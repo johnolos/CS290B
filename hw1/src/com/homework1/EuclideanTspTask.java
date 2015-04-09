@@ -14,6 +14,22 @@ public class EuclideanTspTask implements Task<List<Integer>> {
 
     @Override
     public List<Integer> execute() {
+        List<Integer> orderedList = new ArrayList<Integer>();
+        double leastDistance;
+        int numOfCity;
+        for(int i = 0; i < cities.length; i++) {
+            for(int j = 0; j < cities.length; j++) {
+                if(i == j)
+                    continue;
+                else {
+                    
+
+                }
+            }
+        }
+
+
+
         return new ArrayList<Integer>();
     }
 }
