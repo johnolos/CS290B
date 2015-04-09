@@ -18,7 +18,6 @@ public final class MandelbrotSetTask implements Task<Integer[][]>, Serializable 
         this.limit = limit;
     }
 
-    @Override
     public Integer[][] execute() {
 
         Integer[][] result = new Integer[n][n];
