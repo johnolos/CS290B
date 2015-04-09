@@ -37,6 +37,67 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
     }
     
     public List<Integer> execute() {
+
+        // Generating all possible tuples of cities
+        List<List<Tuple>> listOfTuples = new ArrayList<List<Tuple>>();
+        for(int i = 0; i < cities.length; i++) {
+            List<Tuple> tuples = new ArrayList<Tuple>();
+            for(int j = 0; j < cities.length; j++) {
+                if(i==j)
+                    continue;
+                tuples.add(new Tuple(i, j));
+                listOfTuples.add(recursive(tuples,null));
+            }
+        }
+
+        for(int i = 0; i < cities.length; i++) {
+
+
+
+        }
+
+
+
+
+
+        double shortestPath = 999999999;
+        int numOfTupleCombination = -1;
+
+        for(int i = 0; i < listOfTuples.size(); i++) {
+            List<Tuple> tuples = listOfTuples.get(i);
+            double result = 0;
+            for(Tuple tup : tuples) {
+                result += euclideanDistance(tup);
+            }
+            if(result < shortestPath) {
+                shortestPath = result;
+                numOfTupleCombination = i;
+            }
+        }
+
+        List<Tuple> resultTuples = listOfTuples.get(numOfTupleCombination);
+        List<Integer> resultList = new ArrayList<Integer>();
+
+        for(Tuple tup: resultTuples) {
+            System.out.println(tup);
+        }
+
+        resultList.add(resultTuples.get(0).x);
+        resultList.add(resultTuples.get(0).y);
+
+        System.out.println("Entering while");
+        while(resultList.size() < cities.length) {
+            for(Tuple tup : resultTuples) {
+                if(tup.x == resultList.get(resultList.size() - 1)) {
+                    resultList.add(tup.y);
+                }
+            }
+        }
+
+        return resultList;
+
+
+        /**
         List<Integer> orderedList = new ArrayList<Integer>();
         int numOfCity = -1;
         List<Double> resultList = new ArrayList<Double>();
@@ -77,5 +138,13 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
         System.out.println(intList.toString());
         System.out.println("halloo!");
         return intList;
+         **/
     }
+
+
+    private List<Tuple> recursive(List<Tuple> prev, List<Integer> avail) {
+        List<Integer> copy = null;
+    }
+
+
 }
