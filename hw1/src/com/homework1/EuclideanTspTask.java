@@ -36,33 +36,55 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
     	return Math.sqrt(Math.pow( (x1-x2),2)+ Math.pow( (y1-y2),2));
     }
     
+    public Tuple recursive(int fromCity, int toCity)  {
+    	return new Tuple(fromCity, toCity);
+    }
+   
+    
+    public static List<String> permutationsList; 
+    
+    public String buildStartString(int numberOfCities) {
+    	String startString = ""; 
+    	for (int i = 0; i < numberOfCities; i ++) {
+    		startString += Integer.toString(i); 
+    	}
+    	return startString; 
+    }
+    
+    public static void permutation(String str) { 
+        permutation("", str); 
+    }
+
+    private static void permutation(String prefix, String str) {
+        int n = str.length();
+        if (n == 0) {
+        	permutationsList.add(prefix);
+        } //System.out.println(prefix);
+        else {
+            for (int i = 0; i < n; i++)
+                permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n));
+        }
+    }
+
+    
     public List<Integer> execute() {
-
-        // Generating all possible tuples of cities
-        List<List<Tuple>> listOfTuples = new ArrayList<List<Tuple>>();
-        for(int i = 0; i < cities.length; i++) {
-            List<Tuple> tuples = new ArrayList<Tuple>();
-            for(int j = 0; j < cities.length; j++) {
-                if(i==j)
-                    continue;
-                tuples.add(new Tuple(i, j));
-                listOfTuples.add(recursive(tuples,null));
-            }
-        }
-
-        for(int i = 0; i < cities.length; i++) {
-
-
-
-        }
-
-
-
-
-
-        double shortestPath = 999999999;
-        int numOfTupleCombination = -1;
-
+    	permutationsList = new ArrayList<String>(); 
+    	String startString = buildStartString(cities.length);
+    	permutation(startString); 
+    	
+    	// make tuplelist
+    	List<List<Tuple>> listOfTuples = new ArrayList<List<Tuple>>(); 
+    	for (String permutation : permutationsList) {
+    		List<Tuple> tuples = new ArrayList<Tuple>(); 
+    		for (int i = 0; i < permutation.length() - 1 ; i++) {
+    			tuples.add(new Tuple(Character.getNumericValue(permutation.charAt(i)), Character.getNumericValue(permutation.charAt(i+1)))); 	
+    		}
+    		listOfTuples.add(tuples); 
+    	}
+    	
+    	double shortestPath = 999999999; 
+    	int numOfTupleCombination = -1; 
+    	
         for(int i = 0; i < listOfTuples.size(); i++) {
             List<Tuple> tuples = listOfTuples.get(i);
             double result = 0;
@@ -74,18 +96,18 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
                 numOfTupleCombination = i;
             }
         }
-
+    	
         List<Tuple> resultTuples = listOfTuples.get(numOfTupleCombination);
         List<Integer> resultList = new ArrayList<Integer>();
 
-        for(Tuple tup: resultTuples) {
+        /*for(Tuple tup: resultTuples) {
             System.out.println(tup);
-        }
+        }*/
 
         resultList.add(resultTuples.get(0).x);
         resultList.add(resultTuples.get(0).y);
 
-        System.out.println("Entering while");
+        //System.out.println("Entering while");
         while(resultList.size() < cities.length) {
             for(Tuple tup : resultTuples) {
                 if(tup.x == resultList.get(resultList.size() - 1)) {
@@ -95,56 +117,9 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
         }
 
         return resultList;
+    	
+    	}
 
-
-        /**
-        List<Integer> orderedList = new ArrayList<Integer>();
-        int numOfCity = -1;
-        List<Double> resultList = new ArrayList<Double>();
-
-        for(int i = 0; i < listOftuples.size(); i++) {
-            List<Tuple> innerList = listOftuples.get(i);
-            double result = 0.0;
-            for(Tuple tup : innerList) {
-                result += euclideanDistance(tup);
-            }
-            resultList.add(result);
-        }
-
-        double compareResult = 1000000000.0;
-
-        for(int i = 0; i < resultList.size(); i++) {
-            double tempResult = Double.valueOf(resultList.get(i));
-            if(tempResult < compareResult) {
-                compareResult = tempResult;
-                numOfCity = i;
-                System.out.println(numOfCity);
-            }
-        }
-
-        List<Tuple> tuples = listOftuples.get(numOfCity);
-        List<Integer> intList = new ArrayList<Integer>();
-        intList.add(Integer.valueOf(tuples.get(0).x));
-        while(intList.size() < cities.length) {
-            Integer integer = intList.get(intList.size()-1);
-            for(Tuple tup : tuples) {
-                if(integer == tup.x) {
-                    intList.add(tup.y);
-                    System.out.println("foreeever?");
-               
-                }
-            }
-        }
-        System.out.println(intList.toString());
-        System.out.println("halloo!");
-        return intList;
-         **/
-    }
-
-
-    private List<Tuple> recursive(List<Tuple> prev, List<Integer> avail) {
-        List<Integer> copy = null;
-    }
 
 
 }
