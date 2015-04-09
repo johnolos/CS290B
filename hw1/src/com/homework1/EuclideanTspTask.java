@@ -1,9 +1,10 @@
 package com.homework1;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EuclideanTspTask implements Task<List<Integer>> {
+public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
 
     private double[][] cities;
     List<List<Tuple>> listOftuples;
@@ -38,7 +39,6 @@ public class EuclideanTspTask implements Task<List<Integer>> {
     public List<Integer> execute() {
         List<Integer> orderedList = new ArrayList<Integer>();
         int numOfCity = -1;
-
         List<Double> resultList = new ArrayList<Double>();
 
         for(int i = 0; i < listOftuples.size(); i++) {
@@ -57,22 +57,25 @@ public class EuclideanTspTask implements Task<List<Integer>> {
             if(tempResult < compareResult) {
                 compareResult = tempResult;
                 numOfCity = i;
+                System.out.println(numOfCity);
             }
         }
 
         List<Tuple> tuples = listOftuples.get(numOfCity);
         List<Integer> intList = new ArrayList<Integer>();
         intList.add(Integer.valueOf(tuples.get(0).x));
-        while(intList.size() < tuples.size()) {
-            Integer integer = intList.get(-1);
+        while(intList.size() < cities.length) {
+            Integer integer = intList.get(intList.size()-1);
             for(Tuple tup : tuples) {
                 if(integer == tup.x) {
                     intList.add(tup.y);
-                    break;
+                    System.out.println("foreeever?");
+               
                 }
             }
         }
-
+        System.out.println(intList.toString());
+        System.out.println("halloo!");
         return intList;
     }
 }

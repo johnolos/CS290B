@@ -1,6 +1,8 @@
 package com.homework1;
 
-public class Tuple {
+import java.io.Serializable;
+
+public class Tuple implements Serializable {
     public final int x, y;
 
     public Tuple(int x, int y) {
