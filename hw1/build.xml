@@ -4,7 +4,6 @@
     <delete dir="build"/>
   </target>
 
-
   <target name="compile">
     <mkdir dir="build"/>
     <javac srcdir="src" destdir="build"/>
@@ -54,5 +53,8 @@
     </java>
   </target>
 
+  <target name="javadoc" description="create javadocs">
+    <javadoc packagenames="tasks.*,api.*" sourcepath="src" destdir="documents/javadoc" />
+  </target>
 
 </project>
