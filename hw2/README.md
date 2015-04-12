@@ -1,2 +1,2 @@
-# Homework 1 - A compute server
+#Homework 2 - A Basic Compute Farm
 * [Back](https://github.com/johnolos/CS290B)
