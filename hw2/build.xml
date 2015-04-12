@@ -12,44 +12,31 @@
   <target name="jar">
     <mkdir dir="build/jar"/>
 
-    <jar destfile="build/jar/ComputeImpl.jar" basedir="build">
+    <jar destfile="build/jar/SpaceImpl.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="computer.ComputerImpl"/>
+        <attribute name="Main-Class" value="system.SpaceImpl"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/ClientEuclideanTsp.jar" basedir="build">
+    <jar destfile="build/jar/ComputerImpl.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="client.ClientEuclideanTsp"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/jar/ClientMandelbrotSet.jar" basedir="build">
-      <manifest>
-        <attribute name="Main-Class" value="client.ClientMandelbrotSet"/>
+        <attribute name="Main-Class" value="system.ComputerImpl"/>
       </manifest>
     </jar>
   </target>
 
   <target name="runComputer">
-    <java jar="build/jar/ComputeImpl.jar" fork="true">
-      <jvmarg value="-Djava.security.policy=policy"/>
+    <java jar="build/jar/ComputerImpl.jar" fork="true">
+      <jvmarg value="-Djava.security.policy=policy/policy"/>
 
       <jvmarg value="-Djava.rmi.server.hostname=${server_ip}"/>
     </java>
   </target>
 
-  <target name="runMandelbrot">
-    <java jar="build/jar/ClientMandelbrotSet.jar" fork="true">
+  <target name="runSpace">
+    <java jar="build/jar/SpaceImpl.jar" fork="true">
       <arg value="${server_ip}"/>
-      <jvmarg value="-Djava.security.policy=policy"/>
-    </java>
-  </target>
-
-  <target name="runTSP">
-    <java jar="build/jar/ClientEuclideanTsp.jar" fork="true">
-      <arg value="${server_ip}"/>
-      <jvmarg value="-Djava.security.policy=policy"/>
+      <jvmarg value="-Djava.security.policy=policy/policy"/>
     </java>
   </target>
 

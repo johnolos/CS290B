@@ -9,11 +9,6 @@ import java.rmi.RemoteException;
  */
 public interface Computer extends Remote {
 
-    /** PORT to listen too. **/
-    public static final int PORT = 1099;
-    /** SERVICE_NAME registered at NameService for RMI */
-    public static final String SERVICE_NAME = "bubbafett";
-
     /**
      * Execute function for a task.
      * @param t Object input of a specific task.

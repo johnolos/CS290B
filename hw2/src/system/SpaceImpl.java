@@ -5,7 +5,10 @@ import api.Space;
 import api.Task;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -14,6 +17,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     private BlockingQueue<Task> tasks;
     private BlockingQueue<Result> results;
+    private ArrayList<Computer> computers;
 
     private static SpaceImpl spaceImplInstance;
 
@@ -53,11 +57,23 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     @Override
     public void exit() throws RemoteException {
-
     }
 
     @Override
     public void register(Computer computer) throws RemoteException {
+        computers.add(computer);
+    }
 
+    public static void main(String[] args) throws Exception {
+
+        System.setSecurityManager(new SecurityManager());
+
+        Space space = getInstance();
+        Space stub = (Space) UnicastRemoteObject.exportObject(space, 0);
+
+        Registry registry = LocateRegistry.createRegistry(1099);
+        registry.rebind(Space.SERVICE_NAME, stub);
+
+        System.out.println("SpaceImpl.main Registered and Ready.");
     }
 }

@@ -52,17 +52,18 @@ public class ComputerImpl implements Computer, Runnable {
 
         thread.start();
 
-        System.out.println("ComputerImpl.main Thread Ready.");
+        System.out.println("Thread ComputerImpl.main Ready.");
     }
 
     @Override
     public void run() {
         try {
-            String url = "rmi://" + domain + ":" + Computer.PORT + "/" + Computer.SERVICE_NAME;
+            String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
 
             space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
 
             space.register(this);
+            System.out.println("Computer registered in Space");
 
         } catch (RemoteException e) {
             e.printStackTrace();
