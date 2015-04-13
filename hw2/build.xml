@@ -27,16 +27,15 @@
 
   <target name="runComputer">
     <java jar="build/jar/ComputerImpl.jar" fork="true">
-      <jvmarg value="-Djava.security.policy=policy/policy"/>
-
-      <jvmarg value="-Djava.rmi.server.hostname=${server_ip}"/>
+      <arg value="${server-ip}" />
+      <jvmarg value="-Djava.security.policy=policy"/>
     </java>
   </target>
 
   <target name="runSpace">
     <java jar="build/jar/SpaceImpl.jar" fork="true">
-      <arg value="${server_ip}"/>
-      <jvmarg value="-Djava.security.policy=policy/policy"/>
+      <arg value="${server-ip}"/>
+      <jvmarg value="-Djava.security.policy=policy"/>
     </java>
   </target>
 

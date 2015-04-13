@@ -12,12 +12,12 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * ComputerImplementation of the interface given by Computer
  */
-public class ComputerImpl implements Computer, Runnable {
+public class ComputerImpl extends UnicastRemoteObject implements Computer, Runnable {
 
     private String domain;
     private Space space;
 
-    public ComputerImpl(String domain) {
+    public ComputerImpl(String domain) throws RemoteException {
         this.domain = domain;
     }
 
@@ -49,6 +49,10 @@ public class ComputerImpl implements Computer, Runnable {
             domain = args[0];
         }
 
+        System.setProperty("java.rmi.server.hostname", domain);
+
+        System.out.println(domain);
+
         Thread thread = new Thread(new ComputerImpl(domain));
 
         thread.start();
@@ -59,12 +63,12 @@ public class ComputerImpl implements Computer, Runnable {
     @Override
     public void run() {
         try {
+
             String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
 
             space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
 
             Computer stub = (Computer) UnicastRemoteObject.exportObject(this, 0);
-
             space.register(stub);
 
             System.out.println("Computer registered in Space");

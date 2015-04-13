@@ -67,7 +67,21 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
         System.setSecurityManager(new SecurityManager());
 
+        String domain;
+
+        if(args.length == 0) {
+            domain = "localhost";
+        } else {
+            domain = args[0];
+        }
+
+        System.setProperty("java.rmi.server.hostname", domain);
+
         Space space = new SpaceImpl();
+
+        // Unexport to ensure no exceptions
+        UnicastRemoteObject.unexportObject(space, true);
+
         Space stub = (Space) UnicastRemoteObject.exportObject(space, 6396);
 
         Registry registry = LocateRegistry.createRegistry(1099);
@@ -76,3 +90,4 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         System.out.println("SpaceImpl.main Registered and Ready.");
     }
 }
+
