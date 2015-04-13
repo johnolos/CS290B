@@ -34,7 +34,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         return spaceImplInstance;
     }
 
-
     @Override
     public void putAll(List<Task> taskList) throws RemoteException {
         try {
@@ -68,8 +67,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
         System.setSecurityManager(new SecurityManager());
 
-        Space space = getInstance();
-        Space stub = (Space) UnicastRemoteObject.exportObject(space, 0);
+        Space space = new SpaceImpl();
+        Space stub = (Space) UnicastRemoteObject.exportObject(space, 6396);
 
         Registry registry = LocateRegistry.createRegistry(1099);
         registry.rebind(Space.SERVICE_NAME, stub);

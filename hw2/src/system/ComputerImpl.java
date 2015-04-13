@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * ComputerImplementation of the interface given by Computer
@@ -62,7 +63,10 @@ public class ComputerImpl implements Computer, Runnable {
 
             space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
 
-            space.register(this);
+            Computer stub = (Computer) UnicastRemoteObject.exportObject(this, 0);
+
+            space.register(stub);
+
             System.out.println("Computer registered in Space");
 
         } catch (RemoteException e) {
