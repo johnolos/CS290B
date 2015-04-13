@@ -1,0 +1,47 @@
+<project>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="build"/>
+    <javac srcdir="src" destdir="build"/>
+  </target>
+
+  <target name="jar">
+    <mkdir dir="build/jar"/>
+
+    <jar destfile="build/jar/SpaceImpl.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="system.SpaceImpl"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="build/jar/ComputerImpl.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="system.ComputerImpl"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="runComputer">
+    <java jar="build/jar/ComputerImpl.jar" fork="true">
+      <jvmarg value="-Djava.security.policy=policy/policy"/>
+
+      <jvmarg value="-Djava.rmi.server.hostname=${server_ip}"/>
+    </java>
+  </target>
+
+  <target name="runSpace">
+    <java jar="build/jar/SpaceImpl.jar" fork="true">
+      <arg value="${server_ip}"/>
+      <jvmarg value="-Djava.security.policy=policy/policy"/>
+    </java>
+  </target>
+
+  <target name="javadoc" description="create javadocs">
+    <javadoc packagenames="tasks.*,api.*" sourcepath="src" destdir="documents/javadoc" />
+  </target>
+
+</project>
