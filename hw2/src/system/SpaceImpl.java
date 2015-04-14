@@ -8,22 +8,22 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class SpaceImpl extends UnicastRemoteObject implements Space {
+public class SpaceImpl extends UnicastRemoteObject implements Space, Runnable {
 
     private BlockingQueue<Task> tasks;
     private BlockingQueue<Result> results;
-    private ArrayList<Computer> computers;
-
+    private BlockingQueue<Computer> computers;
     private static SpaceImpl spaceImplInstance;
+    private long sleepDuration = 300;
 
     private SpaceImpl() throws RemoteException {
-        tasks = new ArrayBlockingQueue<Task>(10);
-        results = new ArrayBlockingQueue<Result>(10);
+        tasks = new LinkedBlockingQueue<Task>(10);
+        results = new LinkedBlockingQueue<Result>(10);
+        computers = new LinkedBlockingQueue<Computer>();
         spaceImplInstance = this;
     }
 
@@ -55,6 +55,15 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     @Override
+    public <T> void put(Result<T> result) throws RemoteException {
+        try {
+            results.put(result);
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void exit() throws RemoteException {
     }
 
@@ -65,7 +74,9 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     public static void main(String[] args) throws Exception {
 
-        System.setSecurityManager(new SecurityManager());
+        if(System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
 
         String domain;
 
@@ -77,17 +88,42 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
         System.setProperty("java.rmi.server.hostname", domain);
 
-        Space space = new SpaceImpl();
+        SpaceImpl spaceImpl = new SpaceImpl();
+        Thread thread = new Thread(spaceImpl);
+        thread.start();
 
         // Unexport to ensure no exceptions
-        UnicastRemoteObject.unexportObject(space, true);
+        UnicastRemoteObject.unexportObject(spaceImpl, true);
 
-        Space stub = (Space) UnicastRemoteObject.exportObject(space, 6396);
+        Space stub = (Space) UnicastRemoteObject.exportObject(spaceImpl, 0);
 
-        Registry registry = LocateRegistry.createRegistry(1099);
+        Registry registry = LocateRegistry.createRegistry(Space.PORT);
         registry.rebind(Space.SERVICE_NAME, stub);
 
         System.out.println("SpaceImpl.main Registered and Ready.");
+    }
+
+    @Override
+    public void run() {
+        // For as long Space operates.
+        while(true) {
+            try {
+                // If there is a task and a computer; assign task to computer
+                if(tasks.size() > 0 && computers.size() > 0) {
+                    Task t = tasks.take();
+                    Computer computer = computers.take();
+                    computer.execute(t);
+                }
+                // Else sleep [ms]
+                else {
+                    Thread.sleep(sleepDuration);
+                }
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+            } catch(RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 

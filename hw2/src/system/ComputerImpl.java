@@ -1,5 +1,6 @@
 package system;
 
+import api.Result;
 import api.Space;
 import api.Task;
 
@@ -8,6 +9,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Random;
 
 /**
  * ComputerImplementation of the interface given by Computer
@@ -16,9 +18,17 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
 
     private String domain;
     private Space space;
+    private int id;
+    private final static int NUMBER_OF_COMPUTERS = 10;
+    private final static int BASE_PORT = 4350;
+    private boolean finished;
+    private Computer stub;
 
-    public ComputerImpl(String domain) throws RemoteException {
+
+    public ComputerImpl(String domain, int id) throws RemoteException {
         this.domain = domain;
+        this.id = id;
+        finished = false;
     }
 
     /**
@@ -28,8 +38,13 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
      * @return T object as result specified by the task.
      * @throws java.rmi.RemoteException
      */
-    public <T> T execute(Task<T> t) throws RemoteException {
-        return t.call();
+    public <T> void execute(Task<T> t) throws RemoteException {
+        long start = System.currentTimeMillis();
+        T resultValue = t.call();
+        long end = System.currentTimeMillis();
+        Result<T> result = new Result<T>(resultValue, end - start);
+        space.put(result);
+        space.register(stub);
     }
 
     /**
@@ -40,7 +55,9 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
      */
     public static void main(String[] args) throws Exception {
 
-        System.setSecurityManager(new SecurityManager());
+        if(System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
 
         String domain;
         if(args.length == 0) {
@@ -49,29 +66,37 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
             domain = args[0];
         }
 
-        System.setProperty("java.rmi.server.hostname", domain);
-
         System.out.println(domain);
 
-        Thread thread = new Thread(new ComputerImpl(domain));
+        int i = 0;
+        while(i < NUMBER_OF_COMPUTERS) {
+            Thread thread = new Thread(new ComputerImpl(domain, i));
+            thread.start();
+            i++;
+        }
 
-        thread.start();
-
-        System.out.println("Thread ComputerImpl.main Ready.");
+        System.out.println("ComputerImpl.Main: " + NUMBER_OF_COMPUTERS + " computer(s) has been initiated.");
     }
 
     @Override
     public void run() {
         try {
-
             String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
 
-            space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
+            space = (Space) Naming.lookup(url);
 
-            Computer stub = (Computer) UnicastRemoteObject.exportObject(this, 0);
+            //space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
+
+            UnicastRemoteObject.unexportObject(this, true);
+
+            stub = (Computer) UnicastRemoteObject.exportObject(this, BASE_PORT + id);
+
             space.register(stub);
 
-            System.out.println("Computer registered in Space");
+            System.out.println("Computer " + id + " registered in Space");
+
+            while(!finished) {
+            }
 
         } catch (RemoteException e) {
             e.printStackTrace();

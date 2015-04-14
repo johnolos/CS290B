@@ -36,6 +36,7 @@
     <java jar="build/jar/SpaceImpl.jar" fork="true">
       <arg value="${server-ip}"/>
       <jvmarg value="-Djava.security.policy=policy"/>
+      <jvmarg value="-Djava.rmi.server.hostname=${server-ip}" />
     </java>
   </target>
 

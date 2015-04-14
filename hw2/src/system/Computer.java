@@ -16,6 +16,6 @@ public interface Computer extends Remote {
      * @return T object.
      * @throws RemoteException
      */
-    <T> T execute(Task<T> t) throws RemoteException;
+    <T> void execute(Task<T> t) throws RemoteException;
 
 }
