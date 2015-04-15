@@ -13,11 +13,11 @@ public interface Space extends Remote
     public static int PORT = 2923;
     public static String SERVICE_NAME = "Space";
 
-    void putAll ( List<Task> taskList ) throws RemoteException;
+    <T> void putAll (List<Task<T>> taskList ) throws RemoteException;
 
     Result take() throws RemoteException;
 
-    <T> void put(Result<T> result) throws RemoteException;
+    <V> void put(Result<V> result) throws RemoteException;
 
     void exit() throws RemoteException;
 

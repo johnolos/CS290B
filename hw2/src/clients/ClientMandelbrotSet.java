@@ -1,6 +1,6 @@
-package client;
-import tasks.MandelbrotSetTask;
+package clients;
 
+import tasks.MandelbrotSetTask;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;

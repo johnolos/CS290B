@@ -1,4 +1,5 @@
 package clients;
+import api.Job;
 import api.Result;
 import api.Space;
 import api.Task;
@@ -22,17 +23,17 @@ import javax.swing.JScrollPane;
  *
  * @param <T> return type the Task that this Client executes.
  */
-public class Client<T> extends JFrame
+public class Client<T, V> extends JFrame
 {
-    final protected Task<T> task;
+    final protected Job<T, V> job;
     final private Space space;
-    protected T taskReturnValue;
+    protected V jobReturnValue;
     private long clientStartTime;
 
-    public Client( final String title, final String domainName, final Task<T> task )
+    public Client( final String title, final String domainName, final Job<T, V> job )
             throws RemoteException, NotBoundException, MalformedURLException
     {
-        this.task = task;
+        this.job = job;
         setTitle( title );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
@@ -64,18 +65,18 @@ public class Client<T> extends JFrame
         final long taskStartTime = System.nanoTime();
         final T value = null;
         final long taskRunTime = ( System.nanoTime() - taskStartTime ) / 1000000;
-        Logger.getLogger( Client.class.getCanonicalName() )
-                .log(Level.INFO, "Task {0}Task time: {1} ms.", new Object[]{task, taskRunTime});
+        //Logger.getLogger( Client.class.getCanonicalName() )
+        //        .log(Level.INFO, "Task {0}Task time: {1} ms.", new Object[]{task, taskRunTime});
         return value;
     }
 
 
-    public List<Result<T>> runTasks(List<Task> tasks) throws RemoteException {
+    public void runJob(List<Task> tasks) throws RemoteException {
         System.out.println("Client.runTasks: Sending " + tasks.size() + " tasks.");
-        space.putAll(tasks);
-        List<Result<T>> results = new ArrayList<Result<T>>();
-        Result<T> partialResult;
-        while(results.size() < tasks.size()) {
+        space.putAll(job.getTasks());
+        int numOfReceivedResults = 0;
+        Result<V> partialResult;
+        while(numOfReceivedResults < job.numOfTasks()) {
             partialResult = space.take();
             if(partialResult == null) {
                 try {
@@ -83,11 +84,11 @@ public class Client<T> extends JFrame
                 } catch(InterruptedException e) {
                 }
             } else {
-                System.out.println("Client.runTasks: Received result number: " + results.size());
-                results.add(partialResult);
+                ++numOfReceivedResults;
+                System.out.println("Client.runTasks: Received result number: " + numOfReceivedResults);
+                job.addResult(partialResult);
             }
         }
-        return results;
     }
 
 }
