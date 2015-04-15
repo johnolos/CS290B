@@ -1,6 +1,8 @@
 package clients;
 
 import jobs.MandelbrotSetJob;
+import tasks.MandelbrotSetTask;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -14,7 +16,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientMandelbrotSet extends Client<Integer[][]>
+public class ClientMandelbrotSet extends Client<MandelbrotSetTask,Integer[][]>
 {
     private static final double LOWER_LEFT_X = -2.0;
     private static final double LOWER_LEFT_Y = -2.0;
@@ -48,7 +50,7 @@ public class ClientMandelbrotSet extends Client<Integer[][]>
 
         final ClientMandelbrotSet client = new ClientMandelbrotSet(domain);
         client.begin();
-        Integer[][] value = client.runTask();
+        Integer[][] value = new Integer[0][];
         client.add( client.getLabel( value ) );
         client.end();
     }

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
+public class EuclideanTspNOTUSED2Job implements Task<List<Integer>>, Serializable {
 
     /** Cities and their location. First value is index of city and second array is x and y coordinate **/
     private double[][] cities;
@@ -22,7 +22,7 @@ public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
      * The result is the optimal route.
      * @param cities Double[][] cities.
      */
-    public EuclideanTspJob(double[][] cities) {
+    public EuclideanTspNOTUSED2Job(double[][] cities) {
         this.cities = cities;
 
         listOftuples = new ArrayList<List<Tuple>>();
@@ -61,7 +61,7 @@ public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
      */
     public String buildStartString(int numberOfCities) {
     	String startString = ""; 
-    	for (int i = 0; i < numberOfCities; i ++) {
+    	for (int i = 1; i < numberOfCities; i ++) { // start i = 1, fordi vi alltid skal starte på 0. 
     		startString += Integer.toString(i); 
     	}
     	return startString; 
@@ -75,7 +75,8 @@ public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
     private static void permutation(String prefix, String str) {
         int n = str.length();
         if (n == 0) {
-        	permutationsList.add(prefix);
+        	String perm = Integer.toString(0) + prefix ;  // legger til 0 på starten. 
+        	permutationsList.add(perm); //returnerer 0 + prefix av 1...lengdeAvCities 
         } //System.out.println(prefix);
         else {
             for (int i = 0; i < n; i++)
@@ -91,7 +92,7 @@ public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
      */
     public List<Integer> execute() {
     	permutationsList = new ArrayList<String>(); 
-    	String startString = buildStartString(cities.length);
+    	String startString = buildStartString(cities.length-1);
     	permutation(startString); 
     	
     	// Make tuple list

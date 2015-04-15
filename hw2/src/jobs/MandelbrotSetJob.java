@@ -1,10 +1,10 @@
 package jobs;
 
-import api.Task;
-
+import api.Job;
+import tasks.MandelbrotSetTask;
 import java.io.Serializable;
 
-public final class MandelbrotSetJob implements Task<Integer[][]>, Serializable {
+public final class MandelbrotSetJob extends Job<MandelbrotSetTask,Integer[][]> implements Serializable {
 
     /** Doubles representing lower left corner in complex plane **/
     private double x, y;
@@ -29,6 +29,15 @@ public final class MandelbrotSetJob implements Task<Integer[][]>, Serializable {
         this.length = length;
         this.n = n;
         this.limit = limit;
+    }
+
+
+    public void createTasks() {
+
+    }
+
+    public Integer[][] calculateSolution() {
+        return new Integer[0][];
     }
 
     /**
@@ -69,8 +78,4 @@ public final class MandelbrotSetJob implements Task<Integer[][]>, Serializable {
         return itr;
     }
 
-    @Override
-    public Integer[][] call() {
-        return new Integer[0][];
-    }
 }

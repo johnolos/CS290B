@@ -1,6 +1,9 @@
 package clients;
 
-import jobs.EuclideanTspJob;
+import jobs.EuclideanTSPJob;
+import jobs.EuclideanTspNOTUSED1Job;
+import tasks.EuclideanTSPTask;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -8,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +22,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTsp extends Client<List<Integer>>
+public class ClientEuclideanTsp extends Client<EuclideanTSPTask,List<Integer>>
 {
     private static final int NUM_PIXALS = 600;
     private static final double[][] CITIES =
@@ -37,7 +41,7 @@ public class ClientEuclideanTsp extends Client<List<Integer>>
 
     public ClientEuclideanTsp(String domain) throws RemoteException, NotBoundException, MalformedURLException
     {
-        super( "Euclidean TSP", domain, new EuclideanTspJob( CITIES ) );
+        super( "Euclidean TSP", domain, new EuclideanTSPJob( CITIES ) );
     }
 
     /**
@@ -60,7 +64,7 @@ public class ClientEuclideanTsp extends Client<List<Integer>>
 
         final ClientEuclideanTsp client = new ClientEuclideanTsp(domain);
         client.begin();
-        final List<Integer> value = client.runTask();
+        List<Integer> value = new ArrayList<Integer>();
         client.add( client.getLabel( value.toArray( new Integer[0] ) ) );
         client.end();
     }

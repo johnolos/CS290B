@@ -80,6 +80,7 @@ public class Client<T, V> extends JFrame
                 try {
                     Thread.sleep(100);
                 } catch(InterruptedException e) {
+                    e.printStackTrace();
                 }
             } else {
                 ++numOfReceivedResults;

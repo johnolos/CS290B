@@ -5,7 +5,7 @@ import api.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EuclideanTspTask implements Task<List<Integer>> {
+public class EuclideanTSPTask implements Task<List<Integer>> {
 
 
     public List<Integer> call() {

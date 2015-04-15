@@ -11,9 +11,9 @@ public abstract class Job<T,V> implements Serializable {
     List<Task<T>> tasks;
     List<Result<V>> results;
 
-    abstract void createTasks();
+    abstract public void createTasks();
 
-    abstract V calculateSolution();
+    abstract public V calculateSolution();
 
     public Job() {
         tasks = new ArrayList<Task<T>>();
