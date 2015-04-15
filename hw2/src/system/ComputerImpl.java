@@ -38,11 +38,11 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
      * @return T object as result specified by the task.
      * @throws java.rmi.RemoteException
      */
-    public <T> void execute(Task<T> t) throws RemoteException {
+    public <V> void execute(Task<V> t) throws RemoteException {
         long start = System.currentTimeMillis();
-        T resultValue = t.call();
+        V resultValue = t.call();
         long end = System.currentTimeMillis();
-        Result<T> result = new Result<T>(resultValue, end - start);
+        Result<V> result = new Result<V>(resultValue, end - start);
         space.put(result);
         space.register(stub);
     }

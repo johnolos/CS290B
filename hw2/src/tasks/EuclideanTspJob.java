@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
+public class EuclideanTspJob implements Task<List<Integer>>, Serializable {
 
     /** Cities and their location. First value is index of city and second array is x and y coordinate **/
     private double[][] cities;
@@ -22,7 +22,7 @@ public class EuclideanTspTask implements Task<List<Integer>>, Serializable {
      * The result is the optimal route.
      * @param cities Double[][] cities.
      */
-    public EuclideanTspTask(double[][] cities) {
+    public EuclideanTspJob(double[][] cities) {
         this.cities = cities;
 
         listOftuples = new ArrayList<List<Tuple>>();

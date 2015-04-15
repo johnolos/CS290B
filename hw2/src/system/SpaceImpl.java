@@ -34,10 +34,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space, Runnable {
         return spaceImplInstance;
     }
 
+
     @Override
-    public void putAll(List<Task> taskList) throws RemoteException {
+    public <T> void putAll(List<Task<T>> taskList) throws RemoteException {
         try {
-            for(Task t : taskList)
+            for(Task<T> t : taskList)
                 tasks.put(t);
         } catch(InterruptedException e) {
             e.printStackTrace();
@@ -55,7 +56,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space, Runnable {
     }
 
     @Override
-    public <T> void put(Result<T> result) throws RemoteException {
+    public <V> void put(Result<V> result) throws RemoteException {
         try {
             results.put(result);
         } catch(InterruptedException e) {

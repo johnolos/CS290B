@@ -1,6 +1,6 @@
 package clients;
 
-import tasks.MandelbrotSetTask;
+import tasks.MandelbrotSetJob;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -25,7 +25,7 @@ public class ClientMandelbrotSet extends Client<Integer[][]>
     public ClientMandelbrotSet(String domain) throws RemoteException, NotBoundException, MalformedURLException
     {
         super( "Mandelbrot Set Visualizer", domain,
-                new MandelbrotSetTask( LOWER_LEFT_X, LOWER_LEFT_Y, EDGE_LENGTH, N_PIXELS,
+                new MandelbrotSetJob( LOWER_LEFT_X, LOWER_LEFT_Y, EDGE_LENGTH, N_PIXELS,
                         ITERATION_LIMIT) );
     }
 

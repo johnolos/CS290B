@@ -1,6 +1,6 @@
 package clients;
 
-import tasks.EuclideanTspTask;
+import tasks.EuclideanTspJob;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -37,7 +37,7 @@ public class ClientEuclideanTsp extends Client<List<Integer>>
 
     public ClientEuclideanTsp(String domain) throws RemoteException, NotBoundException, MalformedURLException
     {
-        super( "Euclidean TSP", domain, new EuclideanTspTask( CITIES ) );
+        super( "Euclidean TSP", domain, new EuclideanTspJob( CITIES ) );
     }
 
     /**

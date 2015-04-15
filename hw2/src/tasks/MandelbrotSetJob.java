@@ -4,7 +4,7 @@ import api.Task;
 
 import java.io.Serializable;
 
-public final class MandelbrotSetTask implements Task<Integer[][]>, Serializable {
+public final class MandelbrotSetJob implements Task<Integer[][]>, Serializable {
 
     /** Doubles representing lower left corner in complex plane **/
     private double x, y;
@@ -23,7 +23,7 @@ public final class MandelbrotSetTask implements Task<Integer[][]>, Serializable 
      * @param n Defines how many squares are genereated. n x n
      * @param limit Iteration limit
      */
-    public MandelbrotSetTask(double x, double y, double length, int n, int limit) {
+    public MandelbrotSetJob(double x, double y, double length, int n, int limit) {
         this.x = x;
         this.y = y;
         this.length = length;
