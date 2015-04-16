@@ -32,7 +32,7 @@
 
     <jar destfile="build/jar/TSP.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="clients.ClientEuclideanTsp"/>
+        <attribute name="Main-Class" value="clients.ClientEuclideanTSP"/>
       </manifest>
     </jar>
 

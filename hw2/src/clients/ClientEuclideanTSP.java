@@ -1,7 +1,6 @@
 package clients;
 
 import jobs.EuclideanTSPJob;
-import tasks.EuclideanTSPTask;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +19,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTsp extends Client<EuclideanTSPTask,List<Integer>>
+public class ClientEuclideanTSP extends Client<Double,List<Integer>>
 {
     private static final int NUM_PIXALS = 600;
     private static final double[][] CITIES =
@@ -38,7 +36,7 @@ public class ClientEuclideanTsp extends Client<EuclideanTSPTask,List<Integer>>
                     { 6, 6 }
             };
 
-    public ClientEuclideanTsp(String domain) throws RemoteException, NotBoundException, MalformedURLException
+    public ClientEuclideanTSP(String domain) throws RemoteException, NotBoundException, MalformedURLException
     {
         super( "Euclidean TSP", domain, new EuclideanTSPJob( CITIES ) );
     }
@@ -61,9 +59,9 @@ public class ClientEuclideanTsp extends Client<EuclideanTSPTask,List<Integer>>
         }
 
 
-        final ClientEuclideanTsp client = new ClientEuclideanTsp(domain);
+        final ClientEuclideanTSP client = new ClientEuclideanTSP(domain);
         client.begin();
-        List<Integer> value = new ArrayList<Integer>();
+        List<Integer> value = client.runJob();
         client.add( client.getLabel( value.toArray( new Integer[0] ) ) );
         client.end();
     }
@@ -75,7 +73,7 @@ public class ClientEuclideanTsp extends Client<EuclideanTSPTask,List<Integer>>
      */
     public JLabel getLabel( final Integer[] tour )
     {
-        Logger.getLogger( ClientEuclideanTsp.class.getCanonicalName() ).log(Level.INFO, tourToString( tour ) );
+        Logger.getLogger( ClientEuclideanTSP.class.getCanonicalName() ).log(Level.INFO, tourToString( tour ) );
 
         // display the graph graphically, as it were
         // get minX, maxX, minY, maxY, assuming they 0.0 <= mins

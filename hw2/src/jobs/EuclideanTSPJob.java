@@ -1,6 +1,7 @@
 package jobs;
 
 import api.Job;
+import api.Result;
 import util.PermutationEnumerator;
 import api.Task;
 import tasks.EuclideanTSPTask;
@@ -11,7 +12,7 @@ import java.util.List;
  * This task computes a solution to a Euclidean TSP problem instance.
  * @author Peter Cappello
  */
-public class EuclideanTSPJob extends Job<EuclideanTSPTask,List<Integer>>
+public class EuclideanTSPJob extends Job<Double,List<Integer>>
 {
     final static Integer ONE = 1;
     final static Integer TWO = 2;
@@ -19,32 +20,41 @@ public class EuclideanTSPJob extends Job<EuclideanTSPTask,List<Integer>>
     final private double[][] cities;
     static private double[][] distances;
 
+    private static final String jobId = "EuclideanTSPJob";
+    private List<Integer> partialCityList;
+    private List<Integer> shortestTour;
+    private double shortestTourDistance;
+
     public EuclideanTSPJob( double[][] cities )
     {
         this.cities = cities;
+        // Initialize comparison references
         initializeDistances();
+        partialCityList = initialTour();
+        shortestTour = new ArrayList<Integer>(partialCityList);
+        shortestTour.add(0, 0);
+        shortestTourDistance = tourDistance(shortestTour);
+    }
+
+
+    public List<Integer> calculateSolution() {
+        return shortestTour;
+    }
+
+    @Override
+    public void addResult(Result<Double> result) {
+        super.addResult(result);
+        if(result.getTaskReturnValue() < shortestTourDistance) {
+            shortestTourDistance = result.getTaskReturnValue();
+            EuclideanTSPTask t = (EuclideanTSPTask)getTask(result.getId());
+            shortestTour = t.getPermutation();
+        }
     }
 
     public void createTasks() {
-
-    }
-
-    public List<Integer> calculateSolution() {
-        List<Integer> solution = new ArrayList<Integer>();
-        return solution;
-    }
-
-
-    public List<Integer> call()
-    {
-        // initial value for shortestTour and its distance.
-        List<Integer> partialCityList = initialTour();
-        List<Integer> shortestTour = new ArrayList<Integer>( partialCityList );
-        shortestTour.add( 0, 0 );
-        double shortestTourDistance = tourDistance( shortestTour );
-
         // Use my permutation enumerator
         PermutationEnumerator<Integer> permutationEnumerator = new PermutationEnumerator<Integer>( partialCityList );
+        int id = 0;
         for ( List<Integer> subtour = permutationEnumerator.next(); subtour != null; subtour = permutationEnumerator.next() )
         {
             List<Integer> tour = new ArrayList<Integer>( subtour );
@@ -53,14 +63,9 @@ public class EuclideanTSPJob extends Job<EuclideanTSPTask,List<Integer>>
             {
                 continue; // skip tour; it is the reverse of another.
             }
-            double tourDistance = tourDistance( tour );
-            if ( tourDistance < shortestTourDistance )
-            {
-                shortestTour = tour;
-                shortestTourDistance = tourDistance;
-            }
+            EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, tour);
+            addTask(t);
         }
-        return shortestTour;
     }
 
     private List<Integer> initialTour()

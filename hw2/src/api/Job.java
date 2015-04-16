@@ -54,6 +54,15 @@ public abstract class Job<V, R> implements Serializable {
     }
 
     /**
+     * Get a specific task given it's index.
+     * @param i Index location of task
+     * @return Task of type V
+     */
+    public Task<V> getTask(int i) {
+        return tasks.get(i);
+    }
+
+    /**
      * Returns a List of Tasks
      * @return List<Task<V>> List of Tasks of type V
      */
