@@ -1,6 +1,7 @@
 package jobs;
 
 import api.Job;
+import api.NotEnoughResultsException;
 import api.Result;
 import tasks.MandelbrotSetTask;
 import java.io.Serializable;
@@ -17,6 +18,8 @@ public final class MandelbrotSetJob extends Job<Integer[],Integer[][]> implement
     private int limit;
     /** JobId of current job */
     private final String jobId;
+    /** Set number of rows in each task */
+    private final int NUM_OF_ROWS = 10;
 
     /**
      * Constructor for MandelbrotSetTask

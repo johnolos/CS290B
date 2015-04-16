@@ -1,7 +1,6 @@
 package clients;
 
 import jobs.EuclideanTSPJob;
-import jobs.EuclideanTspNOTUSED1Job;
 import tasks.EuclideanTSPTask;
 
 import java.awt.Color;

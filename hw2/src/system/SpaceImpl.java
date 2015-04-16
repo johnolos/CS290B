@@ -21,8 +21,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space, Runnable {
     private long sleepDuration = 300;
 
     private SpaceImpl() throws RemoteException {
-        tasks = new LinkedBlockingQueue<Task>(10);
-        results = new LinkedBlockingQueue<Result>(10);
+        tasks = new LinkedBlockingQueue<Task>(Space.CAPACITY);
+        results = new LinkedBlockingQueue<Result>(Space.CAPACITY);
         computers = new LinkedBlockingQueue<Computer>();
         spaceImplInstance = this;
     }
@@ -114,6 +114,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space, Runnable {
                     Task t = tasks.take();
                     Computer computer = computers.take();
                     computer.execute(t);
+                    System.out.println("Number of tasks left: " + tasks.size());
                 }
                 // Else sleep [ms]
                 else {

@@ -1,8 +1,5 @@
 package clients;
-import api.Job;
-import api.Result;
-import api.Space;
-import api.Task;
+import api.*;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -10,7 +7,6 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -92,7 +88,7 @@ public class Client<V, R> extends JFrame
         R returnValue = null;
         try {
             returnValue = job.calculateSolution();
-        } catch(Job.NotEnoughResultsException e) {
+        } catch(NotEnoughResultsException e) {
             e.printStackTrace();
         }
         return returnValue;

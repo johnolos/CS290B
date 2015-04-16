@@ -24,7 +24,7 @@ public abstract class Job<V, R> implements Serializable {
     /**
      * Calculates the solution of the job given the results. If not enough results are available an exception will
      * be thrown
-     * @throws api.Job.NotEnoughResultsException
+     * @throws api.NotEnoughResultsException
      */
     abstract public R calculateSolution() throws NotEnoughResultsException;
 
@@ -77,14 +77,5 @@ public abstract class Job<V, R> implements Serializable {
         return tasks.size();
     }
 
-    /**
-     * NotEnoughResultsException
-     * Thrown when not enough results are presented to give an solution.
-     */
-    public class NotEnoughResultsException extends Exception {
-        public NotEnoughResultsException(String message) {
-            super(message);
-        }
-    }
 
 }
