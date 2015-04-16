@@ -23,10 +23,37 @@
         <attribute name="Main-Class" value="system.ComputerImpl"/>
       </manifest>
     </jar>
+
+    <jar destfile="build/jar/Mandelbrot.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="clients.ClientMandelbrotSet"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="build/jar/TSP.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="clients.ClientEuclideanTsp"/>
+      </manifest>
+    </jar>
+
   </target>
 
   <target name="runComputer">
     <java jar="build/jar/ComputerImpl.jar" fork="true">
+      <arg value="${server-ip}" />
+      <jvmarg value="-Djava.security.policy=policy"/>
+    </java>
+  </target>
+
+  <target name="runMandelbrot">
+    <java jar="build/jar/Mandelbrot.jar" fork="true">
+      <arg value="${server-ip}" />
+      <jvmarg value="-Djava.security.policy=policy"/>
+    </java>
+  </target>
+
+  <target name="runTSP">
+    <java jar="build/jar/TSP.jar" fork="true">
       <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
     </java>

@@ -1,4 +1,5 @@
 package api;
+
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
@@ -6,8 +7,24 @@ import java.util.concurrent.Callable;
  *
  * @param <V> the task return type.
  */
-public interface Task<V> extends Serializable, Callable<V>
-{
+public abstract class Task<V> implements Serializable, Callable<V> {
+
+    private int id;
+    private String jobId;
+
+    public Task(String jobId, int id) {
+        this.jobId = jobId;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
     @Override
-    V call();
+    abstract public V call();
 }

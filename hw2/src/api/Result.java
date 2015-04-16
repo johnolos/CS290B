@@ -9,18 +9,31 @@ public class Result<T> implements Serializable
 {
     private final T taskReturnValue;
     private final long taskRunTime;
+    private final int id;
+    private final String jobId;
 
-    public Result( T taskReturnValue, long taskRunTime )
+    public Result(String jobId, int id, T taskReturnValue, long taskRunTime)
     {
         assert taskReturnValue != null;
         assert taskRunTime >= 0;
+        assert id > 0;
         this.taskReturnValue = taskReturnValue;
         this.taskRunTime = taskRunTime;
+        this.jobId = jobId;
+        this.id = id;
     }
 
     public T getTaskReturnValue() { return taskReturnValue; }
 
     public long getTaskRunTime() { return taskRunTime; }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
 
     @Override
     public String toString()

@@ -5,9 +5,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 import system.Computer;
 
-/**
- *
- */
 public interface Space extends Remote
 {
     public static int PORT = 2923;

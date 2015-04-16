@@ -1,10 +1,11 @@
 package jobs;
 
 import api.Job;
+import api.Result;
 import tasks.MandelbrotSetTask;
 import java.io.Serializable;
 
-public final class MandelbrotSetJob extends Job<MandelbrotSetTask,Integer[][]> implements Serializable {
+public final class MandelbrotSetJob extends Job<Integer[],Integer[][]> implements Serializable {
 
     /** Doubles representing lower left corner in complex plane **/
     private double x, y;
@@ -14,6 +15,8 @@ public final class MandelbrotSetJob extends Job<MandelbrotSetTask,Integer[][]> i
     private int n;
     /** Iteration limit. **/
     private int limit;
+    /** JobId of current job */
+    private final String jobId;
 
     /**
      * Constructor for MandelbrotSetTask
@@ -29,53 +32,31 @@ public final class MandelbrotSetJob extends Job<MandelbrotSetTask,Integer[][]> i
         this.length = length;
         this.n = n;
         this.limit = limit;
-    }
-
-
-    public void createTasks() {
-
-    }
-
-    public Integer[][] calculateSolution() {
-        return new Integer[0][];
+        jobId = "MandelbrotSet";
     }
 
     /**
-     * execute
-     * Computes the data for a MandelbrotSet
-     * @return Integer[][] Data result
+     * Divides current Job into smaller task which is able to be computed in simultaneously.
      */
-    public Integer[][] execute() {
+    public void createTasks() {
+        for(int row = 0; row < n; row++) {
+            MandelbrotSetTask t = new MandelbrotSetTask(jobId, row, x, y, n, limit, length);
+            addTask(t);
+        }
+    }
 
-        Integer[][] result = new Integer[n][n];
-        double x, y;
+    public Integer[][] calculateSolution() throws NotEnoughResultsException {
+        if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("calculateSolution()");
 
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                x = ((i * length) / n) + this.x;
-                y = ((j * length) / n) + this.y;
-                result[i][j] = computation(x, y);
+        Integer[][] pixels = new Integer[n][n];
+        for(Result<Integer[]> r : getResults()) {
+            final int row = r.getId();
+            final Integer[] pixelRow = r.getTaskReturnValue();
+            for(int col = 0; col < pixelRow.length; col++) {
+                pixels[row][col] = pixelRow[col];
             }
         }
-        return result;
-    }
-
-    /**
-     * Delegated function to compute the iteration computation for the MandelbrotSet.
-     * @param x0 Double x-value
-     * @param y0 Double y-value
-     * @return Int value as result of iteration computation
-     */
-    private int computation(double x0, double y0) {
-        double x = 0.0, y = 0.0;
-        int itr = 0;
-        while((x*x + y*y) < 2*2 && itr < limit) {
-            double x_temp = x*x - y*y + x0;
-            y = 2*x*y + y0;
-            x = x_temp;
-            itr++;
-        }
-        return itr;
+        return pixels;
     }
 
 }

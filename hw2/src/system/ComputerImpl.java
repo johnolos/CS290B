@@ -9,7 +9,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Random;
 
 /**
  * ComputerImplementation of the interface given by Computer
@@ -34,7 +33,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
     /**
      * Implementation of execute
      * @param t Task to be executed
-     * @param <T> Result object of the task executed.
+     * @param <V> Result object of the task executed.
      * @return T object as result specified by the task.
      * @throws java.rmi.RemoteException
      */
@@ -42,7 +41,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
         long start = System.currentTimeMillis();
         V resultValue = t.call();
         long end = System.currentTimeMillis();
-        Result<V> result = new Result<V>(resultValue, end - start);
+        Result<V> result = new Result<V>(t.getJobId(), t.getId(), resultValue, end - start);
         space.put(result);
         space.register(stub);
     }

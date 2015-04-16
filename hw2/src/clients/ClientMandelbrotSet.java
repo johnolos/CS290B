@@ -16,7 +16,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientMandelbrotSet extends Client<MandelbrotSetTask,Integer[][]>
+public class ClientMandelbrotSet extends Client<Integer[],Integer[][]>
 {
     private static final double LOWER_LEFT_X = -2.0;
     private static final double LOWER_LEFT_Y = -2.0;
@@ -50,8 +50,8 @@ public class ClientMandelbrotSet extends Client<MandelbrotSetTask,Integer[][]>
 
         final ClientMandelbrotSet client = new ClientMandelbrotSet(domain);
         client.begin();
-        Integer[][] value = new Integer[0][];
-        client.add( client.getLabel( value ) );
+        Integer[][] solution = client.runJob();
+        client.add( client.getLabel( solution ) );
         client.end();
     }
 

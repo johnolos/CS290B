@@ -19,16 +19,16 @@ import javax.swing.JScrollPane;
 
 /**
  *
- * @param <T> return type the Task that this Client executes.
+ * @param <V> return type the Task that this Client executes.
  */
-public class Client<T, V> extends JFrame
+public class Client<V, R> extends JFrame
 {
-    final protected Job<T, V> job;
-    final private Space space;
-    protected V jobReturnValue;
+    final protected Job<V, R> job;
+    final protected Space space;
+    protected R jobReturnValue;
     private long clientStartTime;
 
-    public Client( final String title, final String domainName, final Job<T, V> job )
+    public Client( final String title, final String domainName, final Job<V, R> job )
             throws RemoteException, NotBoundException, MalformedURLException
     {
         this.job = job;
@@ -58,10 +58,10 @@ public class Client<T, V> extends JFrame
         setVisible( true );
     }
 
-    public T runTask() throws RemoteException
+    public V runTask() throws RemoteException
     {
         final long taskStartTime = System.nanoTime();
-        final T value = null;
+        final V value = null;
         final long taskRunTime = ( System.nanoTime() - taskStartTime ) / 1000000;
         //Logger.getLogger( Client.class.getCanonicalName() )
         //        .log(Level.INFO, "Task {0}Task time: {1} ms.", new Object[]{task, taskRunTime});
@@ -69,8 +69,9 @@ public class Client<T, V> extends JFrame
     }
 
 
-    public void runJob(List<Task> tasks) throws RemoteException {
-        System.out.println("Client.runTasks: Sending " + tasks.size() + " tasks.");
+    public R runJob() throws RemoteException {
+        job.createTasks();
+        System.out.println("Client.runTasks: Sending " + job.numOfTasks() + " tasks.");
         space.putAll(job.getTasks());
         int numOfReceivedResults = 0;
         Result<V> partialResult;
@@ -88,6 +89,13 @@ public class Client<T, V> extends JFrame
                 job.addResult(partialResult);
             }
         }
+        R returnValue = null;
+        try {
+            returnValue = job.calculateSolution();
+        } catch(Job.NotEnoughResultsException e) {
+            e.printStackTrace();
+        }
+        return returnValue;
     }
 
 }
