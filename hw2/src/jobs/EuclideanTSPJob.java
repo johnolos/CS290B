@@ -1,81 +1,81 @@
 package jobs;
 
 import api.Job;
+import api.NotEnoughResultsException;
 import api.Result;
-import util.PermutationEnumerator;
-import api.Task;
 import tasks.EuclideanTSPTask;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This task computes a solution to a Euclidean TSP problem instance.
- * @author Peter Cappello
  */
-public class EuclideanTSPJob extends Job<Double,List<Integer>>
-{
-    final static Integer ONE = 1;
-    final static Integer TWO = 2;
+public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
 
     final private double[][] cities;
     static private double[][] distances;
 
     private static final String jobId = "EuclideanTSPJob";
-    private List<Integer> partialCityList;
     private List<Integer> shortestTour;
     private double shortestTourDistance;
 
     public EuclideanTSPJob( double[][] cities )
     {
         this.cities = cities;
+        shortestTour = null;
+        shortestTourDistance = 0.0;
+
         // Initialize comparison references
         initializeDistances();
-        partialCityList = initialTour();
-        shortestTour = new ArrayList<Integer>(partialCityList);
-        shortestTour.add(0, 0);
-        shortestTourDistance = tourDistance(shortestTour);
     }
 
 
-    public List<Integer> calculateSolution() {
+    public List<Integer> calculateSolution() throws NotEnoughResultsException {
+        if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("Not enough results");
         return shortestTour;
     }
 
     @Override
-    public void addResult(Result<Double> result) {
+    public void addResult(Result<List<Integer>> result) {
         super.addResult(result);
-        if(result.getTaskReturnValue() < shortestTourDistance) {
-            shortestTourDistance = result.getTaskReturnValue();
-            EuclideanTSPTask t = (EuclideanTSPTask)getTask(result.getId());
-            shortestTour = t.getPermutation();
-        }
-    }
-
-    public void createTasks() {
-        // Use my permutation enumerator
-        PermutationEnumerator<Integer> permutationEnumerator = new PermutationEnumerator<Integer>( partialCityList );
-        int id = 0;
-        for ( List<Integer> subtour = permutationEnumerator.next(); subtour != null; subtour = permutationEnumerator.next() )
-        {
-            List<Integer> tour = new ArrayList<Integer>( subtour );
-            tour.add( 0, 0 );
-            if ( tour.indexOf( ONE ) >  tour.indexOf( TWO ) )
-            {
-                continue; // skip tour; it is the reverse of another.
+        if(shortestTour == null) {
+            shortestTour = result.getTaskReturnValue();
+            shortestTourDistance = tourDistance(shortestTour);
+        } else {
+            List<Integer> tour = result.getTaskReturnValue();
+            double tourDistance = tourDistance(tour);
+            if(tourDistance < shortestTourDistance) {
+                shortestTour = tour;
+                shortestTourDistance = tourDistance;
+                System.out.println("New tour made it!");
+                for(Integer i : shortestTour) {
+                    System.out.print(i + ",");
+                    System.out.println();
+                }
             }
-            EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, tour);
-            addTask(t);
         }
     }
 
-    private List<Integer> initialTour()
+    public void createTasks()
     {
-        List<Integer> tour = new ArrayList<Integer>();
-        for ( int city = 1; city < cities.length; city++ )
-        {
-            tour.add( city );
+        int id = 0;
+        for ( int city1 = 0; city1 < cities.length; city1++ ) {
+            List<Integer> prefix = new ArrayList<Integer>();
+            for(int city2 = 0; city2 < cities.length; city2++) {
+                if(city2 != city1) {
+                    prefix.add(city1);
+                    prefix.add(city2);
+                    List<Integer> partialCityList = new ArrayList<Integer>();
+                    for(int i = 0; i < cities.length; i++) {
+                        if(i != city2 && i != city1) {
+                            partialCityList.add(i);
+                        }
+                    }
+                    EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
+                    addTask(t);
+                }
+            }
         }
-        return tour;
     }
 
     @Override

@@ -1,9 +1,13 @@
 package util;
 
+import java.io.Serializable;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
+ * @author Pete Cappello
  * @param <T> the type of objectList being permuted.
  */
 public class PermutationEnumerator<T>

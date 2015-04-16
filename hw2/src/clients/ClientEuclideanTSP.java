@@ -19,7 +19,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTSP extends Client<Double,List<Integer>>
+public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>>
 {
     private static final int NUM_PIXALS = 600;
     private static final double[][] CITIES =
