@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 /**
  * Client class that has a job and executes it.
  * @param <V> return type the Task that this Client executes.
+ * @param <R> return type of the job performed.
  */
 public class Client<V, R> extends JFrame
 {

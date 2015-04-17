@@ -15,12 +15,39 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ComputerImpl extends UnicastRemoteObject implements Computer, Runnable {
 
+    /**
+     * String domain of the computer
+     */
     private String domain;
+
+    /**
+     * Space
+     */
     private Space space;
+
+    /**
+     * Computer id
+     */
     private int id;
+
+    /**
+     * Number of computers to be created
+     */
     private final static int NUMBER_OF_COMPUTERS = 10;
+
+    /**
+     * Base port for computers
+     */
     private final static int BASE_PORT = 4350;
+
+    /**
+     * finished boolean value to exit while-loop in thread.
+     */
     private boolean finished;
+
+    /**
+     * Computer stub for this ComputerImpl
+     */
     private Computer stub;
 
 
