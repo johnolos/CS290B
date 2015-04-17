@@ -63,6 +63,15 @@ public class Client<V, R> extends JFrame
     {
         Logger.getLogger( Client.class.getCanonicalName() )
                 .log(Level.INFO, "Client time: {0} ms.", ( System.nanoTime() - clientStartTime) / 1000000 );
+
+        long sumOfTimes = 0;
+        for(Result r : job.getResults()) {
+            sumOfTimes+=r.getTaskRunTime();
+        }
+        System.out.println("Combined task times: " + sumOfTimes);
+
+        Logger.getLogger( Client.class.getCanonicalName() )
+            .log(Level.INFO, "Task times: {0} ms.", ( sumOfTimes ));
     }
 
     /**
@@ -111,5 +120,4 @@ public class Client<V, R> extends JFrame
         }
         return returnValue;
     }
-
 }

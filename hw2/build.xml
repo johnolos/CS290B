@@ -68,7 +68,7 @@
   </target>
 
   <target name="javadoc" description="create javadocs">
-    <javadoc packagenames="tasks.*,api.*,clients.*,system.*,jobs.*" sourcepath="src" destdir="documents/javadoc" />
+    <javadoc packagenames="tasks.*,api.*,clients.*,system.*,jobs.*,util.*" sourcepath="src" destdir="documents/javadoc" />
   </target>
 
 </project>
