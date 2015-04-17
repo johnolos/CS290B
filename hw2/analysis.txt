@@ -1,0 +1,10 @@
+Analysis:
+
+1) There are several things that has an affect on the execution time. If the system is on a network with a lot of noise the communication between computers will vary. Slow processes and bad implementation can make the execution times vary. With bad implementation we are referring to an unstable way of dividing the problem as a whole into smaller tasks. 
+
+2) We could do tests with everything on different computers versus everything on one computer. We could also test with 3,4,5,...,n computers and see if the performance improves. 
+
+3) Synchronization; threads should not "get in the way" of others. Only one thread should access a resource at the time.
+   Immutable objets; 
+   
+   	
