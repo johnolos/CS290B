@@ -12,11 +12,29 @@ import java.util.List;
  */
 public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
 
+    /**
+     * Cities in TSP problem
+     */
     final private double[][] cities;
+
+    /**
+     * Distance table for the cities
+     */
     static private double[][] distances;
 
+    /**
+     * JobId
+     */
     private static final String jobId = "EuclideanTSPJob";
+
+    /**
+     * ShortestTour in TSP
+     */
     private List<Integer> shortestTour;
+
+    /**
+     * Distance in shortest tour.
+     */
     private double shortestTourDistance;
 
     public EuclideanTSPJob( double[][] cities )
@@ -47,11 +65,6 @@ public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
             if(tourDistance < shortestTourDistance) {
                 shortestTour = tour;
                 shortestTourDistance = tourDistance;
-                System.out.println("New tour made it!");
-                for(Integer i : shortestTour) {
-                    System.out.print(i + ",");
-                    System.out.println();
-                }
             }
         }
     }
@@ -59,22 +72,18 @@ public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
     public void createTasks()
     {
         int id = 0;
-        for ( int city1 = 0; city1 < cities.length; city1++ ) {
+        for(int city = 1; city < cities.length; city++) {
             List<Integer> prefix = new ArrayList<Integer>();
-            for(int city2 = 0; city2 < cities.length; city2++) {
-                if(city2 != city1) {
-                    prefix.add(city1);
-                    prefix.add(city2);
-                    List<Integer> partialCityList = new ArrayList<Integer>();
-                    for(int i = 0; i < cities.length; i++) {
-                        if(i != city2 && i != city1) {
-                            partialCityList.add(i);
-                        }
-                    }
-                    EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
-                    addTask(t);
+            prefix.add(0);
+            prefix.add(city);
+            List<Integer> partialCityList = new ArrayList<Integer>();
+            for(int i = 1; i < cities.length; i++) {
+                if(i != city) {
+                    partialCityList.add(i);
                 }
             }
+            EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
+            addTask(t);
         }
     }
 

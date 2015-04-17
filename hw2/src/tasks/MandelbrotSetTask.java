@@ -11,7 +11,6 @@ public class MandelbrotSetTask extends Task<Integer[]> {
     private double x, y;
     private double length;
 
-
     /**
      * Constructor for MandelbrotSetTask
      * @param jobId String jobId of which job this task is part of.

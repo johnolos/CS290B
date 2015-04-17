@@ -13,17 +13,20 @@ import java.util.List;
  */
 public abstract class Job<V, R> implements Serializable {
 
+    /** List of tasks for the job*/
     List<Task<V>> tasks;
+    /** List of results for the job */
     List<Result<V>> results;
 
     /**
-     * Divides current Job into smaller task which is able to be computed in simultaneously.
+     * Divides current Job into smaller tasks which is able to be computed in simultaneously and thereafter
+     * compute a solution based on those results.
      */
     abstract public void createTasks();
 
     /**
-     * Calculates the solution of the job given the results. If not enough results are available an exception will
-     * be thrown
+     * Calculates the solution of the job given the results of the tasks.
+     * If not enough results are available an exception wil be thrown.
      * @throws api.NotEnoughResultsException
      */
     abstract public R calculateSolution() throws NotEnoughResultsException;

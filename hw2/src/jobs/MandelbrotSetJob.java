@@ -18,8 +18,6 @@ public final class MandelbrotSetJob extends Job<Integer[],Integer[][]> implement
     private int limit;
     /** JobId of current job */
     private final String jobId;
-    /** Set number of rows in each task */
-    private final int NUM_OF_ROWS = 10;
 
     /**
      * Constructor for MandelbrotSetTask
@@ -48,6 +46,11 @@ public final class MandelbrotSetJob extends Job<Integer[],Integer[][]> implement
         }
     }
 
+    /**
+     * Calculates the solution of the MandbrotSet
+     * @return Integer[][] solution of MandelbrotSet
+     * @throws NotEnoughResultsException
+     */
     public Integer[][] calculateSolution() throws NotEnoughResultsException {
         if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("calculateSolution()");
 

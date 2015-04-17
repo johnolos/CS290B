@@ -8,14 +8,37 @@ import java.util.List;
 
 public class EuclideanTSPTask extends Task<List<Integer>> {
 
+    /**
+     * List of prefix cities for this branch of TSP.
+     */
     private final List<Integer> prefix;
+
+    /**
+     * List of cities to be permuted over.
+     */
     private final List<Integer> partialCityList;
+
+    /**
+     * List of cities and their locations.
+     */
     final private double[][] cities;
+
+    /**
+     * Distance table between cities to ease computation.
+     */
     private double[][] distances;
 
     final static Integer ONE = 1;
     final static Integer TWO = 2;
 
+    /**
+     * Class for EuclideanTSPTask
+     * @param jobId String id for job.
+     * @param id Id of task.
+     * @param cities Cities to be considered and their locations.
+     * @param prefix Prefix for this branch.
+     * @param partialCityList Cities to be permuted over.
+     */
     public EuclideanTSPTask(String jobId, int id, double[][] cities, List<Integer> prefix, List<Integer> partialCityList) {
         super(jobId, id);
         assert prefix != null;
@@ -28,16 +51,16 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         initializeDistances();
     }
 
+    /**
+     * Call method to execute TSP task.
+     * Calculates all premutations given by this TSP branch.
+     * @return Return list containing best TSP tour for this branch.
+     */
     public List<Integer> call() {
         List<Integer> shortestTour = new ArrayList<Integer>(partialCityList);
         shortestTour.addAll(0, prefix);
         double shortestTourDistance = tourDistance(shortestTour);
 
-        System.out.println("What we start with:");
-        for(Integer i : shortestTour) {
-            System.out.print(i + ", ");
-        }
-        System.out.println();
 
         // Using Permutation Enumerator
         PermutationEnumerator<Integer> permutationEnumerator = new PermutationEnumerator<Integer>( partialCityList );
@@ -55,15 +78,15 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
                 shortestTourDistance = tourDistance;
             }
         }
-        System.out.println("What we end with:");
-        for(Integer i : shortestTour) {
-            System.out.print(i + ", ");
-        }
-        System.out.println();
         return shortestTour;
     }
 
 
+    /**
+     * Distance of a TSP tour.
+     * @param tour TSP tour as a list of cities.
+     * @return double distance of tour
+     */
     private double tourDistance( final List<Integer> tour  )
     {
         double cost = distances[ tour.get( tour.size() - 1 ) ][ tour.get( 0 ) ];
@@ -74,6 +97,12 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         return cost;
     }
 
+    /**
+     * Euclidean distance algorithm to compute distance between two cities.
+     * @param city1 City one
+     * @param city2 City two
+     * @return double distance
+     */
     private static double distance( final double[] city1, final double[] city2 )
     {
         final double deltaX = city1[ 0 ] - city2[ 0 ];
@@ -81,6 +110,9 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
     }
 
+    /**
+     * Initialise distance table to ease computation of TSP.
+     */
     private void initializeDistances()
     {
         distances = new double[ cities.length][ cities.length];

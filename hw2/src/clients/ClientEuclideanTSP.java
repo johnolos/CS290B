@@ -19,23 +19,39 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>>
-{
+public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>> {
+
+    /**
+     * Number of pixels
+     */
     private static final int NUM_PIXALS = 600;
+
+    /**
+     * Cities in TSP problem and their locations
+     */
     private static final double[][] CITIES =
             {
-                    { 6, 3 },
+                    { 1, 1 },
+                    { 8, 1 },
+                    { 8, 8 },
+                    { 1, 8 },
                     { 2, 2 },
-                    { 5, 8 },
-                    { 1, 5 },
-                    { 1, 6 },
+                    { 7, 2 },
+                    { 7, 7 },
                     { 2, 7 },
-                    { 2, 8 },
-                    { 6, 5 },
-                    { 1, 3 },
-                    { 6, 6 }
+                    { 3, 3 },
+                    { 6, 3 },
+                    { 6, 6 },
+                    { 3, 6 }
             };
 
+    /**
+     * ClientEuclideanTSP - Client for Euclidean Traveling Salesman Problem.
+     * @param domain Domain which space is reachable on.
+     * @throws RemoteException
+     * @throws NotBoundException
+     * @throws MalformedURLException
+     */
     public ClientEuclideanTSP(String domain) throws RemoteException, NotBoundException, MalformedURLException
     {
         super( "Euclidean TSP", domain, new EuclideanTSPJob( CITIES ) );
@@ -62,6 +78,9 @@ public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>>
         final ClientEuclideanTSP client = new ClientEuclideanTSP(domain);
         client.begin();
         List<Integer> value = client.runJob();
+        for(Integer i : value) {
+            System.out.print(i + ",");
+        }
         client.add( client.getLabel( value.toArray( new Integer[0] ) ) );
         client.end();
     }

@@ -14,16 +14,30 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 /**
- *
+ * Client class that has a job and executes it.
  * @param <V> return type the Task that this Client executes.
  */
 public class Client<V, R> extends JFrame
 {
+    /** Job to be executed. */
     final protected Job<V, R> job;
+    /** Space resource */
     final protected Space space;
+    /** Return value of the job done of type R */
     protected R jobReturnValue;
+    /** Time when client started **/
     private long clientStartTime;
 
+    /**
+     * Constructor for Client class
+     * @param title Title
+     * @param domainName String Domainname to reach Space on.
+     * @param job <V,R> Job where V is the return type of task of that job
+     * and R is the solution type of the job itself.
+     * @throws RemoteException
+     * @throws NotBoundException
+     * @throws MalformedURLException
+     */
     public Client( final String title, final String domainName, final Job<V, R> job )
             throws RemoteException, NotBoundException, MalformedURLException
     {
@@ -35,16 +49,26 @@ public class Client<V, R> extends JFrame
         space = (Space) Naming.lookup(url);
     }
 
+    /**
+     * Begin time recording
+     */
     public void begin() {
         clientStartTime = System.nanoTime();
     }
 
+    /**
+     * End time recording
+     */
     public void end()
     {
         Logger.getLogger( Client.class.getCanonicalName() )
                 .log(Level.INFO, "Client time: {0} ms.", ( System.nanoTime() - clientStartTime) / 1000000 );
     }
 
+    /**
+     * Add label
+     * @param jLabel Label to add.
+     */
     public void add( final JLabel jLabel )
     {
         final Container container = getContentPane();
@@ -54,17 +78,11 @@ public class Client<V, R> extends JFrame
         setVisible( true );
     }
 
-    public V runTask() throws RemoteException
-    {
-        final long taskStartTime = System.nanoTime();
-        final V value = null;
-        final long taskRunTime = ( System.nanoTime() - taskStartTime ) / 1000000;
-        //Logger.getLogger( Client.class.getCanonicalName() )
-        //        .log(Level.INFO, "Task {0}Task time: {1} ms.", new Object[]{task, taskRunTime});
-        return value;
-    }
-
-
+    /**
+     * Method to run the job.
+     * @return R return type of job to be executed.
+     * @throws RemoteException
+     */
     public R runJob() throws RemoteException {
         job.createTasks();
         System.out.println("Client.runTasks: Sending " + job.numOfTasks() + " tasks.");
