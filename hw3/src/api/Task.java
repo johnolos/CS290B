@@ -25,7 +25,7 @@ public interface Task<T> extends Serializable {
      * Add result to task.
      * @param result Result of a subtask to be added.
      */
-    public void addResult(Result<T> result);
+    public void addResult(T result);
 
     /**
      * Checks if task is ready to be composed.
@@ -38,7 +38,5 @@ public interface Task<T> extends Serializable {
      * @return Id of task.
      */
     public int getId();
-
-
 
 }
