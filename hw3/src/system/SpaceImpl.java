@@ -27,15 +27,10 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     private ConcurrentHashMap<Integer, TaskProxy> taskProxies;
 
-    /**
-     * Blocking queue of results to ensure thread-safe execution.
-     */
-    private BlockingQueue<Result> results;
+    private ConcurrentHashMap<Integer, Result> results;
 
-    /**
-     * Blocking queue of computers to ensure thread-safe execution.
-     */
-    private BlockingQueue<Computer> computers;
+    private BlockingQueue<TaskProxy> tasks;
+
 
     /**
      * Field to get space. Implements the singleton pattern.
@@ -50,7 +45,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     /**
      * Map of Computers to ComputerProxies
      */
-    private final Map<Computer, ComputerProxy> computerProxies = new HashMap<Computer, ComputerProxy>();
+    private final Map<Computer, ComputerProxy> computerProxies;
 
     /**
      * Constructor for SpaceImpl
@@ -58,8 +53,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     private SpaceImpl() throws RemoteException {
         taskProxies = new ConcurrentHashMap<Integer, TaskProxy>();
-        results = new LinkedBlockingQueue<Result>();
-        computers = new LinkedBlockingQueue<Computer>();
+        results = new ConcurrentHashMap<Integer, Result>();
+        computerProxies = new ConcurrentHashMap<Computer, ComputerProxy>();
         spaceImplInstance = this;
         Logger.getLogger( SpaceImpl.class.getName() ).log( Level.INFO, "Space started." );
     }
@@ -84,11 +79,9 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     @Override
     public <T> void putAll(List<Task<T>> taskList) throws RemoteException {
-        try {
-            for(Task<T> t : taskList)
-                tasks.put(t);
-        } catch(InterruptedException e) {
-            e.printStackTrace();
+        for(Task<T> t : taskList) {
+            TaskProxy<T> taskProxy = new TaskProxy<T>(t);
+            taskProxies.putIfAbsent(t.getId(), taskProxy);
         }
     }
 
@@ -240,7 +233,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         }
 
         @Override
-        public void addResult(Result<T> result) {
+        public void addResult(T result) {
             task.addResult(result);
         }
 
@@ -253,6 +246,12 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         public int getId() {
             return task.getId();
         }
+
+        @Override
+        public int getParentId() {
+            return task.getParentId();
+        }
     }
+
 }
 

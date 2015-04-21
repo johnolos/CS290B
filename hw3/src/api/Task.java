@@ -39,4 +39,10 @@ public interface Task<T> extends Serializable {
      */
     public int getId();
 
+    /**
+     * Return parent id.
+     * @return Id of parent task.
+     */
+    public int getParentId();
+
 }
