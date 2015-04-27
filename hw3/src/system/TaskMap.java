@@ -1,12 +1,11 @@
 package system;
 
 import api.Task;
-
 import java.util.*;
 
 /**
- * ThreadQueue:
- * Custom thread-safe queue implementation that support seaching for task id.
+ * TaskMap:
+ * Custom thread-safe map implementation that support seaching for task id.
  */
 public class TaskMap {
     private Map<UUID, Task> map = new HashMap<UUID, Task>();
@@ -18,6 +17,7 @@ public class TaskMap {
             lock.notifyAll();
         }
     }
+    
 
     public <T> boolean setArg(UUID taskId, T arg) {
         synchronized (lock) {
