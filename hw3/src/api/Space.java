@@ -3,6 +3,8 @@ package api;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.UUID;
+
 import system.Computer;
 
 /**
@@ -28,28 +30,23 @@ public interface Space extends Remote {
      * @param <T> Value of Task
      * @throws RemoteException
      */
-    <T> void putAll (List<Task<T>> taskList ) throws RemoteException;
+    public <T> void putAll (List<Task<T>> taskList ) throws RemoteException;
 
-    /**
-     * Take a result from the space
-     * @return
-     * @throws RemoteException
-     */
-    Result take() throws RemoteException;
+    public <T> void put(Task task) throws RemoteException;
 
-    /**
-     * Put a result on Space
-     * @param result Result to be added
-     * @param <V> Value of Result added.
-     * @throws RemoteException
-     */
-    <V> void put(Result<V> result) throws RemoteException;
+    public <T> void putWaitQ(Task<T> t) throws RemoteException;
+
+    public <T> void putReadyQ(Task<T> t) throws RemoteException;
+
+    public <T> void setArg(UUID id, T r) throws RemoteException;
+
+    public Result take() throws RemoteException;
 
     /**
      * Order space to exit what is currently is doing.
      * @throws RemoteException
      */
-    void exit() throws RemoteException;
+    public void exit() throws RemoteException;
 
     /**
      * Register a computer on the space which is available for computation.

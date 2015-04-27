@@ -19,7 +19,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>> {
+public class ClientEuclideanTSP extends Client<List<Integer>> {
 
     /**
      * Number of pixels
@@ -66,13 +66,11 @@ public class ClientEuclideanTSP extends Client<List<Integer>,List<Integer>> {
     {
         System.setSecurityManager( new SecurityManager() );
 
-        String domain;
-        if(args.length == 0){
-            domain = "localhost";
+        if(args.length < 1) {
+            System.exit(-1);
         }
-        else {
-            domain = args[0];
-        }
+
+        String domain = args[0];
 
 
         final ClientEuclideanTSP client = new ClientEuclideanTSP(domain);

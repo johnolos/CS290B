@@ -2,14 +2,12 @@ package results;
 
 import api.Result;
 
+import java.util.UUID;
+
 public class FibonacciResult extends Result<Integer> {
 
-	private final int startCity; 
-	private final double lenght; 
-	
-	
-    public FibonacciResult(int taskReturnValue, int taskId) {
-        super(taskReturnValue, taskId);
+    public FibonacciResult(UUID taskAddrId, int taskReturnValue) {
+        super(taskAddrId, taskReturnValue, 0);
     }
 
 

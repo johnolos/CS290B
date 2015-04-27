@@ -1,10 +1,14 @@
 package tasks;
 
 import api.Task;
+import system.Computer;
 import util.PermutationEnumerator;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 
 public class EuclideanTSPTask extends Task<List<Integer>> {
 
@@ -33,14 +37,14 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
 
     /**
      * Class for EuclideanTSPTask
-     * @param jobId String id for job.
+     * @param parentId String id for job.
      * @param id Id of task.
      * @param cities Cities to be considered and their locations.
      * @param prefix Prefix for this branch.
      * @param partialCityList Cities to be permuted over.
      */
-    public EuclideanTSPTask(String jobId, int id, double[][] cities, List<Integer> prefix, List<Integer> partialCityList) {
-        super(jobId, id);
+    public EuclideanTSPTask(UUID parentId, int id, double[][] cities, List<Integer> prefix, List<Integer> partialCityList) {
+        super(parentId);
         assert prefix != null;
         assert partialCityList != null;
         assert cities.length == (prefix.size() + partialCityList.size());
@@ -121,5 +125,18 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
             {
                 distances[ i ][ j ] = distances[ j ][ i ] = distance( cities[ i ], cities[ j ] );
             }
+    }
+
+    @Override
+    public void execute(Computer computer) throws RemoteException {
+    }
+
+    @Override
+    public void addResult(List<Integer> result) {
+    }
+
+    @Override
+    public boolean isReadyToExecute() {
+        return false;
     }
 }

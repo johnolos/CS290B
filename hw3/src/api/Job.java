@@ -3,14 +3,13 @@ package api;
 /**
  * Interface for DAC Job API.
  * @param <S> Solution type
- * @param <T> Task type
  */
-public interface Job<S, T> {
+public interface Job<S> {
 
-    Task<T> runJob();
+    Task runJob();
 
     S value();
 
-
+    void setValue(S value);
 
 }
