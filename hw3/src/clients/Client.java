@@ -18,14 +18,12 @@ import javax.swing.JScrollPane;
  * @param <S> return type of the job performed.
  * @param <T> return type the Task that this Client executes.
  */
-public class Client<S, T> extends JFrame
+public class Client<S> extends JFrame
 {
     /** Job to be executed. */
-    final protected Job<S, T> job;
+    final protected Job<S> job;
     /** Space resource */
     final protected Space space;
-    /** Return value of the job done of type R */
-    protected S jobReturnValue;
     /** Time when client started **/
     private long clientStartTime;
 
@@ -39,7 +37,7 @@ public class Client<S, T> extends JFrame
      * @throws NotBoundException
      * @throws MalformedURLException
      */
-    public Client( final String title, final String domainName, final Job<S, T> job )
+    public Client( final String title, final String domainName, final Job<S> job )
             throws RemoteException, NotBoundException, MalformedURLException
     {
         this.job = job;
@@ -66,9 +64,6 @@ public class Client<S, T> extends JFrame
                 .log(Level.INFO, "Client time: {0} ms.", ( System.nanoTime() - clientStartTime) / 1000000 );
 
         long sumOfTimes = 0;
-        for(Result r : job.getResults()) {
-            sumOfTimes+=r.getTaskRunTime();
-        }
 
         Logger.getLogger( Client.class.getCanonicalName() )
             .log(Level.INFO, "Task times: {0} ms.", ( sumOfTimes ));
@@ -93,31 +88,22 @@ public class Client<S, T> extends JFrame
      * @throws RemoteException
      */
     public S runJob() throws RemoteException {
-        job.createTasks();
-        System.out.println("Client.runTasks: Sending " + job.numOfTasks() + " tasks.");
-        space.putAll(job.getTasks());
-        int numOfReceivedResults = 0;
-        Result<T> partialResult;
-        while(numOfReceivedResults < job.numOfTasks()) {
-            partialResult = space.take();
-            if(partialResult == null) {
-                try {
-                    Thread.sleep(100);
-                } catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                ++numOfReceivedResults;
-                System.out.println("Client.runTasks: Received result number: " + numOfReceivedResults);
-                job.addResult(partialResult);
+        begin();
+        Task t = job.runJob();
+        Logger.getLogger(Client.class.getName()).log(Level.INFO, "Running job");
+        space.put(t);
+        Object value;
+        while(true) {
+            value = space.take();
+            if(value != null) {
+                break;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        S returnValue = null;
-        try {
-            returnValue = job.calculateSolution();
-        } catch(NotEnoughResultsException e) {
-            e.printStackTrace();
-        }
-        return returnValue;
+        return (S)value;
     }
 }

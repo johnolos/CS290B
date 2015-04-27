@@ -4,78 +4,55 @@ import api.Result;
 import api.Space;
 import api.Task;
 
-import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ComputerImplementation of the interface given by Computer
  */
-public class ComputerImpl extends UnicastRemoteObject implements Computer, Runnable {
+public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
-    /**
-     * String domain of the computer
-     */
-    private String domain;
+    private int numOfTasks = 0;
+    private final Space space;
 
-    /**
-     * Space
-     */
-    private Space space;
-
-    /**
-     * Computer id
-     */
-    private int id;
-
-    /**
-     * Number of computers to be created
-     */
-    private final static int NUMBER_OF_COMPUTERS = 1;
-
-    /**
-     * Base port for computers
-     */
-    private final static int BASE_PORT = 4393;
-
-    /**
-     * finished boolean value to exit while-loop in thread.
-     */
-    private boolean finished;
-
-    /**
-     * Computer stub for this ComputerImpl
-     */
-    private Computer stub;
-
-
-    public ComputerImpl(String domain, int id) throws RemoteException {
-        this.domain = domain;
-        this.id = id;
-        finished = false;
+    public ComputerImpl(Space space) throws RemoteException {
+        this.space = space;
     }
 
     /**
      * Implementation of execute
      * @param t Task to be executed
-     * @param <V> Result object of the task executed.
-     * @return T object as result specified by the task.
      * @throws java.rmi.RemoteException
      */
     @Override
-    public <V> Result<V> execute(Task<V> t) throws RemoteException {
-        long start = System.currentTimeMillis();
-        final V resultValue = t.compose();
-        long end = System.currentTimeMillis();
-        return new Result<V>(resultValue, t.getId());
+    public void execute(Task t) throws RemoteException {
+        numOfTasks++;
+        t.execute(this);
+    }
+
+    @Override
+    public <T> void compute(Task<T> t) throws RemoteException {
+        if(t.isReadyToExecute()) {
+            space.putReadyQ(t);
+        } else {
+            space.putWaitQ(t);
+        }
+    }
+
+    @Override
+    public <T> void setArg(UUID id, T r) throws RemoteException {
+        space.setArg(id, r);
     }
 
 
     @Override
     public void exit() throws RemoteException {
-
+        System.out.printf("Computer completed %d tasks.%n", numOfTasks);
+        System.exit(0);
     }
 
     /**
@@ -90,53 +67,17 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer, Runna
             System.setSecurityManager(new SecurityManager());
         }
 
-        String domain;
-        if(args.length == 0) {
-            domain = "localhost";
-        } else {
-            domain = args[0];
+        if(args.length < 1) {
+            System.exit(-1);
         }
 
-        System.out.println(domain);
+        String domain = args[0];
 
-        int i = 0;
-        while(i < NUMBER_OF_COMPUTERS) {
-            Thread thread = new Thread(new ComputerImpl(domain, i));
-            thread.start();
-            i++;
-        }
+        String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
+        final Space space = (Space) Naming.lookup(url);
+        space.register(new ComputerImpl(space));
 
-        System.out.println("ComputerImpl.Main: " + NUMBER_OF_COMPUTERS + " computer(s) has been initiated.");
-    }
-
-    @Override
-    public void run() {
-        try {
-            String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
-
-            space = (Space) Naming.lookup(url);
-
-            //space = (domain == null) ? SpaceImpl.getInstance() : (Space) Naming.lookup(url);
-
-            UnicastRemoteObject.unexportObject(this, true);
-
-            stub = (Computer) UnicastRemoteObject.exportObject(this, BASE_PORT + id);
-
-            space.register(stub);
-
-            System.out.println("Computer " + id + " registered in Space");
-
-            while(!finished) {
-            }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
+        System.out.println("Computer initiated.");
     }
 
 }

@@ -1,48 +1,55 @@
 package api;
 
+import system.Computer;
+
 import java.io.Serializable;
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.UUID;
 
 /**
  * Interface for a DAC Task API that can be executed by calling call method.
  * @param <T> the task return type.
  */
-public interface Task<T> extends Serializable {
+public abstract class Task<T> implements Serializable {
+
+    /** Id of the task */
+    private final UUID taskId;
+
+    /** Id of parent task */
+    private final UUID parentId;
 
     /**
-     * Method call to compose the subtasks and calculate this task's result.
-     * @return result of task
+     * Constructor for Task
      */
-    public T compose();
+    public Task(UUID parentId) {
+        this.taskId = UUID.randomUUID();
+        this.parentId = parentId;
+    }
 
-    /**
-     * Method to decompose the task to smaller subtasks.
-     * @return List of subtasks.
-     */
-    public List<Task<T>> decompose();
+    abstract public void execute(Computer computer) throws RemoteException;
 
     /**
      * Add result to task.
      * @param result Result of a subtask to be added.
      */
-    public void addResult(T result);
+    abstract public void addResult(T result);
 
     /**
      * Checks if task is ready to be composed.
      * @return Returns true if task is ready and false otherwise.
      */
-    public boolean isReadyToCompose();
+    abstract public boolean isReadyToExecute();
 
     /**
      * Return task id.
      * @return Id of task.
      */
-    public int getId();
+    public UUID getTaskId() { return taskId; }
 
     /**
      * Return parent id.
      * @return Id of parent task.
      */
-    public int getParentId();
+    public UUID getParentId() {return parentId; }
 
 }

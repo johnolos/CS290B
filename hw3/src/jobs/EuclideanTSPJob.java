@@ -1,21 +1,22 @@
 package jobs;
 
 import api.Job;
-import api.NotEnoughResultsException;
 import api.Result;
-import tasks.EuclideanTSPTask;
+import api.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This task computes a solution to a Euclidean TSP problem instance.
  */
-public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
+public class EuclideanTSPJob implements Job<List<Integer>> {
 
     /**
      * Cities in TSP problem
      */
     final private double[][] cities;
+
 
     /**
      * Distance table for the cities
@@ -48,14 +49,13 @@ public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
     }
 
 
-    public List<Integer> calculateSolution() throws NotEnoughResultsException {
-        if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("Not enough results");
+    public List<Integer> calculateSolution() {
+        //if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("Not enough results");
         return shortestTour;
     }
 
-    @Override
     public void addResult(Result<List<Integer>> result) {
-        super.addResult(result);
+        //super.addResult(result);
         if(shortestTour == null) {
             shortestTour = result.getTaskReturnValue();
             shortestTourDistance = tourDistance(shortestTour);
@@ -82,8 +82,8 @@ public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
                     partialCityList.add(i);
                 }
             }
-            EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
-            addTask(t);
+            //EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
+            //addTask(t);
         }
     }
 
@@ -127,5 +127,20 @@ public class EuclideanTSPJob extends Job<List<Integer>,List<Integer>> {
             {
                 distances[ i ][ j ] = distances[ j ][ i ] = distance( cities[ i ], cities[ j ] );
             }
+    }
+
+    @Override
+    public Task runJob() {
+        return null;
+    }
+
+    @Override
+    public List<Integer> value() {
+        return null;
+    }
+
+    @Override
+    public void setValue(List<Integer> value) {
+
     }
 }

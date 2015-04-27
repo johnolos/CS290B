@@ -3,77 +3,41 @@ package tasks;
 
 import api.Task;
 import results.FibonacciResult;
+import system.Computer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.rmi.RemoteException;
+import java.util.UUID;
 
-public class FibonacciTask implements Task<FibonacciResult> {
+public class FibonacciTask extends Task {
 
-    private final int parentId, taskId;
-    private List<Integer> subTaskIds;
-    private Map<Integer, FibonacciResult> tHashMap;
-    //private long startTime;
+    private final int n;
 
-
-    public FibonacciTask(int parentId, int taskId) {
-        this.parentId = parentId;
-        this.taskId = taskId;
-        tHashMap = new ConcurrentHashMap<Integer, FibonacciResult>();
+    public FibonacciTask(UUID parentId, int n) {
+        super(parentId);
+        assert n > 0;
+        this.n = n;
     }
 
 
     @Override
-    public FibonacciResult compose() {
-        if(taskId >= 2) {
-            FibonacciResult resultOne = tHashMap.get(taskId - 1);
-            FibonacciResult resultTwo = tHashMap.get(taskId - 2);
-            int resultValue = resultOne.getTaskReturnValue() + resultTwo.getTaskReturnValue();
-            return new FibonacciResult(resultValue, taskId);
+    public void execute(Computer computer) throws RemoteException {
+        if(n < 2) {
+            computer.setArg(getParentId(), n);
+        } else {
+            Sum sum = new Sum(getParentId());
+            computer.compute(sum);
+            computer.compute(new FibonacciTask(sum.getTaskId(), n - 1));
+            computer.compute(new FibonacciTask(sum.getTaskId(), n - 2));
         }
-        return new FibonacciResult(1, taskId);
     }
 
     @Override
-    public List<Task<FibonacciResult>> decompose() {
-        //startTime = System.currentTimeMillis();
-        List<Task<FibonacciResult>> subTasks = new ArrayList<Task<FibonacciResult>>();
-
-        if(taskId >= 2) {
-            Task<FibonacciResult> firstSubTask = new FibonacciTask(this.taskId, this.taskId - 1);
-            Task<FibonacciResult> secondSubTask = new FibonacciTask(this.taskId, this.taskId - 2);
-            subTasks.add(firstSubTask);
-            subTasks.add(secondSubTask);
-            subTaskIds.add(taskId - 1);
-            subTaskIds.add(taskId - 2);
-        }
-
-        return subTasks;
-    }
-
-    public void addResult(FibonacciResult result) {
-        tHashMap.putIfAbsent(result.getTaskId(), result);
+    public void addResult(Object result) {
     }
 
     @Override
-    public boolean isReadyToCompose() {
-        if(taskId >= 2) {
-            return tHashMap.size() == subTaskIds.size();
-        } else if(taskId >= 0) {
-            return true;
-        }
-        return false;
+    public boolean isReadyToExecute() {
+        return true;
     }
-
-    @Override
-    public int getId() {
-        return taskId;
-    }
-
-    public int getParentId() {
-        return parentId;
-    }
-
 
 }

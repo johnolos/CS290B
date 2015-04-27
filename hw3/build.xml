@@ -1,15 +1,16 @@
 <project>
 
-  <target name="clean">
+  <target name="clean" description="Clean build directory">
     <delete dir="build"/>
   </target>
 
-  <target name="compile">
+  <target name="compile" depends="clean" description="Compiles to build directory">
     <mkdir dir="build"/>
     <javac srcdir="src" destdir="build"/>
   </target>
 
-  <target name="jar">
+  <target name="jar" depends="compile" description="Jars to build directory">
+
     <mkdir dir="build/jar"/>
 
     <jar destfile="build/jar/SpaceImpl.jar" basedir="build">
@@ -24,9 +25,9 @@
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/Mandelbrot.jar" basedir="build">
+    <jar destfile="build/jar/Fib.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="clients.ClientMandelbrotSet"/>
+        <attribute name="Main-Class" value="clients.ClientFibonacci"/>
       </manifest>
     </jar>
 
@@ -38,28 +39,36 @@
 
   </target>
 
+  <target name="all" depends="clean,compile,jar" description="Clean build dir, then compiles and create jars" />
+
   <target name="runComputer">
+    <property name="server-ip" value="localhost"/>
     <java jar="build/jar/ComputerImpl.jar" fork="true">
       <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
     </java>
   </target>
 
-  <target name="runMandelbrot">
-    <java jar="build/jar/Mandelbrot.jar" fork="true">
-      <arg value="${server-ip}" />
-      <jvmarg value="-Djava.security.policy=policy"/>
-    </java>
-  </target>
-
   <target name="runTSP">
+    <property name="server-ip" value="localhost"/>
     <java jar="build/jar/TSP.jar" fork="true">
       <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
     </java>
   </target>
 
+  <target name="runFib">
+    <property name="server-ip" value="localhost"/>
+    <property name="num" value="3"/>
+    <java jar="build/jar/Fib.jar" fork="true">
+      <arg value="${server-ip}" />
+      <arg value="${num}" />
+      <jvmarg value="-Djava.security.policy=policy"/>
+    </java>
+  </target>
+
   <target name="runSpace">
+    <property name="server-ip" value="localhost"/>
     <java jar="build/jar/SpaceImpl.jar" fork="true">
       <arg value="${server-ip}"/>
       <jvmarg value="-Djava.security.policy=policy"/>
@@ -68,7 +77,7 @@
   </target>
 
   <target name="javadoc" description="create javadocs">
-    <javadoc packagenames="tasks.*,api.*,clients.*,system.*,jobs.*,util.*" sourcepath="src" destdir="documents/javadoc" />
+    <javadoc packagenames="tasks.*,api.*,clients.*,system.*,jobs.*,util.*,results.*" sourcepath="src" destdir="documents/javadoc" />
   </target>
 
 </project>

@@ -8,12 +8,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,16 +20,11 @@ import java.util.logging.Logger;
  */
 public class SpaceImpl extends UnicastRemoteObject implements Space {
 
-    /**
-     * Blocking queue of tasks to ensure thread-safe execution.
-     */
-    private ConcurrentHashMap<Integer, TaskProxy> taskProxies;
+    private TaskQueue readyQ;
 
-    private ConcurrentHashMap<Integer, Result> results;
+    private TaskMap waitQ;
 
-    private BlockingQueue<TaskProxy> tasks;
-
-
+    private Result result;
     /**
      * Field to get space. Implements the singleton pattern.
      */
@@ -52,10 +45,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      * @throws RemoteException
      */
     private SpaceImpl() throws RemoteException {
-        taskProxies = new ConcurrentHashMap<Integer, TaskProxy>();
-        results = new ConcurrentHashMap<Integer, Result>();
+        readyQ = new TaskQueue();
+        waitQ = new TaskMap();
         computerProxies = new ConcurrentHashMap<Computer, ComputerProxy>();
         spaceImplInstance = this;
+        result = new Result(null, null, 0);
         Logger.getLogger( SpaceImpl.class.getName() ).log( Level.INFO, "Space started." );
     }
 
@@ -79,41 +73,58 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     @Override
     public <T> void putAll(List<Task<T>> taskList) throws RemoteException {
-        for(Task<T> t : taskList) {
-            TaskProxy<T> taskProxy = new TaskProxy<T>(t);
-            taskProxies.putIfAbsent(t.getId(), taskProxy);
+        for (Task<T> t : taskList) {
+            readyQ.push(t);
         }
     }
 
-    /**
-     * Method to take a Result from result queue.
-     * @return Result
-     * @throws RemoteException
-     */
+    @Override
+    public <T> void put(Task task) throws RemoteException {
+        readyQ.push(task);
+        System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
+    }
+
+
+    @Override
+    public <T> void putWaitQ(Task<T> t) throws RemoteException {
+        waitQ.put(t);
+        System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
+    }
+
+    @Override
+    public <T> void putReadyQ(Task<T> t) throws RemoteException {
+        readyQ.push(t);
+        System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
+    }
+
+    @Override
+    public <T> void setArg(UUID id, T r) throws RemoteException {
+        if(id == null) {
+            result = new Result<T>(null, r, 0);
+        }
+        boolean value = waitQ.setArg(id, r);
+
+        System.out.println("Boolean in setArg: " + value);
+
+        if(waitQ.isReady(id)) {
+            Task t = waitQ.getTask(id);
+            putReadyQ(t);
+        }
+        
+    }
+
     @Override
     public Result take() throws RemoteException {
-        try {
-            return results.take();
-        } catch(InterruptedException e) {
-            e.printStackTrace();
+        if(result.getTaskReturnValue() != null) {
+            Result tempResult = result;
+            readyQ.clear();
+            waitQ.clear();
+            result = new Result(null, null, 0);
+            return tempResult;
         }
-        return null;
+        return result;
     }
 
-    /**
-     * Method to put result in result queue.
-     * @param result Result to be added.
-     * @param <V> Result has result value V.
-     * @throws RemoteException
-     */
-    @Override
-    public <V> void put(Result<V> result) throws RemoteException {
-        try {
-            results.put(result);
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Close space
@@ -136,7 +147,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         final ComputerProxy computerProxy = new ComputerProxy(computer);
         computerProxies.put(computer, computerProxy);
         computerProxy.start();
-        Logger.getLogger(SpaceImpl.class.getName()).log(Level.INFO, "Computer {0} started.", computerProxy.computerId);
+        System.out.printf("Computer %d started.%n", computerProxy.computerId);
     }
 
     /**
@@ -151,13 +162,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             System.setSecurityManager(new SecurityManager());
         }
 
-        String domain;
-
-        if(args.length == 0) {
-            domain = "localhost";
-        } else {
-            domain = args[0];
+        if(args.length < 1) {
+            System.exit(-1);
         }
+
+        String domain = args[0];
 
         System.setProperty("java.rmi.server.hostname", domain);
 
@@ -184,8 +193,16 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         }
 
         @Override
-        public Result execute(Task t) throws RemoteException {
-            return computer.execute(t);
+        public void execute(Task t) throws RemoteException {
+            computer.execute(t);
+        }
+
+        @Override
+        public <T> void compute(Task<T> t) throws RemoteException {
+        }
+
+        @Override
+        public <T> void setArg(UUID id, T r) throws RemoteException {
         }
 
         @Override
@@ -201,55 +218,18 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             while(true) {
                 Task task = null;
                 try {
-                    task = tasks.take();
-                    results.add(execute(task));
+                    task = readyQ.pop();
+                    System.out.printf("Task acquired in computer %d.%n", computerId);
+                    execute(task);
                 } catch(RemoteException ignore) {
-                    tasks.add(task);
+                    readyQ.push(task);
                     computerProxies.remove(computer);
                     Logger.getLogger(SpaceImpl.class.getName()).log(Level.WARNING, "Computer {0} failed.", computerId);
                     break;
                 } catch(InterruptedException e) {
-                    Logger.getLogger(SpaceImpl.class.getName()).log(Level.INFO, null, e);
+                    Logger.getLogger(SpaceImpl.class.getName()).log(Level.WARNING, null, e);
                 }
             }
-        }
-    }
-
-    private class TaskProxy<T> implements Task<T> {
-        Task<T> task;
-
-        TaskProxy(Task<T> task) {
-            this.task = task;
-        }
-
-        @Override
-        public T compose() {
-            return task.compose();
-        }
-
-        @Override
-        public List<Task<T>> decompose() {
-            return task.decompose();
-        }
-
-        @Override
-        public void addResult(T result) {
-            task.addResult(result);
-        }
-
-        @Override
-        public boolean isReadyToCompose() {
-            return task.isReadyToCompose();
-        }
-
-        @Override
-        public int getId() {
-            return task.getId();
-        }
-
-        @Override
-        public int getParentId() {
-            return task.getParentId();
         }
     }
 

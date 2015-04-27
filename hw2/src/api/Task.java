@@ -1,6 +1,7 @@
 package api;
 
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
@@ -10,35 +11,32 @@ import java.util.concurrent.Callable;
 public abstract class Task<V> implements Serializable, Callable<V> {
 
     /** Id of the task */
-    private int id;
-    /** Id of the Job the task is intended. */
-    private String jobId;
+    private final UUID taskId;
+
+    /** Id of parent task */
+    private final UUID parentId;
 
     /**
      * Constructor for Task
-     * @param jobId String id for Job it's intended.
-     * @param id Id of the task itself.
      */
-    public Task(String jobId, int id) {
-        this.jobId = jobId;
-        this.id = id;
+    public Task(UUID parentId) {
+        this.taskId = UUID.randomUUID();
+        this.parentId = parentId;
     }
 
     /**
      * Get method to retrieve id.
-     * @return Int id.
+     * @return UUID taskId.
      */
-    public int getId() {
-        return id;
+    public UUID getId() {
+        return taskId;
     }
 
     /**
-     * Get method to retrieve JobId.
-     * @return String JobId.
+     * Get method for parentId
+     * @return UUID parentId
      */
-    public String getJobId() {
-        return jobId;
-    }
+    public UUID getParentId() { return parentId; }
 
     /**
      * Method call to execute task.
