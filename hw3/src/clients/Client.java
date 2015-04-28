@@ -40,6 +40,8 @@ public class Client<S> extends JFrame
     public Client( final String title, final String domainName, final Job<S> job )
             throws RemoteException, NotBoundException, MalformedURLException
     {
+        assert job != null;
+        assert domainName != null;
         this.job = job;
         setTitle( title );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -90,9 +92,8 @@ public class Client<S> extends JFrame
     public S runJob() throws RemoteException {
         Task t = job.runJob();
         space.put(t);
-
-        Result value = null;
-        while(value == null) {
+        Result value = new Result<S>(null);
+        while(value.getTaskReturnValue() == null) {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
@@ -102,6 +103,7 @@ public class Client<S> extends JFrame
 
         }
         //job.setValue((S)value.getTaskReturnValue());
+        space.exit();
         return (S)value.getTaskReturnValue();
     }
 

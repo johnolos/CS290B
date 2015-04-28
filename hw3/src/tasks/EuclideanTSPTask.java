@@ -37,7 +37,7 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
      */
     private double[][] distances;
 
-    private final int LIMIT = 4;
+    private final int LIMIT = 3;
 
     final static Integer ONE = 1;
     final static Integer TWO = 2;
