@@ -51,22 +51,9 @@ public class EuclideanTSPJob implements Job<TSPResult> {
         for(int i = 1; i < cities.length; i++) {
             partialCityList.add(i);
         }
-        System.out.print("Prefix: ");
-        listToString(prefix);
-        System.out.println();
-        System.out.print("City list: ");
-        listToString(partialCityList);
-        System.out.println();
 
         EuclideanTSPTask t = new EuclideanTSPTask(null, cities, prefix, partialCityList);
         return t;
-    }
-
-
-    public <S> void listToString(List<S> list) {
-        for(S ele : list) {
-            System.out.print(ele + " , ");
-        }
     }
 
     @Override

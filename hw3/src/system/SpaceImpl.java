@@ -80,20 +80,20 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     @Override
     public void put(Task task) throws RemoteException {
         readyQ.push(task);
-        System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
+        // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
     }
 
 
     @Override
     public void putWaitQ(Task t) throws RemoteException {
         waitQ.put(t);
-        System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
+        // System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
     }
 
     @Override
     public void putReadyQ(Task t) throws RemoteException {
         readyQ.push(t);
-        System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
+        // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
     }
 
     @Override
@@ -103,9 +103,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             System.out.println("Result has been found.");
             return;
         }
-        boolean value = waitQ.setArg(id, r);
-
-        System.out.println("Boolean in setArg: " + value);
+        waitQ.setArg(id, r);
 
         if(waitQ.isReady(id)) {
             Task t = waitQ.getTask(id);
@@ -219,7 +217,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                 Task task = null;
                 try {
                     task = readyQ.pop();
-                    System.out.printf("Task acquired in computer %d.%n", computerId);
                     execute(task);
                 } catch(RemoteException ignore) {
                     readyQ.push(task);

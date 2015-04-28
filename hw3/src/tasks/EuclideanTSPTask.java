@@ -98,7 +98,6 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         } else {
             TSPSum tspSum = new TSPSum(getParentId(), partialCityList.size());
             computer.compute(tspSum);
-            listToString(pretour);
             for(int city = 0; city < cities.length; city++) {
                 if(!pretour.contains(city)) {
                     List<Integer> prefix = new ArrayList<Integer>();
@@ -143,13 +142,6 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         tourDistance = shortestTourDistance;
     }
 
-
-    public <S> void listToString(List<S> list) {
-        for(S ele : list) {
-            System.out.print(ele + " , ");
-        }
-    }
-
     @Override
     public void addResult(List<Integer> result) {
     }
@@ -158,12 +150,6 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
     public boolean isReadyToExecute() {
         return true;
     }
-
-
-
-
-
-
 
 
     /**

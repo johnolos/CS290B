@@ -74,15 +74,15 @@ public class ClientEuclideanTSP extends Client<TSPResult> {
 
         String domain = args[0];
 
-        List<Integer> list = new ArrayList<Integer>();
-        list.add(1);
-        System.out.println(list.contains(1));
-
         final ClientEuclideanTSP client = new ClientEuclideanTSP(domain);
-        client.begin();
+
+        client.beginTask();
         TSPResult value = client.runJob();
+        client.endTask();
+        client.beginClient();
         client.add( client.getLabel( value.getTaskReturnValue().toArray( new Integer[0] ) ) );
-        client.end();
+        client.endClient();
+        client.log();
     }
 
     /**

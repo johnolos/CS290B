@@ -7,9 +7,6 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -24,8 +21,16 @@ public class Client<S> extends JFrame
     final protected Job<S> job;
     /** Space resource */
     final protected Space space;
-    /** Time when client started **/
+    /** Time when client started processing data **/
     private long clientStartTime;
+    /** Time when client stopped processing data **/
+    private long clientEndTime;
+    /** Time when task process started */
+    private long taskStartTime;
+    /** Time when task process ended */
+    private long taskEndTime;
+
+
 
     /**
      * Constructor for Client class
@@ -53,22 +58,31 @@ public class Client<S> extends JFrame
     /**
      * Begin time recording
      */
-    public void begin() {
+    public void beginClient() {
         clientStartTime = System.nanoTime();
+    }
+
+    public void beginTask() {
+        taskStartTime = System.nanoTime();
+    }
+
+    public void endTask() {
+        taskEndTime = System.nanoTime();
+
     }
 
     /**
      * End time recording
      */
-    public void end()
+    public void endClient()
     {
-        Logger.getLogger( Client.class.getCanonicalName() )
-                .log(Level.INFO, "Client time: {0} ms.", ( System.nanoTime() - clientStartTime) / 1000000 );
+        clientEndTime = System.nanoTime();
+    }
 
-        long sumOfTimes = 0;
-
-        Logger.getLogger( Client.class.getCanonicalName() )
-            .log(Level.INFO, "Task times: {0} ms.", ( sumOfTimes ));
+    public void log() {
+        System.out.printf("Task processing time: %d ms.%n", (taskEndTime - taskStartTime) / 1000000 );
+        System.out.printf("Client processing time: %d ms.%n", (clientEndTime - clientStartTime) / 1000000 );
+        System.out.printf("Total time: %d ms.%n", (clientEndTime - taskStartTime) / 1000000 );
     }
 
     /**
@@ -103,7 +117,6 @@ public class Client<S> extends JFrame
 
         }
         //job.setValue((S)value.getTaskReturnValue());
-        space.exit();
         return (S)value.getTaskReturnValue();
     }
 

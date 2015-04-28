@@ -17,9 +17,7 @@ public class TaskQueue {
     public void push(Task task) {
         synchronized (lock) {
             queue.add(task);
-            if(queue.size() == 1) {
-                lock.notifyAll();
-            }
+            lock.notify();
         }
     }
 
