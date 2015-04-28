@@ -13,11 +13,9 @@
 * ant runTSP(1)
 
 (1)	Optional parameter: -Dserver-ip=x.x.x.x
-
 Default value: "localhost"
 
 (2)	Optional parameter: -Dnum=x
-
 Default value:16
 
 Initaite a Space, computer(s) and then run task(s). Make sure a task is completed before running another one.
