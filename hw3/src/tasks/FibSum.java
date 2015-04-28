@@ -6,13 +6,13 @@ import system.Computer;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
-public class Sum extends Task<Integer> {
+public class FibSum extends Task<Integer> {
 
     private int index = 0;
     private Integer[] values;
     private boolean isReady;
 
-    public Sum(UUID dstAddr) {
+    public FibSum(UUID dstAddr) {
         super(dstAddr);
         values = new Integer[2];
         isReady = false;

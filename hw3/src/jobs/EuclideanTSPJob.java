@@ -1,8 +1,9 @@
 package jobs;
 
 import api.Job;
-import api.Result;
 import api.Task;
+import results.TSPResult;
+import tasks.EuclideanTSPTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,82 +11,22 @@ import java.util.List;
 /**
  * This task computes a solution to a Euclidean TSP problem instance.
  */
-public class EuclideanTSPJob implements Job<List<Integer>> {
+public class EuclideanTSPJob implements Job<TSPResult> {
 
     /**
      * Cities in TSP problem
      */
     final private double[][] cities;
 
-
-    /**
-     * Distance table for the cities
-     */
-    static private double[][] distances;
-
-    /**
-     * JobId
-     */
-    private static final String jobId = "EuclideanTSPJob";
-
-    /**
-     * ShortestTour in TSP
-     */
-    private List<Integer> shortestTour;
-
-    /**
-     * Distance in shortest tour.
-     */
-    private double shortestTourDistance;
+    private TSPResult result;
 
     public EuclideanTSPJob( double[][] cities )
     {
         this.cities = cities;
-        shortestTour = null;
-        shortestTourDistance = 0.0;
-
-        // Initialize comparison references
-        initializeDistances();
+        result = null;
     }
 
 
-    public List<Integer> calculateSolution() {
-        //if(getResults().size() < getTasks().size()) throw new NotEnoughResultsException("Not enough results");
-        return shortestTour;
-    }
-
-    public void addResult(Result<List<Integer>> result) {
-        //super.addResult(result);
-        if(shortestTour == null) {
-            shortestTour = result.getTaskReturnValue();
-            shortestTourDistance = tourDistance(shortestTour);
-        } else {
-            List<Integer> tour = result.getTaskReturnValue();
-            double tourDistance = tourDistance(tour);
-            if(tourDistance < shortestTourDistance) {
-                shortestTour = tour;
-                shortestTourDistance = tourDistance;
-            }
-        }
-    }
-
-    public void createTasks()
-    {
-        int id = 0;
-        for(int city = 1; city < cities.length; city++) {
-            List<Integer> prefix = new ArrayList<Integer>();
-            prefix.add(0);
-            prefix.add(city);
-            List<Integer> partialCityList = new ArrayList<Integer>();
-            for(int i = 1; i < cities.length; i++) {
-                if(i != city) {
-                    partialCityList.add(i);
-                }
-            }
-            //EuclideanTSPTask t = new EuclideanTSPTask(jobId, id++, cities, prefix, partialCityList);
-            //addTask(t);
-        }
-    }
 
     @Override
     public String toString()
@@ -102,45 +43,39 @@ public class EuclideanTSPJob implements Job<List<Integer>> {
         return stringBuilder.toString();
     }
 
-    private double tourDistance( final List<Integer> tour  )
-    {
-        double cost = distances[ tour.get( tour.size() - 1 ) ][ tour.get( 0 ) ];
-        for ( int city = 0; city < tour.size() - 1; city ++ )
-        {
-            cost += distances[ tour.get( city ) ][ tour.get( city + 1 ) ];
-        }
-        return cost;
-    }
-
-    private static double distance( final double[] city1, final double[] city2 )
-    {
-        final double deltaX = city1[ 0 ] - city2[ 0 ];
-        final double deltaY = city1[ 1 ] - city2[ 1 ];
-        return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
-    }
-
-    private void initializeDistances()
-    {
-        distances = new double[ cities.length][ cities.length];
-        for ( int i = 0; i < cities.length; i++ )
-            for ( int j = 0; j < i; j++ )
-            {
-                distances[ i ][ j ] = distances[ j ][ i ] = distance( cities[ i ], cities[ j ] );
-            }
-    }
-
     @Override
     public Task runJob() {
-        return null;
+        List<Integer> prefix = new ArrayList<Integer>();
+        prefix.add(0);
+        List<Integer> partialCityList = new ArrayList<Integer>();
+        for(int i = 1; i < cities.length; i++) {
+            partialCityList.add(i);
+        }
+        System.out.print("Prefix: ");
+        listToString(prefix);
+        System.out.println();
+        System.out.print("City list: ");
+        listToString(partialCityList);
+        System.out.println();
+
+        EuclideanTSPTask t = new EuclideanTSPTask(null, cities, prefix, partialCityList);
+        return t;
+    }
+
+
+    public <S> void listToString(List<S> list) {
+        for(S ele : list) {
+            System.out.print(ele + " , ");
+        }
     }
 
     @Override
-    public List<Integer> value() {
-        return null;
+    public TSPResult value() {
+        return result;
     }
 
     @Override
-    public void setValue(List<Integer> value) {
-
+    public void setValue(TSPResult value) {
+        this.result = value;
     }
 }

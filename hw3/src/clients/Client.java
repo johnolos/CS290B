@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -16,7 +17,6 @@ import javax.swing.JScrollPane;
 /**
  * Client class that has a job and executes it.
  * @param <S> return type of the job performed.
- * @param <T> return type the Task that this Client executes.
  */
 public class Client<S> extends JFrame
 {
@@ -88,22 +88,21 @@ public class Client<S> extends JFrame
      * @throws RemoteException
      */
     public S runJob() throws RemoteException {
-        begin();
         Task t = job.runJob();
-        Logger.getLogger(Client.class.getName()).log(Level.INFO, "Running job");
         space.put(t);
-        Object value;
-        while(true) {
-            value = space.take();
-            if(value != null) {
-                break;
-            }
+
+        Result value = null;
+        while(value == null) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            value = space.take();
+
         }
-        return (S)value;
+        //job.setValue((S)value.getTaskReturnValue());
+        return (S)value.getTaskReturnValue();
     }
+
 }

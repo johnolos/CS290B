@@ -49,7 +49,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         waitQ = new TaskMap();
         computerProxies = new ConcurrentHashMap<Computer, ComputerProxy>();
         spaceImplInstance = this;
-        result = new Result(null, null, 0);
+        result = new Result(null);
         Logger.getLogger( SpaceImpl.class.getName() ).log( Level.INFO, "Space started." );
     }
 
@@ -68,31 +68,30 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     /**
      * Help method to add multiple tasks to task queue.
      * @param taskList List of tasks to be added.
-     * @param <T> Task result have value V.
      * @throws RemoteException
      */
     @Override
-    public <T> void putAll(List<Task<T>> taskList) throws RemoteException {
-        for (Task<T> t : taskList) {
+    public void putAll(List<Task> taskList) throws RemoteException {
+        for (Task t : taskList) {
             readyQ.push(t);
         }
     }
 
     @Override
-    public <T> void put(Task task) throws RemoteException {
+    public void put(Task task) throws RemoteException {
         readyQ.push(task);
         System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
     }
 
 
     @Override
-    public <T> void putWaitQ(Task<T> t) throws RemoteException {
+    public void putWaitQ(Task t) throws RemoteException {
         waitQ.put(t);
         System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
     }
 
     @Override
-    public <T> void putReadyQ(Task<T> t) throws RemoteException {
+    public void putReadyQ(Task t) throws RemoteException {
         readyQ.push(t);
         System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
     }
@@ -100,7 +99,9 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     @Override
     public <T> void setArg(UUID id, T r) throws RemoteException {
         if(id == null) {
-            result = new Result<T>(null, r, 0);
+            result = new Result<T>(r);
+            System.out.println("Result has been found.");
+            return;
         }
         boolean value = waitQ.setArg(id, r);
 
@@ -119,12 +120,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             Result tempResult = result;
             readyQ.clear();
             waitQ.clear();
-            result = new Result(null, null, 0);
+            result = new Result(null);
             return tempResult;
         }
         return result;
     }
-
 
     /**
      * Close space

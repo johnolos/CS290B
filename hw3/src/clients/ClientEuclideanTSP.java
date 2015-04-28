@@ -1,6 +1,7 @@
 package clients;
 
 import jobs.EuclideanTSPJob;
+import results.TSPResult;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +21,7 @@ import javax.swing.JLabel;
  *
  * @author Peter Cappello
  */
-public class ClientEuclideanTSP extends Client<List<Integer>> {
+public class ClientEuclideanTSP extends Client<TSPResult> {
 
     /**
      * Number of pixels
@@ -72,14 +74,14 @@ public class ClientEuclideanTSP extends Client<List<Integer>> {
 
         String domain = args[0];
 
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(1);
+        System.out.println(list.contains(1));
 
         final ClientEuclideanTSP client = new ClientEuclideanTSP(domain);
         client.begin();
-        List<Integer> value = client.runJob();
-        for(Integer i : value) {
-            System.out.print(i + ",");
-        }
-        client.add( client.getLabel( value.toArray( new Integer[0] ) ) );
+        TSPResult value = client.runJob();
+        client.add( client.getLabel( value.getTaskReturnValue().toArray( new Integer[0] ) ) );
         client.end();
     }
 

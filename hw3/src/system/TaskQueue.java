@@ -18,14 +18,14 @@ public class TaskQueue {
         synchronized (lock) {
             queue.add(task);
             if(queue.size() == 1) {
-                lock.notify();
+                lock.notifyAll();
             }
         }
     }
 
     public Task pop() throws InterruptedException {
         synchronized (lock) {
-            while(queue.isEmpty()) {
+            if(queue.isEmpty()) {
                 lock.wait();
             }
             return queue.removeFirst();

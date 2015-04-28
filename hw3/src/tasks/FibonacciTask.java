@@ -2,10 +2,10 @@ package tasks;
 
 
 import api.Task;
-import results.FibonacciResult;
 import system.Computer;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.UUID;
 
 public class FibonacciTask extends Task {
@@ -24,7 +24,7 @@ public class FibonacciTask extends Task {
         if(n < 2) {
             computer.setArg(getParentId(), n);
         } else {
-            Sum sum = new Sum(getParentId());
+            FibSum sum = new FibSum(getParentId());
             computer.compute(sum);
             computer.compute(new FibonacciTask(sum.getTaskId(), n - 1));
             computer.compute(new FibonacciTask(sum.getTaskId(), n - 2));

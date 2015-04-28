@@ -27,16 +27,15 @@ public interface Space extends Remote {
     /**
      * putAll takes a list of tasks and handles the task accordingly
      * @param taskList List of Task
-     * @param <T> Value of Task
      * @throws RemoteException
      */
-    public <T> void putAll (List<Task<T>> taskList ) throws RemoteException;
+    public void putAll (List<Task> taskList ) throws RemoteException;
 
-    public <T> void put(Task task) throws RemoteException;
+    public void put(Task task) throws RemoteException;
 
-    public <T> void putWaitQ(Task<T> t) throws RemoteException;
+    public void putWaitQ(Task t) throws RemoteException;
 
-    public <T> void putReadyQ(Task<T> t) throws RemoteException;
+    public void putReadyQ(Task t) throws RemoteException;
 
     public <T> void setArg(UUID id, T r) throws RemoteException;
 

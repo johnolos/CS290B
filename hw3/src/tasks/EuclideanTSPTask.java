@@ -1,6 +1,7 @@
 package tasks;
 
 import api.Task;
+import results.TSPResult;
 import system.Computer;
 import util.PermutationEnumerator;
 
@@ -15,7 +16,11 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
     /**
      * List of prefix cities for this branch of TSP.
      */
-    private final List<Integer> prefix;
+    private final List<Integer> pretour;
+
+    private List<Integer> tour;
+
+    private double tourDistance;
 
     /**
      * List of cities to be permuted over.
@@ -32,37 +37,36 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
      */
     private double[][] distances;
 
+    private final int LIMIT = 4;
+
     final static Integer ONE = 1;
     final static Integer TWO = 2;
 
     /**
      * Class for EuclideanTSPTask
      * @param parentId String id for job.
-     * @param id Id of task.
      * @param cities Cities to be considered and their locations.
-     * @param prefix Prefix for this branch.
+     * @param pretour Prefix for this branch.
      * @param partialCityList Cities to be permuted over.
      */
-    public EuclideanTSPTask(UUID parentId, int id, double[][] cities, List<Integer> prefix, List<Integer> partialCityList) {
+    public EuclideanTSPTask(UUID parentId, double[][] cities, List<Integer> pretour, List<Integer> partialCityList) {
         super(parentId);
-        assert prefix != null;
+        assert pretour != null;
+        assert cities != null;
         assert partialCityList != null;
-        assert cities.length == (prefix.size() + partialCityList.size());
-        assert id > 0;
+        assert cities.length == (pretour.size() + partialCityList.size());
         this.cities = cities;
-        this.prefix = prefix;
+        this.pretour = pretour;
         this.partialCityList = partialCityList;
-        initializeDistances();
+        if(pretour.size() > LIMIT) {
+            initializeDistances();
+        }
     }
 
-    /**
-     * Call method to execute TSP task.
-     * Calculates all premutations given by this TSP branch.
-     * @return Return list containing best TSP tour for this branch.
-     */
+    /*
     public List<Integer> call() {
         List<Integer> shortestTour = new ArrayList<Integer>(partialCityList);
-        shortestTour.addAll(0, prefix);
+        shortestTour.addAll(0, pretour);
         double shortestTourDistance = tourDistance(shortestTour);
 
 
@@ -71,7 +75,7 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         for ( List<Integer> subtour = permutationEnumerator.next(); subtour != null; subtour = permutationEnumerator.next() )
         {
             List<Integer> tour = new ArrayList<Integer>( subtour );
-            tour.addAll(0, prefix);
+            tour.addAll(0, pretour);
             if ( tour.indexOf( ONE ) >  tour.indexOf( TWO ) )
             {
                 continue; // skip tour; it is the reverse of another.
@@ -83,7 +87,83 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
             }
         }
         return shortestTour;
+    }*/
+
+    @Override
+    public void execute(Computer computer) throws RemoteException {
+        if(pretour.size() > LIMIT) {
+            computePermutations();
+            TSPResult result = new TSPResult(tour, tourDistance);
+            computer.setArg(getParentId(), result);
+        } else {
+            TSPSum tspSum = new TSPSum(getParentId(), partialCityList.size());
+            computer.compute(tspSum);
+            listToString(pretour);
+            for(int city = 0; city < cities.length; city++) {
+                if(!pretour.contains(city)) {
+                    List<Integer> prefix = new ArrayList<Integer>();
+                    prefix.addAll(pretour);
+                    prefix.add(city);
+                    List<Integer> newPartialCityList = new ArrayList<Integer>();
+                    for(int i = 1; i < cities.length; i++) {
+                        if(i != city && !pretour.contains(i)) {
+                            newPartialCityList.add(i);
+                        }
+                    }
+                    EuclideanTSPTask t = new EuclideanTSPTask(tspSum.getTaskId(), cities, prefix, newPartialCityList);
+                    computer.compute(t);
+                }
+            }
+        }
     }
+
+
+    public void computePermutations() {
+        List<Integer> shortestTour = new ArrayList<Integer>(partialCityList);
+        shortestTour.addAll(0, pretour);
+        double shortestTourDistance = tourDistance(shortestTour);
+
+        // Using Permutation Enumerator
+        PermutationEnumerator<Integer> permutationEnumerator = new PermutationEnumerator<Integer>( partialCityList );
+        for ( List<Integer> subtour = permutationEnumerator.next(); subtour != null; subtour = permutationEnumerator.next() )
+        {
+            List<Integer> tour = new ArrayList<Integer>( subtour );
+            tour.addAll(0, pretour);
+            if ( tour.indexOf( ONE ) >  tour.indexOf( TWO ) )
+            {
+                continue; // skip tour; it is the reverse of another.
+            }
+            double tourDistance = tourDistance(tour);
+            if(tourDistance < shortestTourDistance) {
+                shortestTour = tour;
+                shortestTourDistance = tourDistance;
+            }
+        }
+        tour = shortestTour;
+        tourDistance = shortestTourDistance;
+    }
+
+
+    public <S> void listToString(List<S> list) {
+        for(S ele : list) {
+            System.out.print(ele + " , ");
+        }
+    }
+
+    @Override
+    public void addResult(List<Integer> result) {
+    }
+
+    @Override
+    public boolean isReadyToExecute() {
+        return true;
+    }
+
+
+
+
+
+
 
 
     /**
@@ -125,18 +205,5 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
             {
                 distances[ i ][ j ] = distances[ j ][ i ] = distance( cities[ i ], cities[ j ] );
             }
-    }
-
-    @Override
-    public void execute(Computer computer) throws RemoteException {
-    }
-
-    @Override
-    public void addResult(List<Integer> result) {
-    }
-
-    @Override
-    public boolean isReadyToExecute() {
-        return false;
     }
 }

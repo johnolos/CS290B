@@ -9,28 +9,15 @@ import java.util.UUID;
 public class Result<T> implements Serializable
 {
     private final T taskReturnValue;
-    private final UUID taskAddrId;
-    private final long time; 
 
-    public Result(UUID taskAddrId, T taskReturnValue, long time)
+    public Result(T taskReturnValue)
     {
-        assert taskAddrId != null;
         assert taskReturnValue != null;
-        assert time > 0; 
         this.taskReturnValue = taskReturnValue;
-        this.taskAddrId = taskAddrId;
-        this.time = time; 
     }
 
     public T getTaskReturnValue() { return taskReturnValue; }
 
-    public UUID getTaskAddrId() {
-        return taskAddrId;
-    }
-    
-    public long getTime() {
-    	return time; 
-    }
  
 
 

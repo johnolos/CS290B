@@ -29,7 +29,7 @@ public class ClientFibonacci {
     }
 
     public void run() {
-        Logger.getLogger(ClientFibonacci.class.getName()).log(Level.INFO, "Calculating the fibonacci number {0}", number);
+        System.out.printf("Calculating the fibonacci number %d.%n", number);
         start = System.currentTimeMillis();
         Task t = job.runJob();
         Integer value = null;

@@ -17,26 +17,14 @@ public class TaskMap {
             lock.notifyAll();
         }
     }
-    
+
 
     public <T> boolean setArg(UUID taskId, T arg) {
         synchronized (lock) {
-            int attempts = 0;
-            Task t;
-            while(attempts < 2) {
-                t = map.get(taskId);
-                if(t != null) {
-                    t.addResult(arg);
-                    return true;
-                } else {
-                    try {
-                        lock.wait();
-                    } catch(InterruptedException e) {
-
-                    }
-                    attempts++;
-                }
-
+            Task t = map.get(taskId);
+            if(t != null) {
+                t.addResult(arg);
+                return true;
             }
             return false;
         }
@@ -48,7 +36,6 @@ public class TaskMap {
             if(t != null) {
                 return t.isReadyToExecute();
             }
-            System.out.println("ID NOT IN MAP");
             return false;
         }
     }

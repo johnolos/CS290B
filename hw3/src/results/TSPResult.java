@@ -9,8 +9,8 @@ public class TSPResult extends Result<List<Integer>> {
 
 	private final double distance; 
 	
-	public TSPResult(int distance, UUID id, List<Integer> resultList) {
-		super(id, resultList, distance); //0 = time
+	public TSPResult(List<Integer> resultList, double distance) {
+		super(resultList);
 		this.distance = distance; 
 	}
 
