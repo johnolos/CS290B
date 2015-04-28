@@ -3,12 +3,20 @@
 
 
 ##How to run:
-* ant clean compile jar
-* ant -Dserver-ip=169.231.121.188 runSpace
-* ant -Dserver-ip=169.231.121.188 runComputer
+* ant all (clean, compile, jar)
+	- ant clean
+	- ant compile (depends clean)
+	- ant jar (depends compile)
+* ant runSpace*
+* ant runComputer*
+* ant runFib**
+* ant runTSP*
 
-First line cleans, compiles and jars the project.
-Second line initiates the Space (RMI server) along with RMI-registery.
-Third line spawns multiple computers that register themselves at Space.
+(*)	Optional parameter: -Dserver-ip=x.x.x.x
+Default value: "localhost"
+(**)	Optional parameter: -Dnum=x
+Default value:16
+
+Initaite a Space, computer(s) and then run task(s). Make sure a task is completed before running another one.
 
 
