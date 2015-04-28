@@ -7,12 +7,20 @@ import system.Computer;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
+/**
+ * Task class for adding distances.
+ */
 public class TSPSum extends Task<TSPResult> {
 
     private int index = 0;
     private TSPResult[] values;
     private boolean isReady;
 
+    /**
+     * TSPSum
+     * @param dstAddr
+     * @param numOfResults
+     */
     public TSPSum(UUID dstAddr, int numOfResults) {
         super(dstAddr);
         values = new TSPResult[numOfResults];
@@ -20,6 +28,11 @@ public class TSPSum extends Task<TSPResult> {
 
     }
 
+    /**
+     * Execute method.
+     * @param computer
+     * @throws RemoteException 
+     */
     public void execute(Computer computer) throws RemoteException {
         double distance = values[0].getDistance();
         int tripIndex = 0;
@@ -33,6 +46,10 @@ public class TSPSum extends Task<TSPResult> {
     }
 
     @Override
+    /**
+     * Adds the value to the array of values.
+     * @param value
+     */
     public void addResult(TSPResult value) {
         if(index < values.length) {
             values[index++] = value;
