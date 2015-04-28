@@ -40,6 +40,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     private final Map<Computer, ComputerProxy> computerProxies;
 
+    private int numOfJobsCompleed = 0;
+
     /**
      * Constructor for SpaceImpl
      * @throws RemoteException
@@ -103,13 +105,13 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             System.out.println("Result has been found.");
             return;
         }
+
         waitQ.setArg(id, r);
 
-        if(waitQ.isReady(id)) {
-            Task t = waitQ.getTask(id);
+        Task t = waitQ.grabIfReady(id);
+        if(t != null) {
             putReadyQ(t);
         }
-        
     }
 
     @Override

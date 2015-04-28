@@ -11,10 +11,13 @@ public class TaskMap {
     private Map<UUID, Task> map = new HashMap<UUID, Task>();
     private final Object lock = new Object();
 
+
     public void put(Task task) {
         synchronized (lock) {
             map.put(task.getTaskId(), task);
-            lock.notifyAll();
+            if(map.size() == 1) {
+                lock.notify();
+            }
         }
     }
 
@@ -30,25 +33,20 @@ public class TaskMap {
         }
     }
 
-    public boolean isReady(UUID taskId) {
+
+    public Task grabIfReady(UUID taskId) {
         synchronized (lock) {
             Task t = map.get(taskId);
             if(t != null) {
-                return t.isReadyToExecute();
+                if(t.isReadyToExecute()) {
+                    map.remove(taskId);
+                    return t;
+                }
             }
-            return false;
+            return null;
         }
     }
 
-    public Task getTask(UUID taskId) {
-        synchronized (lock) {
-            return map.remove(taskId);
-        }
-    }
-
-    public int getSize() {
-        return map.size();
-    }
 
     public void clear() {
         synchronized (lock) {
