@@ -10,6 +10,9 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 
+ */
 public class ClientFibonacci {
 
     private Space space;
@@ -20,7 +23,12 @@ public class ClientFibonacci {
     private long end;
     private int number;
 
-
+    /**
+     * ClientFibonacci - Client for Fibonacci computation.
+     * @param domain Domain which space is reachable on.
+     * @param number The nth fibonacci number to be computed.
+     * @throws Exception
+     */
     public ClientFibonacci(String domain, int number) throws Exception {
         this.number = number;
         job = new FibonacciJob(number);
@@ -28,6 +36,9 @@ public class ClientFibonacci {
         space = (Space) Naming.lookup(url);
     }
 
+    /**
+     * Run the Fibonacci job
+     */
     public void run() {
         System.out.printf("Calculating the fibonacci number %d.%n", number);
         start = System.currentTimeMillis();
@@ -51,7 +62,10 @@ public class ClientFibonacci {
         System.out.printf("Calculation time: %d.%n", end - start);
     }
 
-
+    /**
+     * Main method of ClientFibonacci
+     * @param args
+     */
     public static void main(String args[]) {
         System.setSecurityManager( new SecurityManager() );
 

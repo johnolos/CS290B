@@ -20,15 +20,21 @@ public class EuclideanTSPJob implements Job<TSPResult> {
 
     private TSPResult result;
 
+    /**
+     * EuclideanTSPJob
+     * @param cities
+     */
     public EuclideanTSPJob( double[][] cities )
     {
         this.cities = cities;
         result = null;
     }
 
-
-
     @Override
+    /**
+     * Returns the generated route as a string.
+     * @return String
+     */
     public String toString()
     {
         StringBuilder stringBuilder = new StringBuilder();
@@ -44,6 +50,10 @@ public class EuclideanTSPJob implements Job<TSPResult> {
     }
 
     @Override
+    /**
+     * Run method for the EuclideanTSP Job
+     * @return EuclideanTSPTask
+     */
     public Task runJob() {
         List<Integer> prefix = new ArrayList<Integer>();
         prefix.add(0);
@@ -57,11 +67,17 @@ public class EuclideanTSPJob implements Job<TSPResult> {
     }
 
     @Override
+    /**
+     * @return TSPResult
+     */
     public TSPResult value() {
         return result;
     }
 
     @Override
+    /**
+     * Set method for TSPResult value
+     */
     public void setValue(TSPResult value) {
         this.result = value;
     }
