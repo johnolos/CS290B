@@ -1,0 +1,28 @@
+<body>
+<h2> Analysis: </h2>
+
+	<h3>What do you see as the advantages/disadvantages of your task scheduler? </h3>
+
+		<h4>Advantages:</h4>		
+
+		<p>In our task scheduler we use two different types of datastructures for ReadyQueue and WaitingQueue. One of the reasons for this is that they suit different purpose for their use case.</p>
+
+		<p>In our implementation, TaskQueue is a custom class that implements thread-safety around LinkedList because all we need from ReadyQueue, which uses this class, is that we are able to push and pop tasks from the queue.</p>
+
+		<p>Futher, TaskMap is a custom map which is also thread-safetly that uses HashMap as it's underlying datastructure because what we need from this is fast lookup based on an unique id/key for the task we are looking for. We think our design solution provides us advantages in terms of faster runtime for our DAC API and more convienient thead handling.</p>
+
+		<h4>Disadvantages:</h4>
+
+		<p>In our task scheduler, we send in the computer as an argument to the execute method in Task to provide Task the ability to schedule it's own tasks or set arguments to other tasks. Although this was a neat way to clean up what otherwise would have been a messy logic to handle different return values from execute, we do think this isn't as clean programming design in terms of seperating logic from and object-oriented strucutre.</p>
+
+	<h3>How might you change the infrastructure to improve your parallel efficiency?</h3>
+		<p>For the time being we don't have a strictly proposal to improve parallel efficiency, but we do however have guideline the users of this infrastructure should follow in order to improve efficiency. That is to make sure that there are more time spent calculating the actual task than to delegate new tasks as that just increases the network overhead.</p>
+
+	<h3>What issues are involved in generalizing your infrastructure to a network of Spaces?</h3>
+
+		<p>In order to generalize our current infrastructure to support network of Spaces, we need to support that once a job has delegated a task, or a range of tasks, they only calculate seperate problem domain so we don't do redudant work. The main issue will be transferring these subproblems to other Spaces and then have a mechanism to bring back the solution. We think the best way to continue with a Master Space that handles these Spaces, grabs the solution from each of them once it is finished. That way, it easier to write the logic for that infrastructure. A space either is a master space or it is a normal space, and the normal space works with the current state of our implementation; no major revision needs to be done. The master space has to be written of course. Another issue that arises is how are we able to connect and disconnect a Space, and how to determind a Master Space. We have fault handling here in the same manner as we would with Computer on a Space, and we could have SpaceProxy threads running on Master Space.</p>
+
+</body>
+
+
+</body> 

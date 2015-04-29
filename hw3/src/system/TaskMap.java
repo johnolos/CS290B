@@ -1,6 +1,8 @@
 package system;
 
 import api.Task;
+
+import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -11,7 +13,10 @@ public class TaskMap {
     private Map<UUID, Task> map = new HashMap<UUID, Task>();
     private final Object lock = new Object();
 
-
+    /**
+     * put puts a task into the task map
+     * @param <Task> task
+     */
     public void put(Task task) {
         synchronized (lock) {
             map.put(task.getTaskId(), task);
@@ -21,7 +26,12 @@ public class TaskMap {
         }
     }
 
-
+    /**
+     * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
+     * @param <UUID> id The Id of the task.
+     * @param <T> r The result
+     * @throws RemoteException
+     */
     public <T> boolean setArg(UUID taskId, T arg) {
         synchronized (lock) {
             Task t = map.get(taskId);
@@ -33,7 +43,11 @@ public class TaskMap {
         }
     }
 
-
+    /**
+     * grabIfReady returns a task if it is ready
+     * @param <UUID> taskId
+     * @return <Task> t
+     */
     public Task grabIfReady(UUID taskId) {
         synchronized (lock) {
             Task t = map.get(taskId);
@@ -47,7 +61,9 @@ public class TaskMap {
         }
     }
 
-
+    /**
+     * clears the task map
+     */
     public void clear() {
         synchronized (lock) {
             map.clear();

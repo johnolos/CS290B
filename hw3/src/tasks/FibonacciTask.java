@@ -15,9 +15,9 @@ public class FibonacciTask extends Task {
     private final int n;
 
     /**
-     * FibonacciTask
-     * @param parentId
-     * @param n
+     * Constructor for FibonacciTask
+     * @param <UUID> parentId
+     * @param <int> n
      */
     public FibonacciTask(UUID parentId, int n) {
         super(parentId);
@@ -29,7 +29,7 @@ public class FibonacciTask extends Task {
     @Override
     /**
      * Executes the computation of the fibonacci.
-     * @param computer
+     * @param <Computer> computer
      */
     public void execute(Computer computer) throws RemoteException {
         if(n < 2) {

@@ -57,7 +57,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     /**
      * Get method to get the running instance of SpaceImpl
-     * @return
+     * @return <SpaceImpl> spaceImplInstance
      * @throws RemoteException
      */
     public static SpaceImpl getInstance() throws RemoteException {
@@ -69,7 +69,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     /**
      * Help method to add multiple tasks to task queue.
-     * @param taskList List of tasks to be added.
+     * @param <List<Task>> taskList List of tasks to be added.
      * @throws RemoteException
      */
     @Override
@@ -80,6 +80,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     @Override
+    /**
+     * put puts the task on the ready queue
+     * @param <Task> task 
+     * @throws RemoteException
+     */
     public void put(Task task) throws RemoteException {
         readyQ.push(task);
         // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
@@ -87,18 +92,34 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
 
     @Override
+    /**
+     * putWaitQ puts the task on the wait queue
+     * @param <Task> t 
+     * @throws RemoteException
+     */
     public void putWaitQ(Task t) throws RemoteException {
         waitQ.put(t);
         // System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
     }
 
     @Override
+    /**
+     * putReadyQ puts the task on the ready queue
+     * @param <Task> task 
+     * @throws RemoteException
+     */
     public void putReadyQ(Task t) throws RemoteException {
         readyQ.push(t);
         // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
     }
 
     @Override
+    /**
+     * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
+     * @param <UUID> id The Id of the task.
+     * @param <T> r The result
+     * @throws RemoteException
+     */
     public <T> void setArg(UUID id, T r) throws RemoteException {
         if(id == null) {
             result = new Result<T>(r);
@@ -115,6 +136,11 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     @Override
+    /**
+     * Method to take a result from result queue
+     * @return <Result> result
+     * @throws RemoteException
+     */
     public Result take() throws RemoteException {
         if(result.getTaskReturnValue() != null) {
             Result tempResult = result;
@@ -127,7 +153,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     /**
-     * Close space
+     * exit closes the space
      * @throws RemoteException
      */
     @Override
@@ -138,8 +164,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     /**
-     * Register computer on Space
-     * @param computer Computer to be registered
+     * register computer on Space
+     * @param <Computer> computer The computer to be registered
      * @throws RemoteException
      */
     @Override
@@ -153,7 +179,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     /**
      * Main method to run SpaceImpl.
      * Creates a thread of SpaceImpl and runs it.
-     * @param args domain
+     * @param <String[]> args domain
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
@@ -183,36 +209,64 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         System.out.println("SpaceImpl.main Registered and Ready.");
     }
 
-
+    /**
+     * 
+     */
     private class ComputerProxy extends Thread implements Computer {
         final private Computer computer;
         final private int computerId = computerIds++;
 
+        /**
+         * Constructor of ComputerProxy
+         * @param <Computer> computer
+         */
         ComputerProxy(Computer computer) {
             this.computer = computer;
         }
 
         @Override
+        /**
+         * execute task t
+         * @param <Task> t
+         * @throws RemoteException
+         */
         public void execute(Task t) throws RemoteException {
             computer.execute(t);
         }
 
         @Override
+        /**
+         * computes task t
+         * @param <Task> t
+         * @throws RemoteException
+         */
         public <T> void compute(Task<T> t) throws RemoteException {
         }
 
         @Override
+        /**
+         * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
+         * @param <UUID> id The Id of the task.
+         * @param <T> r The result
+         * @throws RemoteException
+         */
         public <T> void setArg(UUID id, T r) throws RemoteException {
         }
 
         @Override
+        /**
+         * exits the computer
+         */
         public void exit() {
             try {
                 computer.exit();
             } catch(RemoteException e) {
             }
         }
-
+        
+        /**
+         * Run method
+         */
         @Override
         public void run() {
             while(true) {

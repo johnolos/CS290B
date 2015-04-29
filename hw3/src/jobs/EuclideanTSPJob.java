@@ -22,7 +22,7 @@ public class EuclideanTSPJob implements Job<TSPResult> {
 
     /**
      * EuclideanTSPJob
-     * @param cities
+     * @param <double[][]> cities
      */
     public EuclideanTSPJob( double[][] cities )
     {
@@ -52,7 +52,7 @@ public class EuclideanTSPJob implements Job<TSPResult> {
     @Override
     /**
      * Run method for the EuclideanTSP Job
-     * @return EuclideanTSPTask
+     * @return <Task> t
      */
     public Task runJob() {
         List<Integer> prefix = new ArrayList<Integer>();
@@ -68,7 +68,8 @@ public class EuclideanTSPJob implements Job<TSPResult> {
 
     @Override
     /**
-     * @return TSPResult
+     * Returns the value of the TSP result
+     * @return <TSPResult> value
      */
     public TSPResult value() {
         return result;
@@ -77,6 +78,7 @@ public class EuclideanTSPJob implements Job<TSPResult> {
     @Override
     /**
      * Set method for TSPResult value
+     * @param <TSPResult> value
      */
     public void setValue(TSPResult value) {
         this.result = value;
