@@ -14,6 +14,10 @@ public class TaskQueue {
     private LinkedList<Task> queue = new LinkedList<Task>();
     private final Object lock = new Object();
 
+    /**
+     * pushes a task into the task queue
+     * @param <Task> task
+     */
     public void push(Task task) {
         synchronized (lock) {
             queue.add(task);
@@ -23,6 +27,11 @@ public class TaskQueue {
         }
     }
 
+    /**
+     * pops the first task in the task queue
+     * @return <Task> 
+     * @throws InterruptedException
+     */
     public Task pop() throws InterruptedException {
         synchronized (lock) {
             while(queue.isEmpty()) {
@@ -32,7 +41,9 @@ public class TaskQueue {
         }
     }
 
-
+    /**
+     * clears the task queue
+     */
     public void clear() {
         synchronized (lock) {
             queue.clear();

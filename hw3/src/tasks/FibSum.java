@@ -16,8 +16,8 @@ public class FibSum extends Task<Integer> {
     private boolean isReady;
 
     /**
-     * FibSum
-     * @param dstAddr
+     * Constructor for FibSum
+     * @param <UUID> dstAddr
      */
     public FibSum(UUID dstAddr) {
         super(dstAddr);
@@ -28,7 +28,7 @@ public class FibSum extends Task<Integer> {
 
     /**
      * Execute method.
-     * @param computer
+     * @param <Computer> computer
      * @throws RemoteException
      */
     public void execute(Computer computer) throws RemoteException {
@@ -39,7 +39,7 @@ public class FibSum extends Task<Integer> {
     @Override
     /**
      * Adds value to the array of values.
-     * @param value
+     * @param <Integer> value
      */
     public void addResult(Integer value) {
         if(index < values.length) {

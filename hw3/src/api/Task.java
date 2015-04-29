@@ -30,7 +30,7 @@ public abstract class Task<T> implements Serializable {
 
     /**
      * Add result to task.
-     * @param result Result of a subtask to be added.
+     * @param <T> result Result of a subtask to be added.
      */
     abstract public void addResult(T result);
 
@@ -42,13 +42,13 @@ public abstract class Task<T> implements Serializable {
 
     /**
      * Return task id.
-     * @return Id of task.
+     * @return <UUID> taskId Id of task.
      */
     public UUID getTaskId() { return taskId; }
 
     /**
      * Return parent id.
-     * @return Id of parent task.
+     * @return <UUID> parentId Id of parent task.
      */
     public UUID getParentId() {return parentId; }
 

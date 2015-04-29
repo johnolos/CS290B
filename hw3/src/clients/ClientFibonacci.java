@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 
+ * Client class for the Fibonacci computation
  */
 public class ClientFibonacci {
 
@@ -25,8 +25,8 @@ public class ClientFibonacci {
 
     /**
      * ClientFibonacci - Client for Fibonacci computation.
-     * @param domain Domain which space is reachable on.
-     * @param number The nth fibonacci number to be computed.
+     * @param <String> domain Domain which space is reachable on.
+     * @param <int> number The nth fibonacci number to be computed.
      * @throws Exception
      */
     public ClientFibonacci(String domain, int number) throws Exception {
@@ -64,7 +64,7 @@ public class ClientFibonacci {
 
     /**
      * Main method of ClientFibonacci
-     * @param args
+     * @param <String> args
      */
     public static void main(String args[]) {
         System.setSecurityManager( new SecurityManager() );

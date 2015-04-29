@@ -23,6 +23,7 @@ public class FibonacciJob implements Job<Integer> {
 
     @Override
     /**
+     * Run method for the Fibonacci job
      * @return FibonacciTask
      */
     public Task runJob() {
@@ -31,7 +32,7 @@ public class FibonacciJob implements Job<Integer> {
 
     @Override
     /**
-     * @return value 
+     * @return <Integer> value 
      */
     public Integer value() {
         return value;
@@ -40,6 +41,7 @@ public class FibonacciJob implements Job<Integer> {
     @Override
     /**
      * Set method for 'value'
+     * @param <Integer> value
      */
     public void setValue(Integer value) {
         this.value = value;

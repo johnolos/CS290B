@@ -90,6 +90,11 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
     }*/
 
     @Override
+    /**
+     * executes the TSP task
+     * @param <Computer> computer The computer that will compute the task
+     * @throws RemoteException
+     */
     public void execute(Computer computer) throws RemoteException {
         if(pretour.size() > LIMIT) {
             computePermutations();
@@ -116,7 +121,9 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         }
     }
 
-
+    /**
+     * computes the distances of all permutations of cities
+     */
     public void computePermutations() {
         List<Integer> shortestTour = new ArrayList<Integer>(partialCityList);
         shortestTour.addAll(0, pretour);
@@ -154,8 +161,8 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
 
     /**
      * Distance of a TSP tour.
-     * @param tour TSP tour as a list of cities.
-     * @return double distance of tour
+     * @param <List<Integer>> tour TSP tour as a list of cities.
+     * @return <double> distance of tour
      */
     private double tourDistance( final List<Integer> tour  )
     {
@@ -169,9 +176,9 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
 
     /**
      * Euclidean distance algorithm to compute distance between two cities.
-     * @param city1 City one
-     * @param city2 City two
-     * @return double distance
+     * @param <double[]> city1 City one
+     * @param <double[]> city2 City two
+     * @return <double> distance
      */
     private static double distance( final double[] city1, final double[] city2 )
     {

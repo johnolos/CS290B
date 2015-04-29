@@ -78,7 +78,7 @@ public class Client<S> extends JFrame
     {
         clientEndTime = System.nanoTime();
     }
-
+    
     public void log() {
         System.out.printf("Task processing time: %d ms.%n", (taskEndTime - taskStartTime) / 1000000 );
         System.out.printf("Client processing time: %d ms.%n", (clientEndTime - clientStartTime) / 1000000 );
@@ -100,7 +100,7 @@ public class Client<S> extends JFrame
 
     /**
      * Method to run the job.
-     * @return R return type of job to be executed.
+     * @return <S> return type of job to be executed.
      * @throws RemoteException
      */
     public S runJob() throws RemoteException {

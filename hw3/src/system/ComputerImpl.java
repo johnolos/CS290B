@@ -19,14 +19,19 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     private int numOfTasks = 0;
     private final Space space;
 
+    /**
+     * Constructor of ComputerImpl
+     * @param <Space> space The space which computer relates to
+     * @throws RemoteException
+     */
     public ComputerImpl(Space space) throws RemoteException {
         this.space = space;
     }
 
     /**
      * Implementation of execute
-     * @param t Task to be executed
-     * @throws java.rmi.RemoteException
+     * @param <Task> t Task to be executed
+     * @throws RemoteException
      */
     @Override
     public void execute(Task t) throws RemoteException {
@@ -35,6 +40,10 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     }
 
     @Override
+    /**
+     * Puts task t on the space to be computed
+     * @param <Task<T>> t The task to be computed
+     */
     public <T> void compute(Task<T> t) throws RemoteException {
         if(t.isReadyToExecute()) {
             space.putReadyQ(t);
@@ -44,12 +53,22 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     }
 
     @Override
+    /**
+     * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
+     * @param <UUID> id The Id of the task.
+     * @param <T> r The result
+     * @throws RemoteException
+     */
     public <T> void setArg(UUID id, T r) throws RemoteException {
         space.setArg(id, r);
     }
 
 
     @Override
+    /**
+     * Exits the computer
+     * @throws RemoteException
+     */
     public void exit() throws RemoteException {
         System.out.printf("Computer completed %d tasks.%n", numOfTasks);
         System.exit(0);
@@ -58,8 +77,8 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     /**
      * Main function to start register and the name service and bind a stub of this computer to SERVICE_NAME given in
      * the computer interface.
-     * @param args unused
-     * @throws java.rmi.RemoteException
+     * @param <String[]> args unused
+     * @throws RemoteException
      */
     public static void main(String[] args) throws Exception {
 
