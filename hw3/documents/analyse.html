@@ -16,9 +16,13 @@
                 <h4>Disadvantages:</h4>
  
                 <p>In our task scheduler, we send in the computer as an argument to the execute method in Task to provide Task the ability to schedule it's own tasks or set arguments to other tasks. Although this was a neat way to clean up what otherwise would have been a messy logic to handle different return values from execute, we do think this isn't as clean programming design in terms of seperating logic from and object-oriented strucutre.</p>
+
+                <p>Given how we send back our subtasks back to Space is rather unefficient, a improvement would implement the process in such a way that the tasks are sent all at once.</p>
  
         <h3>How might you change the infrastructure to improve your parallel efficiency?</h3>
                 <p>For the time being we don't have a strictly proposal to improve parallel efficiency, but we do however have guideline the users of this infrastructure should follow in order to improve efficiency. That is to make sure that there are more time spent calculating the actual task than to delegate new tasks as that just increases the network overhead.</p>
+
+                <p>Also, for the time being after having ran our project during the experiments we realised that we also send the tasks back to Space in an rather unefficient way. Another way to do it would be to save up the task to be send and send them up all at once to save network overhead.</p>
  
         <h3>What issues are involved in generalizing your infrastructure to a network of Spaces?</h3>
  
