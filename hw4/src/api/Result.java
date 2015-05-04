@@ -12,7 +12,7 @@ public class Result<T> implements Serializable
 
     /**
      * Constructor for Result
-     * @param <T> taskReturnValue Return value of the Task.
+     * @param taskReturnValue Return value of the Task.
      */
     public Result(T taskReturnValue)
     {

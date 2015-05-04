@@ -69,7 +69,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     /**
      * Help method to add multiple tasks to task queue.
-     * @param <List<Task>> taskList List of tasks to be added.
+     * @param taskList List of tasks to be added.
      * @throws RemoteException
      */
     @Override
@@ -165,7 +165,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
     /**
      * register computer on Space
-     * @param <Computer> computer The computer to be registered
+     * @param computer The computer to be registered
      * @throws RemoteException
      */
     @Override
@@ -179,8 +179,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     /**
      * Main method to run SpaceImpl.
      * Creates a thread of SpaceImpl and runs it.
-     * @param <String[]> args domain
-     * @throws Exception
+     * @param  args domain
+     * @thows Exception
      */
     public static void main(String[] args) throws Exception {
 
@@ -218,7 +218,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
 
         /**
          * Constructor of ComputerProxy
-         * @param <Computer> computer
+         * @param computer
          */
         ComputerProxy(Computer computer) {
             this.computer = computer;
@@ -234,24 +234,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             computer.execute(t);
         }
 
-        @Override
-        /**
-         * computes task t
-         * @param <Task> t
-         * @throws RemoteException
-         */
-        public <T> void compute(Task<T> t) throws RemoteException {
-        }
-
-        @Override
-        /**
-         * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
-         * @param <UUID> id The Id of the task.
-         * @param <T> r The result
-         * @throws RemoteException
-         */
-        public <T> void setArg(UUID id, T r) throws RemoteException {
-        }
 
         @Override
         /**

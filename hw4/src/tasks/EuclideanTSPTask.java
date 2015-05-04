@@ -3,6 +3,7 @@ package tasks;
 import api.Task;
 import results.TSPResult;
 import system.Computer;
+import system.Core;
 import util.PermutationEnumerator;
 
 import java.rmi.RemoteException;
@@ -95,7 +96,7 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
      * @param <Computer> computer The computer that will compute the task
      * @throws RemoteException
      */
-    public void execute(Computer computer) throws RemoteException {
+    public void execute(Core computer) throws RemoteException {
         if(pretour.size() > LIMIT) {
             computePermutations();
             TSPResult result = new TSPResult(tour, tourDistance);
@@ -161,7 +162,7 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
 
     /**
      * Distance of a TSP tour.
-     * @param <List<Integer>> tour TSP tour as a list of cities.
+     * @param tour TSP tour as a list of cities.
      * @return <double> distance of tour
      */
     private double tourDistance( final List<Integer> tour  )
@@ -176,8 +177,8 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
 
     /**
      * Euclidean distance algorithm to compute distance between two cities.
-     * @param <double[]> city1 City one
-     * @param <double[]> city2 City two
+     * @param city1 City one
+     * @param city2 City two
      * @return <double> distance
      */
     private static double distance( final double[] city1, final double[] city2 )

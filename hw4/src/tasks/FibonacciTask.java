@@ -2,6 +2,7 @@ package tasks;
 
 import api.Task;
 import system.Computer;
+import system.Core;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -16,8 +17,8 @@ public class FibonacciTask extends Task {
 
     /**
      * Constructor for FibonacciTask
-     * @param <UUID> parentId
-     * @param <int> n
+     * @param parentId
+     * @param n
      */
     public FibonacciTask(UUID parentId, int n) {
         super(parentId);
@@ -31,7 +32,7 @@ public class FibonacciTask extends Task {
      * Executes the computation of the fibonacci.
      * @param <Computer> computer
      */
-    public void execute(Computer computer) throws RemoteException {
+    public void execute(Core computer) throws RemoteException {
         if(n < 2) {
             computer.setArg(getParentId(), n);
         } else {

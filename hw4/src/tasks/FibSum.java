@@ -28,7 +28,7 @@ public class FibSum extends Task<Integer> {
 
     /**
      * Execute method.
-     * @param <Computer> computer
+     * @param computer
      * @throws RemoteException
      */
     public void execute(Computer computer) throws RemoteException {

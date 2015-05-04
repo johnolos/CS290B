@@ -12,7 +12,7 @@ public interface Job<S> {
 
     /**
      * Abstract method setValue
-     * @param <S> value  
+     * @param value
      */
     void setValue(S value);
 

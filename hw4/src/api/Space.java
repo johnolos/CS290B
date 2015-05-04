@@ -26,35 +26,35 @@ public interface Space extends Remote {
 
     /**
      * putAll takes a list of tasks and handles the task accordingly
-     * @param <List<Task>> tasklist List of Task
+     * @param taskList List of Task
      * @throws RemoteException
      */
     public void putAll (List<Task> taskList ) throws RemoteException;
 
     /**
      * put adds a task on Space
-     * @param <Task> task Task to be added
+     * @param task Task to be added
      * @throws RemoteException
      */
     public void put(Task task) throws RemoteException;
 
     /**
      * putWaitQ puts a task to the wait queue
-     * @param <Task> t The task to be added to the wait queue. 
+     * @param t The task to be added to the wait queue.
      * @throws RemoteException
      */
     public void putWaitQ(Task t) throws RemoteException;
 
     /**
      * putReadyQ puts a task to the ready queue
-     * @param <Task> t The task to be added to the ready queue
+     * @param t The task to be added to the ready queue
      * @throws RemoteException
      */
     public void putReadyQ(Task t) throws RemoteException;
 
     /**
      * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
-     * @param <UUID> id The Id of the task.
+     * @param id The Id of the task.
      * @param <T> r The result
      * @throws RemoteException
      */

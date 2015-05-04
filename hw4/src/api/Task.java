@@ -1,6 +1,7 @@
 package api;
 
 import system.Computer;
+import system.Core;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -26,7 +27,7 @@ public abstract class Task<T> implements Serializable {
         this.parentId = parentId;
     }
 
-    abstract public void execute(Computer computer) throws RemoteException;
+    abstract public void execute(Core core);
 
     /**
      * Add result to task.
