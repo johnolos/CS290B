@@ -281,8 +281,6 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         System.out.println("Computer initiated.");
 
-        Runtime.getRuntime().gc();
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 System.out.println("Shutdown hook");
