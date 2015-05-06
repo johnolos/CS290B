@@ -36,7 +36,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     /**
      * Computer Ids
      */
-    private static int computerIds = 0;
+    private static int computerIds = 1;
 
     /**
      * Map of Computers to ComputerProxies
@@ -166,48 +166,25 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     @Override
     public void register(Computer computer) throws RemoteException {
-        System.out.printf("Computer registering.%n");
         final ComputerProxy computerProxy = new ComputerProxy(computer);
         computerProxies.put(computer, computerProxy);
         computerProxy.start();
-        System.out.printf("Computer %d started.%n", computerProxy.computerId);
+        System.out.printf("Computer %d registered.%n", computerProxy.computerId);
     }
 
+
     /**
-     * Main method to run SpaceImpl.
-     * Creates a thread of SpaceImpl and runs it.
-     * @param  args domain
-     * @thows Exception
+     * Unregister computer on Space
+     * @param computer The computer to be registered
+     * @throws RemoteException
      */
-    public static void main(String[] args) throws Exception {
-
-        if(System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
-
-        if(args.length < 1) {
-            System.exit(-1);
-        }
-
-        String domain = args[0];
-
-        System.setProperty("java.rmi.server.hostname", domain);
-
-        SpaceImpl spaceImpl = getInstance();
-
-        // Unexport to ensure no exceptions
-        UnicastRemoteObject.unexportObject(spaceImpl, true);
-
-        Space stub = (Space) UnicastRemoteObject.exportObject(spaceImpl, 0);
-
-        Registry registry = LocateRegistry.createRegistry(Space.PORT);
-        registry.rebind(Space.SERVICE_NAME, stub);
-
-        System.out.println("SpaceImpl.main Registered and Ready.");
+    @Override
+    public void unregister(Computer computer) throws RemoteException {
+        System.out.printf("Computer %d unregistered.%n", computerProxies.remove(computer).computerId);
     }
 
     /**
-     * 
+     * ComputerProxy
      */
     private class ComputerProxy extends Thread implements Computer {
         final private Computer computer;
@@ -252,8 +229,9 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                 Task task = null;
                 try {
                     task = readyQ.take();
-                    logQueues();
+                    System.out.printf("Task picked up by: %d.%n", computerId);
                     compute(task);
+                    System.out.printf("Something happend?");
                 } catch(RemoteException ignore) {
                     try {
                         readyQ.put(task);
@@ -268,6 +246,39 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                 }
             }
         }
+    }
+
+    /**
+     * Main method to run SpaceImpl.
+     * Creates a thread of SpaceImpl and runs it.
+     * @param  args domain
+     * @thows Exception
+     */
+    public static void main(String[] args) throws Exception {
+
+        if(System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+        if(args.length < 1) {
+            System.exit(-1);
+        }
+
+        String domain = args[0];
+
+        System.setProperty("java.rmi.server.hostname", domain);
+
+        SpaceImpl spaceImpl = getInstance();
+
+        // Unexport to ensure no exceptions
+        UnicastRemoteObject.unexportObject(spaceImpl, true);
+
+        Space stub = (Space) UnicastRemoteObject.exportObject(spaceImpl, 0);
+
+        Registry registry = LocateRegistry.createRegistry(Space.PORT);
+        registry.rebind(Space.SERVICE_NAME, stub);
+
+        System.out.println("SpaceImpl.main Registered and Ready.");
     }
 
 }

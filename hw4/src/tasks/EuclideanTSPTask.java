@@ -2,7 +2,6 @@ package tasks;
 
 import api.Task;
 import results.TSPResult;
-import system.Computer;
 import system.Core;
 import util.PermutationEnumerator;
 
@@ -64,31 +63,6 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
         }
     }
 
-    /*
-    public List<Integer> call() {
-        List<Integer> shortestTour = new ArrayList<Integer>(partialCityList);
-        shortestTour.addAll(0, pretour);
-        double shortestTourDistance = tourDistance(shortestTour);
-
-
-        // Using Permutation Enumerator
-        PermutationEnumerator<Integer> permutationEnumerator = new PermutationEnumerator<Integer>( partialCityList );
-        for ( List<Integer> subtour = permutationEnumerator.next(); subtour != null; subtour = permutationEnumerator.next() )
-        {
-            List<Integer> tour = new ArrayList<Integer>( subtour );
-            tour.addAll(0, pretour);
-            if ( tour.indexOf( ONE ) >  tour.indexOf( TWO ) )
-            {
-                continue; // skip tour; it is the reverse of another.
-            }
-            double tourDistance = tourDistance(tour);
-            if(tourDistance < shortestTourDistance) {
-                shortestTour = tour;
-                shortestTourDistance = tourDistance;
-            }
-        }
-        return shortestTour;
-    }*/
 
     @Override
     /**

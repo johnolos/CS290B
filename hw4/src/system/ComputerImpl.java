@@ -67,21 +67,9 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                System.out.printf("Shutting down gracefully.%n");
-                for(Core core : cores) {
-                    core.shutdownGracefully();
-                }
-
-                try {
-                    Thread.sleep(200);
-                }catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                exit = true;
+                System.out.println("Shutdown hook 1");
             }
         });
-
     }
 
     private Core startCore(int i) {
@@ -161,6 +149,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         } catch(InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("LOL");
     }
 
     private void logQueues() {
@@ -183,7 +172,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     class CoreImpl implements Core {
         final Computer computer;
         private int numOfTasks = 0;
-        private int id;
+        private final int id;
         private boolean exit;
         private Task task;
 
@@ -191,6 +180,12 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
             this.computer = computer;
             this.id = id;
             exit = false;
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    System.out.println("Shutdown hook ki - core");
+                }
+            });
         }
 
         @Override
@@ -285,6 +280,14 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         computer.run();
 
         System.out.println("Computer initiated.");
+
+        Runtime.getRuntime().gc();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                System.out.println("Shutdown hook");
+            }
+        });
     }
 
 }

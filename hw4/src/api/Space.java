@@ -58,4 +58,6 @@ public interface Space extends Remote {
      * @throws RemoteException
      */
     void register( Computer computer ) throws RemoteException;
+
+    void unregister(Computer computer ) throws RemoteException;
 }
