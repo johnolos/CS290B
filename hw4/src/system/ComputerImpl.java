@@ -41,6 +41,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         waitTaskQ = new LinkedBlockingDeque<Task>();
         setArgQ = new LinkedBlockingDeque<SetArg>();
         taskSpace = new LinkedBlockingQueue<Task>();
+        cores = new ArrayList<Core>();
         availableProcessors = Runtime.getRuntime().availableProcessors();
         this.multiCore = multiCore;
         this.ameliorateLatency = ameliorateLatency;
@@ -48,10 +49,12 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
             int i = 0;
             while(i < availableProcessors) {
                 cores.add(startCore(i));
+                i++;
             }
         } else {
             cores.add(startCore(0));
         }
+        System.out.println("Number of processors: " + availableProcessors);
         if(ameliorateLatency) {
             readyTaskQ = new LinkedBlockingDeque<Task>();
         } else {
@@ -64,6 +67,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+                System.out.printf("Shutting down gracefully.%n");
                 for(Core core : cores) {
                     core.shutdownGracefully();
                 }
@@ -91,27 +95,51 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     public void run() {
         List<Task> tasks = new ArrayList<Task>();
         List<SetArg> setArgs = new ArrayList<SetArg>();
+        long last = System.currentTimeMillis();
         while(!exit) {
             try {
                 // WaitQTasks to space
-                if(waitTaskQ.size() > 1) {
-                    waitTaskQ.removeAll(tasks);
+                if(waitTaskQ.size() > 0) {
+                    try {
+                        while (waitTaskQ.size() > 0) {
+                            tasks.add(waitTaskQ.take());
+                        }
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     space.putAllWaitQ(tasks);
                     tasks.clear();
                 }
 
                 // ReadyQTasks to space
-                if(taskSpace.size() > 1) {
-                    taskSpace.removeAll(tasks);
+                if(taskSpace.size() > 0) {
+                    try {
+                        while (taskSpace.size() > 0) {
+                            tasks.add(taskSpace.take());
+                        }
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     space.putAllReadyQ(tasks);
                     tasks.clear();
                 }
 
                 // SetArgs to space
-                if(setArgs.size() > 0) {
-                    setArgQ.removeAll(setArgs);
+                if(setArgQ.size() > 0) {
+                    try {
+                        while (setArgQ.size() > 0) {
+                            setArgs.add(setArgQ.take());
+                        }
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     space.setAllArgs(setArgs);
                     setArgs.clear();
+                }
+
+                if(System.currentTimeMillis() > last + 5000) {
+                    last = System.currentTimeMillis();
+                    logQueues();
                 }
 
             } catch (RemoteException e) {
@@ -121,17 +149,24 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     }
 
     /**
-     * Implementation of execute
+     * Implementation of compute
      * @param t Task to be executed
      * @throws RemoteException
      */
     @Override
-    public void execute(Task t) throws RemoteException {
+    public void compute(Task t) throws RemoteException {
         try {
             readyTaskQ.put(t);
+            logQueues();
         } catch(InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void logQueues() {
+        System.out.printf("ReadyQ: %d.%n", readyTaskQ.size());
+        System.out.printf("WaitQ: %d.%n", waitTaskQ.size());
+        System.out.printf("TaskSpace: %d.%n", taskSpace.size());
     }
 
     @Override
@@ -160,14 +195,17 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         @Override
         public void run() {
+            System.out.printf("Core %d running.%n", id);
             while(!exit) {
                 try {
                     task = readyTaskQ.take();
+                    System.out.printf("Task taken on %d.%n", id);
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
                 execute(task);
                 numOfTasks++;
+                logQueues();
             }
         }
 
@@ -183,19 +221,23 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         @Override
         public <T> void execute(Task<T> t) {
-            if(exit)
-                return;
-            t.execute(this);
+            if(!exit) {
+                t.execute(this);
+            }
         }
 
         @Override
         public <T> void compute(Task<T> t) {
             if(exit)
                 return;
-            if(t.isReadyToExecute()) {
-                readyTaskQ.offer(t);
-            } else {
-                waitTaskQ.offer(t);
+            try {
+                if(t.isReadyToExecute()) {
+                    taskSpace.put(t);
+                } else {
+                    waitTaskQ.put(t);
+                }
+            } catch(InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
@@ -235,7 +277,12 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         String url = "rmi://" + domain + ":" + Space.PORT + "/" + Space.SERVICE_NAME;
         final Space space = (Space) Naming.lookup(url);
-        space.register(new ComputerImpl(space, ameliorateLatency, multicore));
+
+        ComputerImpl computer = new ComputerImpl(space, ameliorateLatency, multicore);
+
+        space.register(computer);
+
+        computer.run();
 
         System.out.println("Computer initiated.");
     }

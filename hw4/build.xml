@@ -44,7 +44,7 @@
   <target name="runComputer">
     <property name="server-ip" value="localhost"/>
     <property name="multicore" value="true"/>
-    <ptoperty name="amelioriteLatency" value="true" />
+    <property name="amelioriteLatency" value="true" />
     <java jar="build/jar/ComputerImpl.jar" fork="true">
       <arg value="${server-ip}" />
       <arg value="${multicore}" />

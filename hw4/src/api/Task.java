@@ -31,7 +31,7 @@ public abstract class Task<T> implements Serializable {
 
     /**
      * Add result to task.
-     * @param <T> result Result of a subtask to be added.
+     * @param result Result of a subtask to be added.
      */
     abstract public void addResult(T result);
 

@@ -37,7 +37,7 @@ public interface Space extends Remote {
 
     public void putAllReadyQ(Collection<Task> t) throws RemoteException;
 
-    public <T> void setAllArgs(Collection<SetArg<T>> setArgs) throws RemoteException;
+    public void setAllArgs(Collection<SetArg> setArgs) throws RemoteException;
 
     /**
      * take a result from the space
