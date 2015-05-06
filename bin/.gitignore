@@ -1,9 +1,0 @@
-.DS_Store
-*/.idea/
-
-.gitignore~
-README.md~
-*/README.md~
-hw*/hw*.iml
-hw*/build/
-
