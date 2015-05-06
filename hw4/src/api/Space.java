@@ -2,9 +2,11 @@ package api;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import results.SetArg;
 import system.Computer;
 
 /**
@@ -26,39 +28,16 @@ public interface Space extends Remote {
 
     /**
      * putAll takes a list of tasks and handles the task accordingly
-     * @param taskList List of Task
+     * @param t Task
      * @throws RemoteException
      */
-    public void putAll (List<Task> taskList ) throws RemoteException;
+    public void put(Task t) throws RemoteException;
 
-    /**
-     * put adds a task on Space
-     * @param task Task to be added
-     * @throws RemoteException
-     */
-    public void put(Task task) throws RemoteException;
+    public void putAllWaitQ(Collection<Task> t) throws RemoteException;
 
-    /**
-     * putWaitQ puts a task to the wait queue
-     * @param t The task to be added to the wait queue.
-     * @throws RemoteException
-     */
-    public void putWaitQ(Task t) throws RemoteException;
+    public void putAllReadyQ(Collection<Task> t) throws RemoteException;
 
-    /**
-     * putReadyQ puts a task to the ready queue
-     * @param t The task to be added to the ready queue
-     * @throws RemoteException
-     */
-    public void putReadyQ(Task t) throws RemoteException;
-
-    /**
-     * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
-     * @param id The Id of the task.
-     * @param <T> r The result
-     * @throws RemoteException
-     */
-    public <T> void setArg(UUID id, T r) throws RemoteException;
+    public <T> void setAllArgs(Collection<SetArg<T>> setArgs) throws RemoteException;
 
     /**
      * take a result from the space

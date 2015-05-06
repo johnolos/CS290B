@@ -3,14 +3,14 @@ package system;
 import api.Result;
 import api.Space;
 import api.Task;
+import results.SetArg;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +40,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     private final Map<Computer, ComputerProxy> computerProxies;
 
-    private int numOfJobsCompleed = 0;
 
     /**
      * Constructor for SpaceImpl
@@ -67,71 +66,44 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         return spaceImplInstance;
     }
 
-    /**
-     * Help method to add multiple tasks to task queue.
-     * @param taskList List of tasks to be added.
-     * @throws RemoteException
-     */
     @Override
-    public void putAll(List<Task> taskList) throws RemoteException {
-        for (Task t : taskList) {
+    public void put(Task t) throws RemoteException {
+        if(t.isReadyToExecute()) {
+            readyQ.push(t);
+        } else {
+            waitQ.put(t);
+        }
+    }
+
+    @Override
+    public void putAllWaitQ(Collection<Task> tasks) throws RemoteException {
+        for(Task t : tasks) {
+            waitQ.put(t);
+        }
+    }
+
+
+    @Override
+    public void putAllReadyQ(Collection<Task> tasks) throws RemoteException {
+        for(Task t : tasks) {
             readyQ.push(t);
         }
     }
 
-    @Override
-    /**
-     * put puts the task on the ready queue
-     * @param <Task> task 
-     * @throws RemoteException
-     */
-    public void put(Task task) throws RemoteException {
-        readyQ.push(task);
-        // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
-    }
-
 
     @Override
-    /**
-     * putWaitQ puts the task on the wait queue
-     * @param <Task> t 
-     * @throws RemoteException
-     */
-    public void putWaitQ(Task t) throws RemoteException {
-        waitQ.put(t);
-        // System.out.printf("%d tasks in WaitQ.%n", waitQ.getSize());
-    }
+    public <T> void setAllArgs(Collection<SetArg<T>> setArgs) throws RemoteException {
+        for(SetArg<T> setArg : setArgs) {
+            if(setArg.getUUID() == null) {
+                result = new Result<T>(setArg.getArg());
+                System.out.println("Result has been found");
+            } else {
+                waitQ.setArg(setArg.getUUID(), setArg.getArg());
 
-    @Override
-    /**
-     * putReadyQ puts the task on the ready queue
-     * @param <Task> task 
-     * @throws RemoteException
-     */
-    public void putReadyQ(Task t) throws RemoteException {
-        readyQ.push(t);
-        // System.out.printf("%d tasks in ReadyQ.%n", readyQ.getSize());
-    }
-
-    @Override
-    /**
-     * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
-     * @param <UUID> id The Id of the task.
-     * @param <T> r The result
-     * @throws RemoteException
-     */
-    public <T> void setArg(UUID id, T r) throws RemoteException {
-        if(id == null) {
-            result = new Result<T>(r);
-            System.out.println("Result has been found.");
-            return;
-        }
-
-        waitQ.setArg(id, r);
-
-        Task t = waitQ.grabIfReady(id);
-        if(t != null) {
-            putReadyQ(t);
+                Task t = waitQ.grabIfReady(setArg.getUUID());
+                if(t != null)
+                    readyQ.push(t);
+            }
         }
     }
 

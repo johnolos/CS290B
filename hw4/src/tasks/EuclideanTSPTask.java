@@ -96,14 +96,14 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
      * @param <Computer> computer The computer that will compute the task
      * @throws RemoteException
      */
-    public void execute(Core computer) throws RemoteException {
+    public void execute(Core core) {
         if(pretour.size() > LIMIT) {
             computePermutations();
             TSPResult result = new TSPResult(tour, tourDistance);
-            computer.setArg(getParentId(), result);
+            core.setArg(getParentId(), result);
         } else {
             TSPSum tspSum = new TSPSum(getParentId(), partialCityList.size());
-            computer.compute(tspSum);
+            core.compute(tspSum);
             for(int city = 0; city < cities.length; city++) {
                 if(!pretour.contains(city)) {
                     List<Integer> prefix = new ArrayList<Integer>();
@@ -116,7 +116,7 @@ public class EuclideanTSPTask extends Task<List<Integer>> {
                         }
                     }
                     EuclideanTSPTask t = new EuclideanTSPTask(tspSum.getTaskId(), cities, prefix, newPartialCityList);
-                    computer.compute(t);
+                    core.compute(t);
                 }
             }
         }

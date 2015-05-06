@@ -2,6 +2,7 @@ package tasks;
 
 import api.Task;
 import system.Computer;
+import system.Core;
 
 import java.rmi.RemoteException;
 import java.util.UUID;
@@ -17,7 +18,6 @@ public class FibSum extends Task<Integer> {
 
     /**
      * Constructor for FibSum
-     * @param <UUID> dstAddr
      */
     public FibSum(UUID dstAddr) {
         super(dstAddr);
@@ -28,12 +28,12 @@ public class FibSum extends Task<Integer> {
 
     /**
      * Execute method.
-     * @param computer
+     * @param core
      * @throws RemoteException
      */
-    public void execute(Computer computer) throws RemoteException {
+    public void execute(Core core) {
         int sum = values[0] + values[1];
-        computer.setArg(getParentId(), sum);
+        core.setArg(getParentId(), sum);
     }
 
     @Override

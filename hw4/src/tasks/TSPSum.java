@@ -3,6 +3,7 @@ package tasks;
 import api.Task;
 import results.TSPResult;
 import system.Computer;
+import system.Core;
 
 import java.rmi.RemoteException;
 import java.util.UUID;
@@ -30,10 +31,10 @@ public class TSPSum extends Task<TSPResult> {
 
     /**
      * Execute method.
-     * @param computer
+     * @param core
      * @throws RemoteException 
      */
-    public void execute(Computer computer) throws RemoteException {
+    public void execute(Core core) {
         double distance = values[0].getDistance();
         int tripIndex = 0;
         for(int i = 0; i < values.length; i++) {
@@ -42,7 +43,7 @@ public class TSPSum extends Task<TSPResult> {
                 tripIndex = i;
             }
         }
-        computer.setArg(getParentId(), values[tripIndex]);
+        core.setArg(getParentId(), values[tripIndex]);
     }
 
     @Override

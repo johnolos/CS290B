@@ -22,7 +22,7 @@ public class EuclideanTSPJob implements Job<TSPResult> {
 
     /**
      * EuclideanTSPJob
-     * @param <double[][]> cities
+     * @param cities
      */
     public EuclideanTSPJob( double[][] cities )
     {

@@ -14,8 +14,8 @@ public class TSPResult extends Result<List<Integer>> {
 	
 	/**
 	 * Constructor for TSPResult
-	 * @param <List<Integer>> resultList
-	 * @param <double> distance
+	 * @param resultList
+	 * @param distance
 	 */
 	public TSPResult(List<Integer> resultList, double distance) {
 		super(resultList);

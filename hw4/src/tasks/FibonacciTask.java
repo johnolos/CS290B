@@ -32,14 +32,14 @@ public class FibonacciTask extends Task {
      * Executes the computation of the fibonacci.
      * @param <Computer> computer
      */
-    public void execute(Core computer) throws RemoteException {
+    public void execute(Core core) {
         if(n < 2) {
-            computer.setArg(getParentId(), n);
+            core.setArg(getParentId(), n);
         } else {
             FibSum sum = new FibSum(getParentId());
-            computer.compute(sum);
-            computer.compute(new FibonacciTask(sum.getTaskId(), n - 1));
-            computer.compute(new FibonacciTask(sum.getTaskId(), n - 2));
+            core.compute(sum);
+            core.compute(new FibonacciTask(sum.getTaskId(), n - 1));
+            core.compute(new FibonacciTask(sum.getTaskId(), n - 2));
         }
     }
 

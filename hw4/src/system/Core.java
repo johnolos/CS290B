@@ -25,12 +25,13 @@ public interface Core extends Remote, Runnable {
      */
     public <T> void compute(Task<T> t);
 
+
+    public void shutdownGracefully();
+
     /**
      * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
      * @param id The Id of the task.
      */
-
-
     public <T> void setArg(UUID id, T r);
 
     /**

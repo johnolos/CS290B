@@ -25,8 +25,8 @@ public class ClientFibonacci {
 
     /**
      * ClientFibonacci - Client for Fibonacci computation.
-     * @param <String> domain Domain which space is reachable on.
-     * @param <int> number The nth fibonacci number to be computed.
+     * @param domain Domain which space is reachable on.
+     * @param number The nth fibonacci number to be computed.
      * @throws Exception
      */
     public ClientFibonacci(String domain, int number) throws Exception {

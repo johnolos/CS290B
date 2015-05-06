@@ -23,7 +23,7 @@ public class PermutationEnumerator<T>
 
     /**
      *
-     * @param <List<T>> objectList The objectList being permuted is unmodified.
+     * @param objectList The objectList being permuted is unmodified.
      * @throws java.lang.IllegalArgumentException when passed a null object list.
      */
     public PermutationEnumerator( final List<T> objectList ) throws IllegalArgumentException

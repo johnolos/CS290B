@@ -16,7 +16,7 @@ public class TaskQueue {
 
     /**
      * pushes a task into the task queue
-     * @param <Task> task
+     * @param task
      */
     public void push(Task task) {
         synchronized (lock) {

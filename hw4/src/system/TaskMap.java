@@ -15,7 +15,7 @@ public class TaskMap {
 
     /**
      * put puts a task into the task map
-     * @param <Task> task
+     * @param task
      */
     public void put(Task task) {
         synchronized (lock) {
@@ -28,7 +28,7 @@ public class TaskMap {
 
     /**
      * setArg sets results to subtasks. The argument is sent to the parent task which handles what it should do with it.
-     * @param <UUID> id The Id of the task.
+     * @param id The Id of the task.
      * @param <T> r The result
      * @throws RemoteException
      */
@@ -45,7 +45,7 @@ public class TaskMap {
 
     /**
      * grabIfReady returns a task if it is ready
-     * @param <UUID> taskId
+     * @param taskId
      * @return <Task> t
      */
     public Task grabIfReady(UUID taskId) {

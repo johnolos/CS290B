@@ -10,10 +10,6 @@ public interface Job<S> {
 
     S value();
 
-    /**
-     * Abstract method setValue
-     * @param value
-     */
     void setValue(S value);
 
 }
