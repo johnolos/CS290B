@@ -18,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
     private final Space space;
-    private BlockingQueue<Task> readyTaskQ;
+    private TaskBlockingQueue readyTaskQ;
     private Stack<Task> taskSpace;
     private BlockingQueue<Task> waitTaskQ;
     private Stack<UUID> idsOfTasksCompleted;
@@ -36,7 +36,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
      */
     public ComputerImpl(Space space, boolean ameliorateLatency, boolean multiCore) throws RemoteException {
         this.space = space;
-        readyTaskQ = new LinkedBlockingQueue<Task>();
+        readyTaskQ = new TaskBlockingQueue();
         waitTaskQ = new LinkedBlockingQueue<Task>();
         setArgQ = new LinkedBlockingQueue<SetArg>();
         taskSpace = new Stack<Task>();
@@ -56,21 +56,21 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         }
         System.out.println("Number of processors: " + availableProcessors);
         if(ameliorateLatency) {
-            readyTaskQ = new LinkedBlockingDeque<Task>();
+            readyTaskQ = new TaskBlockingQueue();
         } else {
             if(multiCore) {
-                readyTaskQ = new LinkedBlockingDeque<Task>(availableProcessors);
+                readyTaskQ = new TaskBlockingQueue(availableProcessors);
             } else {
-                readyTaskQ = new LinkedBlockingDeque<Task>(1);
+                readyTaskQ = new TaskBlockingQueue(1);
             }
         }
+        System.out.println("Size :" + cores.size());
     }
 
     private Core startCore(int i) {
         Core core = new CoreImpl(this, i);
         Thread t = new Thread(core);
         t.start();
-        cores.add(core);
         return core;
     }
 
@@ -140,14 +140,11 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
      * @throws RemoteException
      */
     @Override
-    public void compute(Task t) throws RemoteException {
-        try {
-            readyTaskQ.put(t);
-            System.out.println("Task added.");
-            logQueues();
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
+    public boolean compute(Task t) throws RemoteException {
+        readyTaskQ.push(t);
+        System.out.println("Task added.");
+        logQueues();
+        return true;
     }
 
     private void logQueues() {
@@ -183,20 +180,12 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         @Override
         public void run() {
             System.out.printf("Core %d running.%n", id);
-            while(true) {
-                try {
-                    System.out.printf("%d tasks completed on core %d.%n", numOfTasks, id);
-                    task = readyTaskQ.take();
-                } catch(InterruptedException e) {
-                    System.out.println("Task interrupted.");
-                    e.printStackTrace();
-                    break;
-                }
+            while(!exit) {
+                task = readyTaskQ.pop();
                 execute(task);
                 numOfTasks++;
                 idsOfTasksCompleted.push(task.getTaskId());
             }
-            System.out.println("Exited");
         }
 
         @Override

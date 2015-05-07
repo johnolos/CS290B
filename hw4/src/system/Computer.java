@@ -17,7 +17,7 @@ public interface Computer extends Remote {
      * @return V object.
      * @throws RemoteException
      */
-    <T> void compute(Task<T> t) throws RemoteException;
+    <T> boolean compute(Task<T> t) throws RemoteException;
 
     /**
      * Exits the computer

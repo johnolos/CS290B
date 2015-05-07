@@ -9,9 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,6 +24,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     private BlockingQueue<Task> readyQ;
 
     private ConcurrentHashMap<UUID, Task> waitQ;
+
+    private BlockingQueue<SetArg> setArgs;
 
     private Result result;
     /**
@@ -50,6 +50,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     private SpaceImpl() throws RemoteException {
         readyQ = new LinkedBlockingQueue<Task>();
         waitQ = new ConcurrentHashMap<UUID, Task>();
+        setArgs = new LinkedBlockingQueue<SetArg>();
         computerProxies = new ConcurrentHashMap<Computer, ComputerProxy>();
         spaceImplInstance = this;
         result = new Result(null);
@@ -87,6 +88,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         for(Task t : tasks) {
             waitQ.put(t.getTaskId(), t);
         }
+        scheduleSetArgs();
     }
 
     @Override
@@ -119,7 +121,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                         }
                     }
                 } else {
-                    System.out.println("A SetArg got lost.");
+                    setArgs.add(setArg);
                 }
             }
         }
@@ -186,6 +188,25 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         System.out.printf("Computer %d unregistered.%n", computerProxies.remove(computer).computerId);
     }
 
+
+    private void scheduleSetArgs() {
+        if(setArgs.size() == 0) {
+            return;
+        }
+        List<SetArg> list = new ArrayList<SetArg>();
+        while(setArgs.size() > 0) {
+            try {
+                list.add(setArgs.take());
+            } catch(InterruptedException e) {
+
+            }
+        }
+        try {
+            setAllArgs(list);
+        } catch(RemoteException e) {
+        }
+    }
+
     /**
      * ComputerProxy
      */
@@ -193,12 +214,15 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         final private Computer computer;
         final private int computerId = computerIds++;
 
+        //private ConcurrentHashMap<UUID, Task> map;
+
         /**
          * Constructor of ComputerProxy
          * @param computer
          */
         ComputerProxy(Computer computer) {
             this.computer = computer;
+            //this.map = new ConcurrentHashMap<UUID, Task>();
         }
 
         @Override
@@ -207,8 +231,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
          * @param <Task> t
          * @throws RemoteException
          */
-        public void compute(Task t) throws RemoteException {
-            computer.compute(t);
+        public boolean compute(Task t) throws RemoteException {
+            return computer.compute(t);
         }
 
         @Override
@@ -231,14 +255,19 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                 Task task = null;
                 try {
                     task = readyQ.take();
-                    System.out.printf("Task picked up by: %d.%n", computerId);
-                    compute(task);
+                    boolean b = compute(task);
+                    //map.put(task.getTaskId(), task);
                 } catch(RemoteException ignore) {
                     try {
                         readyQ.put(task);
                     } catch(InterruptedException e) {
                         e.printStackTrace();
                     }
+                    /*
+                    for(UUID id : map.keySet()) {
+                        readyQ.add(map.remove(id));
+                    }
+                    */
                     computerProxies.remove(computer);
                     System.out.printf("Computer %d failed.%n", computerId);
                     break;
