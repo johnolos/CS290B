@@ -43,7 +43,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      */
     private final Map<Computer, ComputerProxy> computerProxies;
 
-
     /**
      * Constructor for SpaceImpl
      * @throws RemoteException
@@ -90,7 +89,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         }
     }
 
-
     @Override
     public void putAllReadyQ(Collection<Task> tasks) throws RemoteException {
         try {
@@ -101,7 +99,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void setAllArgs(Collection<SetArg> setArgs) throws RemoteException {
@@ -121,9 +118,16 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                             e.printStackTrace();
                         }
                     }
+                } else {
+                    System.out.println("A SetArg got lost.");
                 }
             }
         }
+    }
+
+    @Override
+    public void reportTaskCompleted(Collection<UUID> taskIds) throws RemoteException {
+
     }
 
     private void logQueues() {
@@ -172,7 +176,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
         System.out.printf("Computer %d registered.%n", computerProxy.computerId);
     }
 
-
     /**
      * Unregister computer on Space
      * @param computer The computer to be registered
@@ -208,7 +211,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             computer.compute(t);
         }
 
-
         @Override
         /**
          * exits the computer
@@ -231,7 +233,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                     task = readyQ.take();
                     System.out.printf("Task picked up by: %d.%n", computerId);
                     compute(task);
-                    System.out.printf("Something happend?");
                 } catch(RemoteException ignore) {
                     try {
                         readyQ.put(task);

@@ -7,9 +7,7 @@ import results.SetArg;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,8 +19,9 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
     private final Space space;
     private BlockingQueue<Task> readyTaskQ;
-    private BlockingQueue<Task> taskSpace;
+    private Stack<Task> taskSpace;
     private BlockingQueue<Task> waitTaskQ;
+    private Stack<UUID> idsOfTasksCompleted;
     private BlockingQueue<SetArg> setArgQ;
     private final int availableProcessors;
     private List<Core> cores;
@@ -37,10 +36,11 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
      */
     public ComputerImpl(Space space, boolean ameliorateLatency, boolean multiCore) throws RemoteException {
         this.space = space;
-        readyTaskQ = new LinkedBlockingDeque<Task>();
-        waitTaskQ = new LinkedBlockingDeque<Task>();
-        setArgQ = new LinkedBlockingDeque<SetArg>();
-        taskSpace = new LinkedBlockingQueue<Task>();
+        readyTaskQ = new LinkedBlockingQueue<Task>();
+        waitTaskQ = new LinkedBlockingQueue<Task>();
+        setArgQ = new LinkedBlockingQueue<SetArg>();
+        taskSpace = new Stack<Task>();
+        idsOfTasksCompleted = new Stack<UUID>();
         cores = new ArrayList<Core>();
         availableProcessors = Runtime.getRuntime().availableProcessors();
         this.multiCore = multiCore;
@@ -64,12 +64,6 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
                 readyTaskQ = new LinkedBlockingDeque<Task>(1);
             }
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.println("Shutdown hook 1");
-            }
-        });
     }
 
     private Core startCore(int i) {
@@ -83,6 +77,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     public void run() {
         List<Task> tasks = new ArrayList<Task>();
         List<SetArg> setArgs = new ArrayList<SetArg>();
+        List<UUID> taskIds = new ArrayList<UUID>();
         long last = System.currentTimeMillis();
         while(!exit) {
             try {
@@ -101,12 +96,8 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
                 // ReadyQTasks to space
                 if(taskSpace.size() > 0) {
-                    try {
-                        while (taskSpace.size() > 0) {
-                            tasks.add(taskSpace.take());
-                        }
-                    } catch(InterruptedException e) {
-                        e.printStackTrace();
+                    while(taskSpace.size() > 0) {
+                        tasks.add(taskSpace.pop());
                     }
                     space.putAllReadyQ(tasks);
                     tasks.clear();
@@ -123,6 +114,13 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
                     }
                     space.setAllArgs(setArgs);
                     setArgs.clear();
+                }
+
+                if(idsOfTasksCompleted.size() > 0) {
+                    while(idsOfTasksCompleted.size() > 0) {
+                        taskIds.add(idsOfTasksCompleted.pop());
+                    }
+                    space.reportTaskCompleted(taskIds);
                 }
 
                 if(System.currentTimeMillis() > last + 5000) {
@@ -145,11 +143,11 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     public void compute(Task t) throws RemoteException {
         try {
             readyTaskQ.put(t);
+            System.out.println("Task added.");
             logQueues();
         } catch(InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("LOL");
     }
 
     private void logQueues() {
@@ -180,65 +178,44 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
             this.computer = computer;
             this.id = id;
             exit = false;
-
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    System.out.println("Shutdown hook ki - core");
-                }
-            });
         }
 
         @Override
         public void run() {
             System.out.printf("Core %d running.%n", id);
-            while(!exit) {
+            while(true) {
                 try {
+                    System.out.printf("%d tasks completed on core %d.%n", numOfTasks, id);
                     task = readyTaskQ.take();
-                    System.out.printf("Task taken on %d.%n", id);
                 } catch(InterruptedException e) {
+                    System.out.println("Task interrupted.");
                     e.printStackTrace();
+                    break;
                 }
                 execute(task);
                 numOfTasks++;
-                logQueues();
+                idsOfTasksCompleted.push(task.getTaskId());
             }
-        }
-
-        @Override
-        public void shutdownGracefully() {
-            exit();
-            if(task != null) {
-                taskSpace.offer(task);
-                System.out.printf("Computer Core %d recovered task before shutdown.%n", id);
-                System.out.printf("Computer Core %d completed %d task(s) before it shutdown.%n", id, numOfTasks);
-            }
+            System.out.println("Exited");
         }
 
         @Override
         public <T> void execute(Task<T> t) {
-            if(!exit) {
-                t.execute(this);
-            }
+            t.execute(this);
         }
 
         @Override
         public <T> void compute(Task<T> t) {
-            if(exit)
-                return;
-            try {
-                if(t.isReadyToExecute()) {
-                    taskSpace.put(t);
-                } else {
-                    waitTaskQ.put(t);
-                }
-            } catch(InterruptedException e) {
-                e.printStackTrace();
+            if(t.isReadyToExecute()) {
+                taskSpace.add(t);
+            } else {
+                waitTaskQ.add(t);
             }
         }
 
         @Override
         public <T> void setArg(UUID id, T r) {
-            setArgQ.offer(new SetArg(id, r));
+            setArgQ.add(new SetArg(id, r));
         }
 
         @Override

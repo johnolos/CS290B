@@ -63,7 +63,7 @@
 
   <target name="runFib">
     <property name="server-ip" value="localhost"/>
-    <property name="num" value="16"/>
+    <property name="num" value="20"/>
     <java jar="build/jar/Fib.jar" fork="true">
       <arg value="${server-ip}" />
       <arg value="${num}" />

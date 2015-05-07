@@ -39,6 +39,8 @@ public interface Space extends Remote {
 
     public void setAllArgs(Collection<SetArg> setArgs) throws RemoteException;
 
+    public void reportTaskCompleted(Collection<UUID> taskIds) throws RemoteException;
+
     /**
      * take a result from the space
      * @return <Result>
