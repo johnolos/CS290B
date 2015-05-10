@@ -123,11 +123,13 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
                     space.reportTaskCompleted(taskIds);
                 }
 
-                if(System.currentTimeMillis() > last + 10000) {
+                if(System.currentTimeMillis() >= (last + 2000)) {
                     int i = 0;
                     for(Core core : cores) {
                         i+=core.getNumberOfTasks();
+                        System.out.printf("A core has completed %d tasks.%n", core.getNumberOfTasks());
                     }
+                    last = System.currentTimeMillis();
                     System.out.printf("Number of tasks completed %d.%n", i);
                 }
 
@@ -145,8 +147,6 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     @Override
     public boolean compute(Task t) throws RemoteException {
         readyTaskQ.push(t);
-        System.out.println("Task added.");
-        logQueues();
         return true;
     }
 

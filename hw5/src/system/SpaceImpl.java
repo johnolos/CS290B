@@ -161,6 +161,10 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             Result tempResult = result;
             readyQ.clear();
             waitQ.clear();
+            for(ComputerProxy computerProxy : computerProxies.values()) {
+                computerProxy.map.clear();
+            }
+
             result = new Result(null);
             return tempResult;
         }
