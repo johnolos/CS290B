@@ -108,7 +108,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             if (setArg.getUUID() == null) {
                 result = new Result(setArg.getArg());
                 System.out.println("Result has been found");
-                reportNumberOfCachedTasks();
             } else {
                 Task t = waitQ.get(setArg.getUUID());
                 if (t != null) {
@@ -129,10 +128,12 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
     }
 
     @Override
-    public void reportTaskCompleted(Collection<UUID> taskIds) throws RemoteException {
-        for(UUID id : taskIds) {
-            for(ComputerProxy computerProxy : computerProxies.values()) {
-                computerProxy.removeTaskCache(id);
+    public void reportTaskCompleted(Collection<UUID> taskIds, int id) throws RemoteException {
+        for(ComputerProxy proxy : computerProxies.values()) {
+            if(proxy.computerId == id) {
+                for(UUID taskId : taskIds) {
+                    proxy.map.remove(taskId);
+                }
             }
         }
     }
@@ -164,7 +165,6 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             for(ComputerProxy computerProxy : computerProxies.values()) {
                 computerProxy.map.clear();
             }
-
             result = new Result(null);
             return tempResult;
         }
@@ -188,11 +188,12 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
      * @throws RemoteException
      */
     @Override
-    public void register(Computer computer) throws RemoteException {
+    public int register(Computer computer) throws RemoteException {
         final ComputerProxy computerProxy = new ComputerProxy(computer);
         computerProxies.put(computer, computerProxy);
         computerProxy.start();
         System.out.printf("Computer %d registered.%n", computerProxy.computerId);
+        return computerProxy.computerId;
     }
 
     /**
@@ -263,12 +264,8 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
             }
         }
 
-        public void removeTaskCache(UUID id) {
-            map.remove(id);
-        }
-
         public int getNumberOfCachedTask() {
-            return map.size();
+            return map.keySet().size();
         }
         
         /**
@@ -281,7 +278,7 @@ public class SpaceImpl extends UnicastRemoteObject implements Space {
                 try {
                     task = readyQ.take();
                     boolean b = compute(task);
-                    map.put(task.getTaskId(), task);
+                    map.putIfAbsent(task.getTaskId(), task);
                 } catch(RemoteException ignore) {
                     try {
                         readyQ.put(task);

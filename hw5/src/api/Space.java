@@ -39,7 +39,7 @@ public interface Space extends Remote {
 
     public void setAllArgs(Collection<SetArg> setArgs) throws RemoteException;
 
-    public void reportTaskCompleted(Collection<UUID> taskIds) throws RemoteException;
+    public void reportTaskCompleted(Collection<UUID> taskIds, int id) throws RemoteException;
 
     /**
      * take a result from the space
@@ -59,7 +59,7 @@ public interface Space extends Remote {
      * @param computer Computer to be added
      * @throws RemoteException
      */
-    void register( Computer computer ) throws RemoteException;
+    int register( Computer computer ) throws RemoteException;
 
     void unregister(Computer computer ) throws RemoteException;
 }

@@ -1,8 +1,8 @@
 #!/bin/bash
 gnome-terminal --tab="Compiling" -x bash -c "ant all"
-sleep 4
+sleep 6
 gnome-terminal --title="Space" -x bash -c "ant runSpace"
-sleep 2
+sleep 3
 
 tab="--tab"
 title="-t "

@@ -9,7 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -18,8 +17,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
     private final Space space;
-    private TaskBlockingQueue readyTaskQ;
-    private Stack<Task> taskSpace;
+    private BlockingQueue<Task> readyTaskQ;
+    private Stack<Task> taskSpaceQ;
     private BlockingQueue<Task> waitTaskQ;
     private Stack<UUID> idsOfTasksCompleted;
     private BlockingQueue<SetArg> setArgQ;
@@ -28,6 +27,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     private boolean exit = false;
     private boolean multiCore;
     private boolean ameliorateLatency;
+    private int computerId;
 
     /**
      * Constructor of ComputerImpl
@@ -36,15 +36,24 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
      */
     public ComputerImpl(Space space, boolean ameliorateLatency, boolean multiCore) throws RemoteException {
         this.space = space;
-        readyTaskQ = new TaskBlockingQueue();
         waitTaskQ = new LinkedBlockingQueue<Task>();
         setArgQ = new LinkedBlockingQueue<SetArg>();
-        taskSpace = new Stack<Task>();
+        taskSpaceQ = new Stack<Task>();
         idsOfTasksCompleted = new Stack<UUID>();
         cores = new ArrayList<Core>();
         availableProcessors = Runtime.getRuntime().availableProcessors();
         this.multiCore = multiCore;
         this.ameliorateLatency = ameliorateLatency;
+        System.out.println("Number of processors: " + availableProcessors);
+        if(ameliorateLatency) {
+            readyTaskQ = new LinkedBlockingQueue<Task>();
+        } else {
+            if(multiCore) {
+                readyTaskQ = new LinkedBlockingQueue<Task>(availableProcessors);
+            } else {
+                readyTaskQ = new LinkedBlockingQueue<Task>(1);
+            }
+        }
         if(multiCore) {
             int i = 0;
             while(i < availableProcessors) {
@@ -54,21 +63,11 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         } else {
             cores.add(startCore(0));
         }
-        System.out.println("Number of processors: " + availableProcessors);
-        if(ameliorateLatency) {
-            readyTaskQ = new TaskBlockingQueue();
-        } else {
-            if(multiCore) {
-                readyTaskQ = new TaskBlockingQueue(availableProcessors);
-            } else {
-                readyTaskQ = new TaskBlockingQueue(1);
-            }
-        }
         System.out.println("Size :" + cores.size());
     }
 
     private Core startCore(int i) {
-        Core core = new CoreImpl(this, i);
+        CoreImpl core = new CoreImpl(this, i);
         Thread t = new Thread(core);
         t.start();
         return core;
@@ -95,9 +94,9 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
                 }
 
                 // ReadyQTasks to space
-                if(taskSpace.size() > 0) {
-                    while(taskSpace.size() > 0) {
-                        tasks.add(taskSpace.pop());
+                if(taskSpaceQ.size() > 0) {
+                    while(taskSpaceQ.size() > 0) {
+                        tasks.add(taskSpaceQ.pop());
                     }
                     space.putAllReadyQ(tasks);
                     tasks.clear();
@@ -120,7 +119,8 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
                     while(idsOfTasksCompleted.size() > 0) {
                         taskIds.add(idsOfTasksCompleted.pop());
                     }
-                    space.reportTaskCompleted(taskIds);
+                    space.reportTaskCompleted(taskIds, computerId);
+                    idsOfTasksCompleted.clear();
                 }
 
                 if(System.currentTimeMillis() >= (last + 2000)) {
@@ -146,14 +146,14 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
      */
     @Override
     public boolean compute(Task t) throws RemoteException {
-        readyTaskQ.push(t);
+        readyTaskQ.add(t);
         return true;
     }
 
     private void logQueues() {
         System.out.printf("ReadyQ: %d.%n", readyTaskQ.size());
         System.out.printf("WaitQ: %d.%n", waitTaskQ.size());
-        System.out.printf("TaskSpace: %d.%n", taskSpace.size());
+        System.out.printf("TaskSpace: %d.%n", taskSpaceQ.size());
     }
 
     @Override
@@ -164,6 +164,10 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
     public void exit() throws RemoteException {
         System.out.printf("Computer completed %d tasks.%n", 0);
         System.exit(0);
+    }
+
+    public void setId(int id) {
+        this.computerId = id;
     }
 
 
@@ -184,7 +188,14 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         public void run() {
             System.out.printf("Core %d running.%n", id);
             while(!exit) {
-                task = readyTaskQ.pop();
+                try {
+                    task = readyTaskQ.take();
+                } catch(InterruptedException e) {
+
+                }
+                if(task == null) {
+                    continue;
+                }
                 execute(task);
                 numOfTasks++;
                 idsOfTasksCompleted.push(task.getTaskId());
@@ -199,7 +210,7 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
         @Override
         public <T> void compute(Task<T> t) {
             if(t.isReadyToExecute()) {
-                taskSpace.add(t);
+                taskSpaceQ.add(t);
             } else {
                 waitTaskQ.add(t);
             }
@@ -245,17 +256,13 @@ public class ComputerImpl extends UnicastRemoteObject implements Computer {
 
         ComputerImpl computer = new ComputerImpl(space, ameliorateLatency, multicore);
 
-        space.register(computer);
+        int computerId = space.register(computer);
+
+        computer.setId(computerId);
 
         computer.run();
 
         System.out.println("Computer initiated.");
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.println("Shutdown hook");
-            }
-        });
     }
 
 }
