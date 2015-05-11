@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="build/jar/ComputerImpl.jar"/>
+	<classpathentry kind="lib" path="build/jar/Fib.jar"/>
+	<classpathentry kind="lib" path="build/jar/SpaceImpl.jar"/>
+	<classpathentry kind="lib" path="build/jar/TSP.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
