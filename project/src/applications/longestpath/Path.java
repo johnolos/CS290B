@@ -13,7 +13,7 @@ public class Path implements Comparable<Path> {
     }
     @Override
     public int compareTo(Path otherPath) {
-        return this.cost < otherPath.cost ? -1 : this.cost > otherPath.cost ? 1 : 0;
+        return this.cost < otherPath.cost ? 1 : this.cost > otherPath.cost ? -1 : 0;
     }
 
     public double cost() {
