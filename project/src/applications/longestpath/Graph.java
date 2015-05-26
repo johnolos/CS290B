@@ -23,25 +23,26 @@ public class Graph {
 				for (int i = 0; i < numberOfNodes; i++) {
 					nodes[i] = new int[0]; 
 				}
-				
+	
 				while (in.hasNextLine()) {
-					String line = in.nextLine();
-					String[] stringArr = line.split(" "); 
-					int fromNode = Integer.parseInt(stringArr[0]); 
-					int toNode = Integer.parseInt(stringArr[1]);
-					int value = Integer.parseInt(stringArr[2]); 
+					int fromNode = in.nextInt(); 
+					int toNode = in.nextInt();
+					int value = in.nextInt(); 
 					int arrayLength = nodes[fromNode].length; 
 					int[] replacement = Arrays.copyOf(nodes[fromNode], arrayLength + 2);
 					replacement[arrayLength] =  toNode; 
 					replacement[arrayLength + 1] = value; 
 					nodes[fromNode] = replacement;
+				} in.close();
+				
+				// reduce any fragmentation
+				int[][] newNodes = new int[numberOfNodes][];
+				for (int i = 0; i < numberOfNodes; i++) {
+					newNodes[i] = Arrays.copyOf(nodes[i], nodes[i].length);
 				}
-				in.close();
 				return nodes; 
 			}  
-			
-		} catch(FileNotFoundException e){
-		}
+		} catch(FileNotFoundException e){}
 		throw new FileNotFoundException("Format wrong");
 	}
 	
