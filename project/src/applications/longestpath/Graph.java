@@ -1,4 +1,4 @@
-package application.longestpath;
+package applications.longestpath;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
