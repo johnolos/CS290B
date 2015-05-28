@@ -57,15 +57,6 @@ public class Graph {
 					newNodes[i] = Arrays.copyOf(nodes[i], nodes[i].length);
 				}
 				
-				System.out.println(nodes.length);
-				for(int i = 0; i < nodes.length; i++) {
-					System.out.println("i:" + i );
-					for (int j = 0; j < nodes[i].length; j++) {
-						System.out.println("     j:" + nodes[i][j]); 
-					}
-				}
-				
-				
 				return nodes;
 			}
 
