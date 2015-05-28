@@ -1,9 +1,15 @@
 .DS_Store
 */.idea/
-
 .gitignore~
 README.md~
 */README.md~
 hw*/hw*.iml
 hw*/build/
+/bin/
+.settings
+/.settings/
+.project
+.classpath
+project.iml
+*.class
 
