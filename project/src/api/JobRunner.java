@@ -23,6 +23,9 @@
  */
 package api;
 
+import api.events.EventController;
+import api.events.EventListener;
+import api.events.EventView;
 import system.Task;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -44,12 +47,12 @@ import system.SpaceImpl;
  * @author Peter Cappello
  * @param <T> type of value returned by value.
  */
-public class JobRunner<T> extends JFrame
+public class JobRunner<T> extends JFrame implements EventView
 {
     final private Space  space;
     final private long   startTime = System.nanoTime();
 
-    private EventHandler eventHandler = null;
+    private EventController eventHandler = null;
     
     /**
      *
@@ -88,7 +91,7 @@ public class JobRunner<T> extends JFrame
         }
     }
 
-    public JobRunner(String title, String[] args, EventHandler eventHandler)
+    public JobRunner(String title, String[] args, EventController eventHandler)
             throws RemoteException, NotBoundException, MalformedURLException {
         this(title, args);
         this.eventHandler = eventHandler;
@@ -141,7 +144,7 @@ public class JobRunner<T> extends JFrame
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }
     
-    void view( final JLabel jLabel )
+    public void view( final JLabel jLabel )
     {
         final Container container = getContentPane();
         container.setLayout( new BorderLayout() );
@@ -149,5 +152,6 @@ public class JobRunner<T> extends JFrame
         pack();
         setVisible( true );
     }
+
 
 }

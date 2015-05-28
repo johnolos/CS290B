@@ -2,6 +2,7 @@
 package applications.longestpath;
 
 import api.*;
+import api.events.EventListener;
 import system.Task;
 
 import java.io.File;
@@ -16,6 +17,8 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     static final private File GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
     static final private String FRAME_TITLE = "Longest Path Problem";
     static final private Task TASK = new TaskLongestPath();
+
+
     //static final private List<Integer> GREEDY_TOUR = EuclideanGraph.greedyTour(CITIES) ;
     //static private final double UPPER_BOUND = tourDistance( CITIES, GREEDY_TOUR );
     //static private final Shared SHARED = new SharedTour( GREEDY_TOUR, UPPER_BOUND );
@@ -23,7 +26,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
     public static void main(String args[]) throws Exception {
         EventListener listener = new EventListener();
-        LongestPathHandler handler = new LongestPathHandler();
+        LongestPathController handler = new LongestPathController();
         listener.register(handler);
 
         // Obviously not null on SHARED.

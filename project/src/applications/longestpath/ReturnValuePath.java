@@ -16,4 +16,5 @@ public class ReturnValuePath extends ReturnValue<Path> {
     public JLabel view() {
         return null;
     }
+
 }

@@ -1,4 +1,4 @@
-package api;
+package api.events;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -7,19 +7,19 @@ import java.util.List;
 
 public class EventListener implements Remote {
 
-    List<EventHandler> eventHandlers = new ArrayList<>();
+    List<EventController> eventHandlers = new ArrayList<>();
 
     public void fireEvent(Event event) throws RemoteException {
-        for(EventHandler handler : eventHandlers) {
+        for(EventController handler : eventHandlers) {
             handler.handle(event);
         }
     }
 
-    public void register(EventHandler handler) {
+    public void register(EventController handler) {
         eventHandlers.add(handler);
     }
 
-    public void unregister(EventHandler handler) {
+    public void unregister(EventController handler) {
         eventHandlers.remove(handler);
     }
 

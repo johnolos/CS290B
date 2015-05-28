@@ -27,6 +27,10 @@ import api.ReturnValue;
 import api.Shared;
 import api.Space;
 import api.TaskCompose;
+import api.events.Event;
+import api.events.EventEnum;
+import api.events.EventListener;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -55,6 +59,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private AtomicInteger taskIds = new AtomicInteger();
     final private BlockingQueue<Task>     readyTaskQ = new LinkedBlockingQueue<>();
     final private BlockingQueue<ReturnValue> resultQ = new LinkedBlockingQueue<>();
+    final private BlockingQueue<Event>        eventQ = new LinkedBlockingQueue<>();
     final private Map<Computer, ComputerProxy> computerProxies = Collections.synchronizedMap( new HashMap<>() );
     final private Map<UUID, TaskCompose>        waitingTaskMap = Collections.synchronizedMap( new HashMap<>() );
     final private AtomicInteger numTasks = new AtomicInteger();
@@ -62,6 +67,8 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private Boolean sharedLock = true;
           private UUID rootTaskReturnValue;
           private Shared shared;
+          private ListenerProxy listenerProxy;
+          private EventListener listener;
           private long t1   = 0;
           private long tInf = 0;
     
@@ -109,7 +116,21 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         reportTimeMeasures( result );
         return result;
     }
-    
+
+    @Override
+    public ReturnValue compute(Task rootTask, Shared shared, EventListener listener) throws RemoteException {
+        initTimeMeasures();
+        //this.shared = shared;
+        listenerProxy = new ListenerProxy(listener);
+        listenerProxy.start();
+        execute(rootTask);
+        ReturnValue result = take();
+        reportTimeMeasures(result);
+        listenerProxy.stopListenerProxy();
+        listenerProxy = null;
+        return result;
+    }
+
     /**
      * Put a task into the Task queue.
      * @param rootTask
@@ -185,7 +206,12 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     {
         synchronized ( sharedLock )
         {
-            return this.shared.isOlderThan( that ) ? that : this.shared;
+            if(this.shared.isOlderThan(that)) {
+                eventQ.add(new Event(EventEnum.SHARED_UPDATED, that));
+                return that;
+            } else {
+                return this.shared;
+            }
         }
     }
     
@@ -206,7 +232,10 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         readyTaskQ.add( task ); 
     }
     
-    public void putReadyTasks( final List<Task> tasks ) { readyTaskQ.addAll( tasks ); }
+    public void putReadyTasks( final List<Task> tasks ) {
+        eventQ.add(new Event(EventEnum.TEST, t1));
+        readyTaskQ.addAll( tasks );
+    }
     
     public void removeWaitingTask( final UUID composeId ) { waitingTaskMap.remove( composeId ); }
     
@@ -229,6 +258,43 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
               .log( Level.INFO, 
                     "\n\tTotal tasks: {0} \n\tT_1: {1}ms.\n\tT_inf: {2}ms.\n\tT_1 / T_inf: {3}", 
                     new Object[]{ numTasks, result.t1() / 1000000, result.tInf() / 1000000, result.t1() / result.tInf() } );
+    }
+
+
+    private class ListenerProxy extends Thread {
+        final private EventListener listener;
+
+        private boolean isActive;
+
+        ListenerProxy(EventListener listener) {
+            this.listener = listener;
+            isActive = true;
+        }
+
+        private void stopListenerProxy() {
+            isActive = false;
+        }
+
+        @Override
+        public void run() {
+            while(isActive) {
+                Event event = null;
+
+                try {
+                    event = eventQ.take();
+                    listener.fireEvent(event);
+                }
+                catch ( RemoteException ignore ) {
+                    listenerProxy = null;
+                    ignore.printStackTrace();
+                    return;
+                }
+                catch ( InterruptedException ex ) {
+                    Logger.getLogger( getClass().getName() )
+                            .log( Level.INFO, null, ex );
+                }
+            }
+        }
     }
     
     private class ComputerProxy
