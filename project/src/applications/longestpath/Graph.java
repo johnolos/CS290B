@@ -56,6 +56,7 @@ public class Graph {
 				for (int i = 0; i < numberOfNodes; i++) {
 					newNodes[i] = Arrays.copyOf(nodes[i], nodes[i].length);
 				}
+				
 				return nodes;
 			}
 
