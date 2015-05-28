@@ -112,7 +112,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     
     /**
      * Put a task into the Task queue.
-     * @param task
+     * @param rootTask
      */
     private void execute( Task rootTask ) 
     { 

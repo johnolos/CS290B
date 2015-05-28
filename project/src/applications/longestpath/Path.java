@@ -1,16 +1,33 @@
 package applications.longestpath;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Path implements Comparable<Path> {
 
-    final private List<Integer> path;
-    final private double cost;
+    private List<Integer> path;
+    private double cost;
 
     public Path(List<Integer> path, double cost) {
         this.path = path;
         this.cost = cost;
     }
+
+    public Path() {
+        path = new ArrayList<>();
+        cost = 0;
+    }
+
+    public Path(Path path) {
+        this.path = new ArrayList<>(path.path);
+        this.cost = path.cost;
+    }
+
+    public void addNewNode(int node, double weight) {
+        path.add(node);
+        cost += weight;
+    }
+
     @Override
     public int compareTo(Path otherPath) {
         return this.cost < otherPath.cost ? 1 : this.cost > otherPath.cost ? -1 : 0;

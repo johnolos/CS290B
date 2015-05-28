@@ -23,7 +23,6 @@
  */
 package api;
 
-import applications.euclideantsp.Tour;
 import system.Task;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -49,6 +48,8 @@ public class JobRunner<T> extends JFrame
 {
     final private Space  space;
     final private long   startTime = System.nanoTime();
+
+    private EventHandler eventHandler = null;
     
     /**
      *
@@ -63,7 +64,7 @@ public class JobRunner<T> extends JFrame
            throws RemoteException, NotBoundException, MalformedURLException
     { 
         System.setSecurityManager( new SecurityManager() );
-        setTitle( title );
+        setTitle(title);
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         if ( args.length == 0 )
         {
@@ -85,6 +86,13 @@ public class JobRunner<T> extends JFrame
                              + Space.SERVICE_NAME;
             space = (Space) Naming.lookup( url );
         }
+    }
+
+    public JobRunner(String title, String[] args, EventHandler eventHandler)
+            throws RemoteException, NotBoundException, MalformedURLException {
+        this(title, args);
+        this.eventHandler = eventHandler;
+        eventHandler.register(this);
     }
     
     /**
@@ -116,8 +124,24 @@ public class JobRunner<T> extends JFrame
         Logger.getLogger( this.getClass().getCanonicalName() )
               .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }
+
+    /**
+     * Run the Job: Generate the tasks, retrieve the results, compose a solution
+     * to the original problem, and display the solution.
+     * @param task the task that defines the job.
+     * @param shared
+     * @param eventListener the event listener specified for this task.
+     * @throws RemoteException occurs if there is a communication problem or
+     * the remote service is not responding
+     */
+    public void run( final Task task, Shared shared, EventListener eventListener) throws RemoteException
+    {
+        view( space.compute( task, shared, eventListener).view() );
+        Logger.getLogger( this.getClass().getCanonicalName() )
+                .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
+    }
     
-    private void view( final JLabel jLabel )
+    void view( final JLabel jLabel )
     {
         final Container container = getContentPane();
         container.setLayout( new BorderLayout() );
@@ -125,9 +149,5 @@ public class JobRunner<T> extends JFrame
         pack();
         setVisible( true );
     }
-    
-    private void handleEvent( Tour tour )
-    {
-        
-    }
+
 }

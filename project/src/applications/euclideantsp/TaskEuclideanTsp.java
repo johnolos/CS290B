@@ -116,7 +116,9 @@ public class TaskEuclideanTsp extends TaskRecursive<Tour>
     }
     
     @Override
-    public boolean isAtomic() { return unvisitedCities.size() <= MAX_UNVISITED_CITIES; }
+    public boolean isAtomic() {
+        return unvisitedCities.size() <= MAX_UNVISITED_CITIES;
+    }
     
     /**
      * Produce a tour of minimum cost from the set of tours, having as its
