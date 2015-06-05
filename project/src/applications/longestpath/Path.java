@@ -13,7 +13,23 @@ public class Path implements Comparable<Path> {
         this.cost = cost;
     }
 
-    public Path() {
+    public List<Integer> getPath() {
+		return path;
+	}
+
+	public void setPath(List<Integer> path) {
+		this.path = path;
+	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public Path() {
         path = new ArrayList<>();
         cost = 0;
     }
