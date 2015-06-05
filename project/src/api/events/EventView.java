@@ -1,9 +1,7 @@
 package api.events;
 
-import javax.swing.*;
+public interface EventView<T> {
 
-public interface EventView {
-
-    public void view(final JLabel jlabel);
+    public void view(final T data);
 
 }

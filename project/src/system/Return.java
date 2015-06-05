@@ -24,6 +24,8 @@
 package system;
 
 import api.Shared;
+import api.events.Event;
+
 import java.io.Serializable;
 
 /**

@@ -47,12 +47,12 @@ import system.SpaceImpl;
  * @author Peter Cappello
  * @param <T> type of value returned by value.
  */
-public class JobRunner<T> extends JFrame implements EventView
+public class JobRunner<T> extends JFrame implements EventView<JLabel>
 {
     final private Space  space;
     final private long   startTime = System.nanoTime();
 
-    private EventController eventHandler = null;
+    private EventController eventController = null;
     
     /**
      *
@@ -91,11 +91,11 @@ public class JobRunner<T> extends JFrame implements EventView
         }
     }
 
-    public JobRunner(String title, String[] args, EventController eventHandler)
+    public JobRunner(String title, String[] args, EventController eventController)
             throws RemoteException, NotBoundException, MalformedURLException {
         this(title, args);
-        this.eventHandler = eventHandler;
-        eventHandler.register(this);
+        this.eventController = eventController;
+        eventController.register(this);
     }
     
     /**

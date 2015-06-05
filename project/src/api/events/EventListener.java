@@ -7,20 +7,20 @@ import java.util.List;
 
 public class EventListener implements Remote {
 
-    List<EventController> eventHandlers = new ArrayList<>();
+    List<EventController> eventControllers = new ArrayList<>();
 
     public void fireEvent(Event event) throws RemoteException {
-        for(EventController handler : eventHandlers) {
+        for(EventController handler : eventControllers) {
             handler.handle(event);
         }
     }
 
     public void register(EventController handler) {
-        eventHandlers.add(handler);
+        eventControllers.add(handler);
     }
 
     public void unregister(EventController handler) {
-        eventHandlers.remove(handler);
+        eventControllers.remove(handler);
     }
 
 }

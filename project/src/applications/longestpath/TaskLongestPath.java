@@ -26,11 +26,11 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
     public static void main(String args[]) throws Exception {
         EventListener listener = new EventListener();
-        LongestPathController handler = new LongestPathController();
-        listener.register(handler);
+        LongestPathController controller = new LongestPathController();
+        listener.register(controller);
 
         // Obviously not null on SHARED.
-        new JobRunner(FRAME_TITLE, args, handler).run(TASK, null, listener);
+        new JobRunner(FRAME_TITLE, args, controller).run(TASK, null, listener);
     }
 
     private int[][] GRAPH;

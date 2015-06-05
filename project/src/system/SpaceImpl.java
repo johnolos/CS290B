@@ -28,7 +28,7 @@ import api.Shared;
 import api.Space;
 import api.TaskCompose;
 import api.events.Event;
-import api.events.EventEnum;
+import api.events.EventType;
 import api.events.EventListener;
 
 import java.rmi.RemoteException;
@@ -207,7 +207,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         synchronized ( sharedLock )
         {
             if(this.shared.isOlderThan(that)) {
-                eventQ.add(new Event(EventEnum.SHARED_UPDATED, that));
+                eventQ.add(new Event(EventType.SHARED_UPDATED, that));
                 return that;
             } else {
                 return this.shared;
@@ -233,7 +233,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
     
     public void putReadyTasks( final List<Task> tasks ) {
-        eventQ.add(new Event(EventEnum.TEST, t1));
+        eventQ.add(new Event(EventType.TEST, t1));
         readyTaskQ.addAll( tasks );
     }
     
