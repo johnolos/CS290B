@@ -45,13 +45,23 @@ public class Logic {
 				}
 			}
 		}
-		//System.out.println("dist: " + currentPath.getCost());
 		visitedNodes[srcNode] = false;
 		return currentPath;
 	}
 	
 	
-	
+	public Path findLongestSolution() {
+		Path longestSolution = new Path(); 
+		for (int n = 0; n < nodes.length; n++) {
+			if (findLongestPath(n, nodes[n], visitedNodes).getCost() > longestSolution.getCost()) {
+				longestSolution.setCost(findLongestPath(n, nodes[n], visitedNodes).getCost());
+				ArrayList<Integer> templist = (ArrayList<Integer>) findLongestPath(n, nodes[n], visitedNodes).getPath(); 
+				templist.add(n); 
+				longestSolution.setPath(templist);
+			}
+		}
+		return longestSolution; 
+	}
 	
 	
 	
@@ -60,25 +70,13 @@ public class Logic {
 		getNodes();
 		Logic l = new Logic();
 		
-		Path longestSolution = new Path(); 
-		for (int n = 0; n < nodes.length; n++) {
-			if (l.findLongestPath(n, nodes[n], l.visitedNodes).getCost() > longestSolution.getCost()) {
-				longestSolution.setCost(l.findLongestPath(n, nodes[n], l.visitedNodes).getCost());
-				ArrayList<Integer> templist = (ArrayList<Integer>) l.findLongestPath(n, nodes[n], l.visitedNodes).getPath(); 
-				templist.add(n); 
-				longestSolution.setPath(templist);
-			}
-		}
-		
-		
+		Path longestSolution = l.findLongestSolution(); 
 		System.out.println("----------------");
 		System.out.println("Cost: " +  longestSolution.getCost());
-		
+		System.out.println("Path: ");
 		for (int i = 0; i < longestSolution.getPath().size(); i++) {
 			System.out.println(longestSolution.getPath().get(i));
 		}
-		
-		System.out.println("----------------");
 		
 	}
 	
