@@ -33,26 +33,27 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         new JobRunner(FRAME_TITLE, args, controller).run(TASK, null, listener);
     }
 
-    private int[][] GRAPH;
+    private int[][] graph; 
     private int node;
-    private Path partialPath;
+    private Path currentPath;
+    private Path tempPath;
+	private TaskLongestPath parentTask; 
 
 
 
-    public TaskLongestPath() {
-        partialPath = new Path(new ArrayList<>(), 0);
-        try {
-            GRAPH = Graph.graphForNodes(GRAPH_FILE);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+    public TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph) {
+    	this.node = node; 
+    	this.graph = graph; 
+    	this.parentTask = parentTask; 
+    	
     }
 
-    TaskLongestPath(TaskLongestPath parentTask, int node) {
-        partialPath = new Path(parentTask.partialPath);
-        partialPath.addNewNode(node, GRAPH[parentTask.node][node]);
-
-    }
+//    TaskLongestPath(TaskLongestPath parentTask, int node) {
+//        
+//    	//partialPath = new Path(parentTask.partialPath);
+//        //partialPath.addNewNode(node, GRAPH[parentTask.node][node]);
+//
+//    }
 
     @Override
     public boolean isAtomic() {
