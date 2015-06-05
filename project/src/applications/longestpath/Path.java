@@ -9,9 +9,11 @@ public class Path implements Comparable<Path> {
     private double cost;
 
     public Path(List<Integer> path, double cost) {
-        this.path = path;
+        this.path = new ArrayList<Integer>(path); 
         this.cost = cost;
     }
+    
+    
 
     public List<Integer> getPath() {
 		return path;
@@ -42,6 +44,11 @@ public class Path implements Comparable<Path> {
     public void addNewNode(int node, double weight) {
         path.add(node);
         cost += weight;
+    }
+    
+    public void addNodeToPath(int node, double dist) {
+    	path.add(node);
+    	cost = dist; 
     }
 
     @Override

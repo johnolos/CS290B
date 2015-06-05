@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 public class Logic {
 	
 	static Graph graph = new Graph(); 
@@ -17,8 +19,8 @@ public class Logic {
 	}
 	
 	public static void getNodes() {
-		//File file = new File("res/exampleGraph1.txt");
-		File file = new File("res/exampleGraph2.txt");
+		File file = new File("res/exampleGraph1.txt");
+		//File file = new File("res/exampleGraph2.txt");
 		try {
 			nodes = graph.graphForNodes(file);
 		} catch (IOException e) {
@@ -40,8 +42,8 @@ public class Logic {
 				final double dist = neighbors[i+1] + tempPath.getCost();
 				if (dist > max) {
 					max = dist;
-					currentPath = tempPath;
-					currentPath.addNewNode(dest, dist);
+					currentPath = new Path(tempPath.getPath(), tempPath.getCost()); 
+					currentPath.addNodeToPath(dest, dist); 
 				}
 			}
 		}
@@ -59,9 +61,14 @@ public class Logic {
 	public static void main(String[] args){
 		getNodes();
 		Logic l = new Logic();
-		System.out.println("==============\n" + l.findLongestPath(0, nodes[0], l.visitedNodes));
 		System.out.println("----------------");
-		System.out.println(l.longestPath.getCost());
+		Path solution = l.findLongestPath(0, nodes[0], l.visitedNodes);
+		System.out.println("Cost: " +  solution.getCost());
+		
+		for (int i = 0; i < solution.getPath().size(); i++) {
+			System.out.println(solution.getPath().get(i));
+		}
+		
 		System.out.println("----------------");
 		
 	}
