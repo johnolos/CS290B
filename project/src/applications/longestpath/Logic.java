@@ -11,14 +11,14 @@ public class Logic {
 	static ArrayList<Integer> path = new ArrayList<>();
 	
 	static boolean[] visitedNodes;
-	
+			
 	public Logic() {
 		visitedNodes = new boolean[nodes.length];
 	}
 	
 	public static void getNodes() {
-//		File file = new File("res/exampleGraph1.txt");
-		File file = new File("res/exampleGraph2.txt");
+		File file = new File("res/exampleGraph1.txt");
+		//File file = new File("res/exampleGraph2.txt");
 		try {
 			nodes = graph.graphForNodes(file);
 		} catch (IOException e) {
@@ -27,22 +27,27 @@ public class Logic {
 		} 
 	}
 	
+	
 	public int findLongestPath(int srcNode, int[] neighbors, boolean[] visitedNodes) {
 		int max = 0;
+		ArrayList<Integer> p = new ArrayList<Integer>();
 		visitedNodes[srcNode] = true;
 		for (int i = 0; i < neighbors.length; i+=2) {
 			int dest = neighbors[i];
 			if(!visitedNodes[dest]){
+				
 				final int dist = neighbors[i+1] + findLongestPath(dest, nodes[dest], visitedNodes);
 				if(dist > max){
 					max = dist;
+					// Vil sette nåværende lengste path
+					System.out.println("New longest path!" + "Previous distance: " + max + " New distance: " + dist);
+					path.add(dest);
 				}
 			}
 		}		
 		visitedNodes[srcNode] = false;
-		
+		System.out.println("Global: " + path);
 		return max;
-		
 	}
 	
 	
