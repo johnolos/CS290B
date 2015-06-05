@@ -27,27 +27,27 @@ public class Logic {
 		} 
 	}
 	
-	
 
 	
-	Path longestPath = new Path(); 
-	
 	public Path findLongestPath(int srcNode, int[] neighbors, boolean[] visitedNodes) {
+		Path currentPath = new Path();
 		double max = 0.0;
-		visitedNodes[srcNode] = true; 
+		visitedNodes[srcNode] = true;
 		for (int i = 0; i < neighbors.length; i+=2) {
 			int dest = neighbors[i]; 
 			if (!visitedNodes[dest]) {
-				final double dist = (neighbors[i+1] + findLongestPath(dest, nodes[dest], visitedNodes).getCost());
+				Path tempPath = findLongestPath(dest, nodes[dest], visitedNodes);
+				final double dist = neighbors[i+1] + tempPath.getCost();
 				if (dist > max) {
-					max = dist;  
+					max = dist;
+					currentPath = tempPath;
+					currentPath.addNewNode(dest, dist);
 				}
 			}
 		}
 		
 		visitedNodes[srcNode] = false;
-		longestPath.setCost(max);
-		return longestPath; 
+		return currentPath;
 	}
 	
 	

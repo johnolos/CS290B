@@ -31,4 +31,5 @@ public interface Configuration
 {
     static final public boolean SPACE_CALLABLE  = true;
     static final public boolean MULTI_COMPUTERS = false;
+    static final public boolean EVENT_BROADCAST = true;
 }

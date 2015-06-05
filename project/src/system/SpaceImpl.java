@@ -28,6 +28,7 @@ import api.Shared;
 import api.Space;
 import api.TaskCompose;
 import api.events.Event;
+import api.events.EventController;
 import api.events.EventType;
 import api.events.EventListener;
 
@@ -44,6 +45,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static system.Configuration.EVENT_BROADCAST;
 import static system.Configuration.SPACE_CALLABLE;
 
 /**
@@ -67,8 +70,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private Boolean sharedLock = true;
           private UUID rootTaskReturnValue;
           private Shared shared;
-          private ListenerProxy listenerProxy;
-          private EventListener listener;
+          private ListenerMap map;
           private long t1   = 0;
           private long tInf = 0;
     
@@ -77,6 +79,10 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         if ( SPACE_CALLABLE )
         {
             computerInternal = new ComputerImpl( this );
+        }
+        if ( EVENT_BROADCAST ) {
+            map = new ListenerMap();
+            map.start();
         }
         Logger.getLogger( getClass().getName() )
               .log( Level.INFO, "Space started." );
@@ -121,13 +127,9 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     public ReturnValue compute(Task rootTask, Shared shared, EventListener listener) throws RemoteException {
         initTimeMeasures();
         //this.shared = shared;
-        listenerProxy = new ListenerProxy(listener);
-        listenerProxy.start();
         execute(rootTask);
         ReturnValue result = take();
         reportTimeMeasures(result);
-        listenerProxy.stopListenerProxy();
-        listenerProxy = null;
         return result;
     }
 
@@ -261,38 +263,47 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
 
 
-    private class ListenerProxy extends Thread {
-        final private EventListener listener;
-
-        private boolean isActive;
-
-        ListenerProxy(EventListener listener) {
-            this.listener = listener;
-            isActive = true;
-        }
-
-        private void stopListenerProxy() {
-            isActive = false;
-        }
+    private class ListenerMap extends Thread {
+        private Map<EventController, EventControllerProxy> controllerProxies =
+                Collections.synchronizedMap(new HashMap<>());
 
         @Override
         public void run() {
-            while(isActive) {
+            Logger.getLogger( getClass().getName() )
+                    .log( Level.INFO, "ListenerMap started." );
+            while(true) {
                 Event event = null;
-
                 try {
                     event = eventQ.take();
-                    listener.fireEvent(event);
-                }
-                catch ( RemoteException ignore ) {
-                    listenerProxy = null;
-                    ignore.printStackTrace();
-                    return;
+                    fireEvent(event);
                 }
                 catch ( InterruptedException ex ) {
                     Logger.getLogger( getClass().getName() )
                             .log( Level.INFO, null, ex );
                 }
+            }
+        }
+
+        private void fireEvent(Event event) {
+            for(EventControllerProxy controller : controllerProxies.values()) {
+                try {
+                    controller.fireEvent(event);
+                } catch (RemoteException e) {
+                    controllerProxies.remove(controller);
+                }
+            }
+        }
+
+        private class EventControllerProxy {
+
+            private EventController eventController;
+
+            private EventControllerProxy(EventController eventController) {
+                this.eventController = eventController;
+            }
+
+            private void fireEvent(Event event) throws RemoteException {
+                eventController.handle(event);
             }
         }
     }
