@@ -34,7 +34,6 @@ public class LongestPathController implements EventController {
         }
     }
 
-    @Override
     public String url() {
         return "rmi://" + domain + ":" + port + "/" + service;
     }
@@ -71,12 +70,10 @@ public class LongestPathController implements EventController {
         return new JLabel( imageIcon );
     }
 
-    @Override
     public void register(EventView view) {
         views.add(view);
     }
 
-    @Override
     public void unregister(EventView view) {
         views.remove(view);
     }

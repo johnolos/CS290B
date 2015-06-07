@@ -33,19 +33,15 @@ public class EventAPITest {
     // Custom EventController implementation
     class CustomEventController extends UnicastRemoteObject implements EventController {
         EventView eventView;
-        String host;
-        int port;
-        String service;
 
-        public CustomEventController(String host, int port, String service) throws RemoteException {
-            this.host = host;
-            this.port = port;
-            this.service = service;
+        final private EventControllerUrl url;
+
+        public CustomEventController(EventControllerUrl url) throws RemoteException {
+            this.url = url;
         }
 
-        @Override
-        public String url() {
-            return "rmi://" + host + ":" + port + "/" + service;
+        public EventControllerUrl getUrl() {
+            return url;
         }
 
         @Override
@@ -54,12 +50,10 @@ public class EventAPITest {
                 eventView.view(event.getObject());
         }
 
-        @Override
         public void register(EventView eventView) {
             this.eventView = eventView;
         }
 
-        @Override
         public void unregister(EventView eventView) {
             if(this.eventView == eventView) {
                 this.eventView = null;
@@ -71,11 +65,11 @@ public class EventAPITest {
     public void setUp() throws Exception {
         System.setSecurityManager( new SecurityManager());
 
-        controller = new CustomEventController(HOST, PORT_NUMBER, SERVICE);
+        controller = new CustomEventController(new EventControllerUrl(HOST, PORT_NUMBER, SERVICE));
 
         LocateRegistry.createRegistry(PORT_NUMBER).rebind(SERVICE, controller);
 
-        rmiController = (EventController) Naming.lookup(controller.url());
+        rmiController = (EventController) Naming.lookup(controller.getUrl().url());
     }
 
     @Test

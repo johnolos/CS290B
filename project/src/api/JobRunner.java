@@ -95,7 +95,7 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
             throws RemoteException, NotBoundException, MalformedURLException {
         this(title, args);
         this.eventController = eventController;
-        eventController.register(this);
+        //eventController.register(this);
     }
     
     /**
