@@ -12,4 +12,5 @@ hw*/build/
 .classpath
 project.iml
 *.class
+*/out/*
 

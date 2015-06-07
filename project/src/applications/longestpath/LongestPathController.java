@@ -7,6 +7,7 @@ import api.events.EventView;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,15 @@ public class LongestPathController implements EventController {
     private List<EventView> views = new ArrayList<>();
     private int updateNumber = 0;
 
+    final private String domain;
+    final private int port;
+    final private String service = "LONGEST";
+
+
+    public LongestPathController(String domain, int port) throws RemoteException {
+        this.domain = domain;
+        this.port = port;
+    }
 
     private void fireViewUpdate(JLabel label) {
         for(EventView view : views) {
@@ -25,7 +35,12 @@ public class LongestPathController implements EventController {
     }
 
     @Override
-    public void handle(Event event) {
+    public String url() {
+        return "rmi://" + domain + ":" + port + "/" + service;
+    }
+
+    @Override
+    public void handle(Event event) throws RemoteException {
         switch (event.getEvent()) {
             case SHARED_UPDATED:
                 fireViewUpdate(sharedUpdatedEvent());

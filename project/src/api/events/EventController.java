@@ -1,26 +1,16 @@
 package api.events;
 
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public abstract class EventController implements Remote {
+public interface EventController extends Remote {
 
-    public String DOMAIN;
-    public String SERVICE;
-    public int PORT;
+    public String url() throws RemoteException;
 
-    public EventController(String domain, String service, int port) {
-        this.DOMAIN = domain;
-        this.SERVICE = service;
-        this.PORT = port;
+    public void handle(Event event) throws RemoteException;
 
-    }
+    void register(EventView eventView) throws RemoteException;
 
-    abstract public void handle(Event event) throws RemoteException;
-
-    abstract public void register(EventView jobRunner);
-
-    abstract public void unregister(EventView jobRunner);
+    void unregister(EventView eventView) throws RemoteException;
 
 }
