@@ -1,6 +1,9 @@
 package api.events;
 
-public class EventControllerUrl {
+import java.io.Serializable;
+
+public class EventControllerUrl implements Serializable {
+
     final private String host;
     final private int port;
     final private String service;
@@ -14,6 +17,5 @@ public class EventControllerUrl {
     public String url() {
         return "rmi://" + host + ":" + port + "/" + service;
     }
-
 
 }

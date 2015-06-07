@@ -1,9 +1,9 @@
 package api.events;
 
-import java.io.Serializable;
+public interface EventView<T> {
 
-public interface EventView<T> extends Serializable {
+    void view(final T data);
 
-    public void view(final T data);
+    void viewIfCapable(Object data);
 
 }

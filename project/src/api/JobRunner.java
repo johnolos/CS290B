@@ -143,7 +143,8 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }
-    
+
+    @Override
     public void view( final JLabel jLabel )
     {
         final Container container = getContentPane();
@@ -151,6 +152,14 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         container.add( new JScrollPane( jLabel ), BorderLayout.CENTER );
         pack();
         setVisible( true );
+    }
+
+    @Override
+    public void viewIfCapable(Object data) {
+        try {
+            view((JLabel)data);
+        } catch(ClassCastException e) {
+        }
     }
 
 

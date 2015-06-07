@@ -11,11 +11,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LongestPathController implements EventController {
+public class LongestPathController extends EventController {
 
     static final private int NUM_PIXELS = 600;
 
-    private List<EventView> views = new ArrayList<>();
     private int updateNumber = 0;
 
     final private String domain;
@@ -28,18 +27,13 @@ public class LongestPathController implements EventController {
         this.port = port;
     }
 
-    private void fireViewUpdate(JLabel label) {
-        for(EventView view : views) {
-            view.view(label);
-        }
-    }
 
     public String url() {
         return "rmi://" + domain + ":" + port + "/" + service;
     }
 
     @Override
-    public void handle(Event event) throws RemoteException {
+    public void handle(Event event){
         switch (event.getEvent()) {
             case SHARED_UPDATED:
                 fireViewUpdate(sharedUpdatedEvent());
@@ -69,14 +63,5 @@ public class LongestPathController implements EventController {
         final ImageIcon imageIcon = new ImageIcon( image );
         return new JLabel( imageIcon );
     }
-
-    public void register(EventView view) {
-        views.add(view);
-    }
-
-    public void unregister(EventView view) {
-        views.remove(view);
-    }
-
 
 }

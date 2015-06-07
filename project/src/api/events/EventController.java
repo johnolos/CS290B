@@ -1,10 +1,38 @@
 package api.events;
 
-import java.rmi.Remote;
+
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface EventController extends Remote {
+public abstract class EventController extends UnicastRemoteObject implements EventListener {
 
-    public void handle(Event event) throws RemoteException;
+    List<EventView> eventViews;
+
+    public EventController() throws RemoteException{
+        eventViews = new ArrayList<>();
+    }
+
+    abstract public void handle(Event event);
+
+    public void fireViewUpdate(Object data) {
+        for(EventView eventView : eventViews) {
+            eventView.viewIfCapable(data);
+        }
+    }
+
+    public void register(EventView eventView) {
+        eventViews.add(eventView);
+    }
+
+    public void unregister(EventView eventView) {
+        eventViews.remove(eventView);
+    }
+
+    @Override
+    public void notify(Event event) throws RemoteException {
+        handle(event);
+    }
 
 }
