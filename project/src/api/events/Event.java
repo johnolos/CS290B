@@ -4,15 +4,20 @@ import java.io.Serializable;
 
 public class Event implements Serializable {
 
-    private final EventType event;
+    public static enum Type {
+        SHARED_UPDATED,
+        TEST
+    }
+
+    private final Event.Type event;
     private final Object o;
 
-    public Event(EventType event, Object o) {
+    public Event(Type event, Object o) {
         this.event = event;
         this.o = o;
     }
 
-    public EventType getEvent() { return event; }
+    public Event.Type getEventType() { return event; }
 
     public Object getObject() { return o; }
 

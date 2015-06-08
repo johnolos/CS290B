@@ -7,6 +7,7 @@ import system.Task;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.rmi.registry.LocateRegistry;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -14,9 +15,13 @@ import java.util.Stack;
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
-    static final private File GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
-    static final private String FRAME_TITLE = "Longest Path Problem";
-    static final private Task TASK = new TaskLongestPath(null, 10, null, null);
+    final static private File   GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
+    final static private String FRAME_TITLE = "Longest Path Problem";
+    final static private Task   TASK = new TaskLongestPath(null, 10, null, null);
+
+    final static private int    PORT = 8202;
+    final static public  String SERVICE = "LongestPath";
+          static private String DOMAIN;
 
 
 
@@ -26,9 +31,10 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
 
     public static void main(String args[]) throws Exception {
-        //EventListener listener = new EventListener();
-        LongestPathController controller = new LongestPathController("localhost", 3292);
-        //listener.register(controller);
+        DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
+
+        LongestPathController controller = new LongestPathController(DOMAIN, PORT);
+        LocateRegistry.createRegistry(PORT).rebind(SERVICE, controller);
 
         // Obviously not null on SHARED.
         new JobRunner(FRAME_TITLE, args, controller).run(TASK, null, null);

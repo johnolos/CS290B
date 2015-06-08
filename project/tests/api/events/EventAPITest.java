@@ -14,11 +14,13 @@ public class EventAPITest {
     /**
      * Setup configuration
      */
-    CustomEventController controller;
-    EventListener rmiListener;
-    String HOST = "localhost";
-    int PORT_NUMBER = 2189;
-    String SERVICE = "HAW328";
+    CustomEventController   controller;
+    EventListener           rmiListener;
+
+
+    private String  DOMAIN = "localhost";
+    private int     PORT = 2189;
+    private String  SERVICE = "HAW328";
 
     /**
      * Test objects
@@ -59,13 +61,13 @@ public class EventAPITest {
     // Custom EventController implementation
     class CustomEventController extends EventController {
 
-        public CustomEventController() throws RemoteException {
-            super();
+        public CustomEventController(String domain, int port, String service) throws RemoteException {
+            super(domain, port, service);
         }
 
         @Override
         public void handle(Event event) {
-            if(event.getEvent() == EventType.TEST) {
+            if(event.getEventType() == Event.Type.TEST) {
                 for(EventView eventView : eventViews) {
                     eventView.viewIfCapable(event.getObject());
                 }
@@ -77,22 +79,20 @@ public class EventAPITest {
     public void setUp() throws Exception {
         System.setSecurityManager( new SecurityManager());
 
+        controller = new CustomEventController(DOMAIN, PORT, SERVICE);
+        LocateRegistry.createRegistry(PORT).rebind(SERVICE, controller);
 
-        EventControllerUrl url = new EventControllerUrl(HOST, PORT_NUMBER, SERVICE);
-        controller = new CustomEventController();
-
-        LocateRegistry.createRegistry(PORT_NUMBER).rebind(SERVICE, controller);
-
-        rmiListener = (EventListener) Naming.lookup(url.url());
+        rmiListener = (EventListener) Naming.lookup(controller.getUrl().url());
     }
 
     @Test
     public void testEventAPI() throws Exception {
         controller.register(doubleView);
-        rmiListener.notify(new Event(EventType.TEST, TEST_NUMBER));
+        rmiListener.notify(new Event(Event.Type.TEST, TEST_NUMBER));
         controller.unregister(doubleView);
         controller.register(objectView);
-        rmiListener.notify(new Event(EventType.TEST, TEXT_STRING));
+        rmiListener.notify(new Event(Event.Type.TEST, TEXT_STRING));
         controller.unregister(objectView);
     }
+
 }

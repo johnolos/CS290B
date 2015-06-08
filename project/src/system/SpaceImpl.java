@@ -28,18 +28,16 @@ import api.Shared;
 import api.Space;
 import api.TaskCompose;
 import api.events.Event;
-import api.events.EventController;
-import api.events.EventType;
+import api.events.EventControllerUrl;
 import api.events.EventListener;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -70,7 +68,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private Boolean sharedLock = true;
           private UUID rootTaskReturnValue;
           private Shared shared;
-          private ListenerMap map;
+          private EventListenerMap listenerMap;
           private long t1   = 0;
           private long tInf = 0;
     
@@ -81,8 +79,8 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
             computerInternal = new ComputerImpl( this );
         }
         if ( EVENT_BROADCAST ) {
-            map = new ListenerMap();
-            map.start();
+            listenerMap = new EventListenerMap();
+            listenerMap.start();
         }
         Logger.getLogger( getClass().getName() )
               .log( Level.INFO, "Space started." );
@@ -124,11 +122,19 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
 
     @Override
-    public ReturnValue compute(Task rootTask, Shared shared, EventListener listener) throws RemoteException {
+    public ReturnValue compute(Task rootTask, Shared shared, EventControllerUrl url) throws RemoteException {
         initTimeMeasures();
         //this.shared = shared;
+        EventListener listener = null;
+        try {
+            listener = (EventListener) Naming.lookup(url.url());
+            listenerMap.addEventListener(listener);
+        } catch(RemoteException|MalformedURLException|NotBoundException e) {
+        }
         execute(rootTask);
         ReturnValue result = take();
+        if(listener != null)
+            listenerMap.removeEventListener(listener);
         reportTimeMeasures(result);
         return result;
     }
@@ -209,7 +215,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         synchronized ( sharedLock )
         {
             if(this.shared.isOlderThan(that)) {
-                eventQ.add(new Event(EventType.SHARED_UPDATED, that));
+                eventQ.add(new Event(Event.Type.SHARED_UPDATED, that));
                 return that;
             } else {
                 return this.shared;
@@ -235,7 +241,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
     
     public void putReadyTasks( final List<Task> tasks ) {
-        eventQ.add(new Event(EventType.TEST, t1));
+        eventQ.add(new Event(Event.Type.TEST, t1));
         readyTaskQ.addAll( tasks );
     }
     
@@ -263,8 +269,9 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
 
 
-    private class ListenerMap extends Thread {
-        private Map<EventController, EventControllerProxy> controllerProxies =
+    private class EventListenerMap extends Thread {
+
+        private Map<EventListener, EventListenerProxy> listenerProxies =
                 Collections.synchronizedMap(new HashMap<>());
 
         @Override
@@ -275,7 +282,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
                 Event event = null;
                 try {
                     event = eventQ.take();
-                    fireEvent(event);
+                    notifyAll(event);
                 }
                 catch ( InterruptedException ex ) {
                     Logger.getLogger( getClass().getName() )
@@ -284,28 +291,38 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
             }
         }
 
-        private void fireEvent(Event event) {
-            for(EventControllerProxy controller : controllerProxies.values()) {
+        protected void notifyAll(Event event) {
+            for(EventListenerProxy listener : listenerProxies.values()) {
                 try {
-                    controller.fireEvent(event);
+                    listener.notify(event);
                 } catch (RemoteException e) {
-                    controllerProxies.remove(controller);
+                    listenerProxies.remove(listener);
                 }
             }
         }
 
-        private class EventControllerProxy {
+        protected void addEventListener(final EventListener listener) {
+            final EventListenerProxy listenerProxy = new EventListenerProxy(listener);
+            listenerProxies.put(listener, listenerProxy);
+        }
 
-            private EventController eventController;
+        protected void removeEventListener(final EventListener listener) {
+            listenerProxies.remove(listener);
+        }
 
-            private EventControllerProxy(EventController eventController) {
-                this.eventController = eventController;
+        private class EventListenerProxy implements EventListener {
+            private EventListener eventListener;
+
+            private EventListenerProxy(EventListener eventListener) {
+                this.eventListener = eventListener;
             }
 
-            private void fireEvent(Event event) throws RemoteException {
-                eventController.handle(event);
+            @Override
+            public void notify(Event event) throws RemoteException {
+                eventListener.notify(event);
             }
         }
+
     }
     
     private class ComputerProxy

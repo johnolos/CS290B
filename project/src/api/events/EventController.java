@@ -10,8 +10,12 @@ public abstract class EventController extends UnicastRemoteObject implements Eve
 
     List<EventView> eventViews;
 
-    public EventController() throws RemoteException{
+    final private EventControllerUrl url;
+
+    public EventController(final String domain, final int port, final String service)
+            throws RemoteException {
         eventViews = new ArrayList<>();
+        url = new EventControllerUrl(domain, port, service);
     }
 
     abstract public void handle(Event event);
@@ -22,6 +26,13 @@ public abstract class EventController extends UnicastRemoteObject implements Eve
         }
     }
 
+    @Override
+    public void notify(Event event) throws RemoteException {
+        handle(event);
+    }
+
+    public EventControllerUrl getUrl() { return url; }
+
     public void register(EventView eventView) {
         eventViews.add(eventView);
     }
@@ -30,9 +41,5 @@ public abstract class EventController extends UnicastRemoteObject implements Eve
         eventViews.remove(eventView);
     }
 
-    @Override
-    public void notify(Event event) throws RemoteException {
-        handle(event);
-    }
 
 }

@@ -17,24 +17,14 @@ public class LongestPathController extends EventController {
 
     private int updateNumber = 0;
 
-    final private String domain;
-    final private int port;
-    final private String service = "LONGEST";
-
-
     public LongestPathController(String domain, int port) throws RemoteException {
-        this.domain = domain;
-        this.port = port;
+        super(domain, port, TaskLongestPath.SERVICE);
     }
 
-
-    public String url() {
-        return "rmi://" + domain + ":" + port + "/" + service;
-    }
 
     @Override
     public void handle(Event event){
-        switch (event.getEvent()) {
+        switch (event.getEventType()) {
             case SHARED_UPDATED:
                 fireViewUpdate(sharedUpdatedEvent());
                 updateNumber++;

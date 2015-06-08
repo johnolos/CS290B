@@ -23,6 +23,7 @@
  */
 package api;
 
+import api.events.EventControllerUrl;
 import api.events.EventListener;
 import system.Task;
 import java.rmi.Remote;
@@ -67,11 +68,11 @@ public interface Space extends Remote
      *
      * @param task to be computed.
      * @param shared the shared object.
-     * @param eventListener to be called when an event happens.
+     * @param url to the EventController at the application side
      * @return the task's execute method return value.
      * @throws RemoteException
      */
-    ReturnValue compute( Task task, Shared shared, EventListener eventListener) throws RemoteException;
+    ReturnValue compute( Task task, Shared shared, EventControllerUrl url) throws RemoteException;
     
     /**
      *

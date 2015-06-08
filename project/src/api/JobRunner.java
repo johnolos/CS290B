@@ -24,6 +24,7 @@
 package api;
 
 import api.events.EventController;
+import api.events.EventControllerUrl;
 import api.events.EventListener;
 import api.events.EventView;
 import system.Task;
@@ -133,13 +134,13 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
      * to the original problem, and display the solution.
      * @param task the task that defines the job.
      * @param shared
-     * @param eventListener the event listener specified for this task.
+     * @param url to the EventController at the application side
      * @throws RemoteException occurs if there is a communication problem or
      * the remote service is not responding
      */
-    public void run( final Task task, Shared shared, EventListener eventListener) throws RemoteException
+    public void run( final Task task, Shared shared, EventControllerUrl url) throws RemoteException
     {
-        view( space.compute( task, shared, eventListener).view() );
+        view( space.compute( task, shared, url).view() );
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }
