@@ -4,8 +4,10 @@ package applications.longestpath;
 import api.*;
 import api.events.EventListener;
 import system.Task;
+import util.EuclideanGraph;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.rmi.registry.LocateRegistry;
 import java.util.LinkedList;
@@ -23,12 +25,9 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     final static public  String SERVICE = "LongestPath";
           static private String DOMAIN;
 
-
-
-    //static final private List<Integer> GREEDY_TOUR = EuclideanGraph.greedyTour(CITIES) ;
+    static final private Path GREEDY_PATH = Graph.greedyPath();
     //static private final double UPPER_BOUND = tourDistance( CITIES, GREEDY_TOUR );
     //static private final Shared SHARED = new SharedTour( GREEDY_TOUR, UPPER_BOUND );
-
 
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
@@ -42,52 +41,66 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
     private int[][] graph;
     private int node;
-    private Path currentPath;
-    private Path tempPath;
 	private TaskLongestPath parentTask;
 
     public boolean[] visitedNodes;
 
-    public TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph, boolean[] visitedNodes) {
-    	this.node = node; 
-    	this.graph = graph; 
-    	this.parentTask = parentTask;
-        this.visitedNodes = visitedNodes;
+    public TaskLongestPath() throws IOException {
+        parentTask = null;
+        node = -1;
+        graph = Graph.graphForNodes(GRAPH_FILE);
+        visitedNodes = new boolean[graph.length];
     }
 
-//    TaskLongestPath(TaskLongestPath parentTask, int node) {
-//        
-//    	//partialPath = new Path(parentTask.partialPath);
-//        //partialPath.addNewNode(node, GRAPH[parentTask.node][node]);
-//
-//    }
+    TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph, boolean[] visitedNodes) {
+        this.node = node;
+        this.graph = graph;
+        this.parentTask = parentTask;
+        this.visitedNodes = visitedNodes;
+        visitedNodes[node] = true;
+    }
 
     @Override
     public boolean isAtomic() {
-        return false;
+        // Checked and should work
+        for(int i = 0; i < graph[node].length; i+=2) {
+            if(!visitedNodes[graph[node][i]]) {
+                return false;
+            }
+        }
+        return true;
     }
+
 
     @Override
     public ReturnValue<Path> solve() {
-        final Stack<TaskLongestPath> stack = new Stack<>();
-        stack.push(this);
-        // Shared something
-
-        return new ReturnValuePath(this, new Path());
+        //TODO: Unfinished
+        Path base = new Path();
+        base.addNewNode(node, 0);
+        return new ReturnValuePath(this, base);
     }
+
 
     @Override
     public ReturnDecomposition divideAndConquer() {
-        // Think this looks right
+        // Checked.
         List<Task> children = new LinkedList<>();
-        for(int i = 0; i < graph.length; i++) {
-            if(!visitedNodes[i]) {
+        if(parentTask == null) {
+            for(int i = 0; i < graph.length; i++) {
                 TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);
                 children.add(child);
             }
+            return new ReturnDecomposition(new LongestPath(), children);
+        } else {
 
+            for(int i = 0; i < graph[node].length; i+=2) {
+                if(!visitedNodes[graph[node][i]]) {
+                    TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);
+                    children.add(child);
+                }
+            }
+            return new ReturnDecomposition(new LongestPath(), children);
         }
-        return new ReturnDecomposition(new LongestPath(), children);
     }
 
     private boolean isComplete() {
@@ -98,4 +111,25 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         }
         return true;
     }
+
+    private static Path findLongestPath(int srcNode, int[] neighbors, boolean[] visitedNodes, int[][] nodes) {
+        Path currentPath = new Path();
+        double max = 0.0;
+        visitedNodes[srcNode] = true;
+        for (int i = 0; i < neighbors.length; i+=2) {
+            int dest = neighbors[i];
+            if (!visitedNodes[dest]) {
+                Path tempPath = findLongestPath(dest, nodes[dest], visitedNodes, nodes);
+                final double dist = neighbors[i+1] + tempPath.getCost();
+                if (dist > max) {
+                    max = dist;
+                    currentPath = new Path(tempPath.getPath(), tempPath.getCost());
+                    currentPath.addNodeToPath(dest, dist);
+                }
+            }
+        }
+        visitedNodes[srcNode] = false;
+        return currentPath;
+    }
+
 }

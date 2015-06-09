@@ -23,7 +23,6 @@ public class Logic {
 		try {
 			nodes = graph.graphForNodes(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}

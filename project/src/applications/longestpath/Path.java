@@ -12,8 +12,16 @@ public class Path implements Comparable<Path> {
         this.path = new ArrayList<Integer>(path); 
         this.cost = cost;
     }
-    
-    
+
+    public Path() {
+        path = new ArrayList<>();
+        cost = 0;
+    }
+
+    public Path(Path path) {
+        this.path = new ArrayList<>(path.path);
+        this.cost = path.cost;
+    }
 
     public List<Integer> getPath() {
 		return path;
@@ -30,16 +38,6 @@ public class Path implements Comparable<Path> {
 	public void setCost(double cost) {
 		this.cost = cost;
 	}
-
-	public Path() {
-        path = new ArrayList<>();
-        cost = 0;
-    }
-
-    public Path(Path path) {
-        this.path = new ArrayList<>(path.path);
-        this.cost = path.cost;
-    }
 
     public void addNewNode(int node, double weight) {
         path.add(node);

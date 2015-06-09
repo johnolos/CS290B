@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Graph {
@@ -65,7 +67,26 @@ public class Graph {
 		throw new FileNotFoundException("Couldn't find file.");
 	}
 
-
+	public static Path greedyPath(int[][] graph) {
+		int node = 0;
+		boolean[] visited = new boolean[graph.length];
+		List<Integer> path = new ArrayList<>();
+		path.add(node);
+		double cost = 0;
+		visited[node] = true;
+		while(true) {
+			for(int i = 0; i < graph[node].length; i+=2) {
+				if(!visited[graph[node][i]]) {
+					cost += graph[node][i+1];
+					node = graph[node][i];
+					path.add(node);
+					continue;
+				}
+			}
+			break;
+		}
+		return new Path(path, cost);
+	}
 
 	public static class WrongFileFormatException extends IOException {
 		public WrongFileFormatException(String msg) {

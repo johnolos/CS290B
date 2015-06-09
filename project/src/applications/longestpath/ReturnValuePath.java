@@ -9,7 +9,6 @@ public class ReturnValuePath extends ReturnValue<Path> {
 
     public ReturnValuePath(final Task task, Path path) {
         super(task, path);
-
     }
 
     @Override
