@@ -130,6 +130,8 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
             listener = (EventListener) Naming.lookup(url.url());
             listenerMap.addEventListener(listener);
         } catch(RemoteException|MalformedURLException|NotBoundException e) {
+            Logger.getLogger( getClass().getName() )
+                    .log( Level.WARNING, "Listener failed" );
         }
         execute(rootTask);
         ReturnValue result = take();
@@ -149,6 +151,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         rootTaskReturnValue = UUID.randomUUID();
         rootTask.composeId( rootTaskReturnValue );
         readyTaskQ.add( rootTask );
+        eventQ.add(new Event(Event.Type.TEST, "Task started"));
     }
     
     @Override
@@ -215,7 +218,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         synchronized ( sharedLock )
         {
             if(this.shared.isOlderThan(that)) {
-                eventQ.add(new Event(Event.Type.SHARED_UPDATED, that));
+                //eventQ.add(new Event(Event.Type.SHARED_UPDATED, that));
                 return that;
             } else {
                 return this.shared;
@@ -241,7 +244,6 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     }
 
     public void putReadyTasks( final List<? extends Task> tasks ) {
-        eventQ.add(new Event(Event.Type.TEST, t1));
         readyTaskQ.addAll( tasks );
     }
     
@@ -282,6 +284,8 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
             while(true) {
                 Event event = null;
                 try {
+                    Logger.getLogger(getClass().getName()).log(Level.INFO,
+                            String.format("There are %d events in eventQ.%n",eventQ.size()));
                     event = eventQ.take();
                     notifyAll(event);
                 }

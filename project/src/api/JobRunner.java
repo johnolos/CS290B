@@ -141,6 +141,8 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
     public void run( final Task task, Shared shared, EventControllerUrl url) throws RemoteException
     {
         view( space.compute( task, shared, url).view() );
+        Logger.getLogger(this.getClass().getCanonicalName())
+                .log(Level.INFO, "Result found");
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }
@@ -148,7 +150,7 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
     @Override
     public void view( final JLabel jLabel )
     {
-        final Container container = getContentPane();
+        Container container = getContentPane();
         container.setLayout( new BorderLayout() );
         container.add( new JScrollPane( jLabel ), BorderLayout.CENTER );
         pack();

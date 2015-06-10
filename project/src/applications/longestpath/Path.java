@@ -1,9 +1,10 @@
 package applications.longestpath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Path implements Comparable<Path> {
+public class Path implements Comparable<Path>, Serializable {
 
     private List<Integer> path;
     private double cost;
@@ -42,6 +43,10 @@ public class Path implements Comparable<Path> {
     public void addNewNode(int node, double weight) {
         path.add(node);
         cost += weight;
+    }
+
+    public int getLastNode() {
+        return path.get(path.size() - 1);
     }
     
     public void addNodeToPath(int node, double dist) {

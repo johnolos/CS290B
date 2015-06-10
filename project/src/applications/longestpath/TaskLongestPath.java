@@ -68,6 +68,8 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     @Override
     public boolean isAtomic() {
         // Checked and should work
+        if(node == -1)
+            return false;
         for(int i = 0; i < graph[node].length; i+=2) {
             if(!visitedNodes[graph[node][i]]) {
                 return false;
@@ -76,7 +78,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         return true;
     }
 
-
     @Override
     public ReturnValue<Path> solve() {
         //TODO: Unfinished
@@ -84,7 +85,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         base.addNewNode(node, 0);
         return new ReturnValuePath(this, base);
     }
-
 
     @Override
     public ReturnDecomposition divideAndConquer() {
@@ -95,7 +95,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                 TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);
                 children.add(child);
             }
-            return new ReturnDecomposition(new LongestPath(), children);
+            return new ReturnDecomposition(new LongestPath(graph, node), children);
         } else {
             for(int i = 0; i < graph[node].length; i+=2) {
                 if(!visitedNodes[graph[node][i]]) {
@@ -103,7 +103,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                     children.add(child);
                 }
             }
-            return new ReturnDecomposition(new LongestPath(), children);
+            return new ReturnDecomposition(new LongestPath(graph, node), children);
         }
     }
 

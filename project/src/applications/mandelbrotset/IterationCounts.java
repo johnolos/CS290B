@@ -23,11 +23,13 @@
  */
 package applications.mandelbrotset;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Peter Cappello
  */
-public class IterationCounts
+public class IterationCounts implements Serializable
 {
     final private Integer[][] counts;
     final private int row;

@@ -1,5 +1,6 @@
 <project>
 
+  <!--
   <path id="main.class.path">
     <fileset dir="build/jar" includes="classes.jar"/>
   </path>
@@ -26,6 +27,8 @@
     </junit>
   </target>
 
+  -->
+
   <property name="timeout" value="4000" />
 
 
@@ -38,94 +41,79 @@
   <target name="compile" depends="clean" description="Compiles to build directory">
     <mkdir dir="build"/>
     <mkdir dir="build/src"/>
-    <mkdir dir="build/src"/>
     <javac srcdir="src" destdir="build/src"/>
     <javac srcdir="tests" destdir="build/src" classpath="jars/junit-4.12.jar" />
   </target>
 
   <target name="jar" depends="compile" description="Jars to build directory">
-
+    <mkdir dir="build/jar"/>
     <jar jarfile="build/jar/classes.jar" basedir="build/src/" includes="api/** applications/** system/** util/**"/>
-
-    <mkdir dir="build/src/jar"/>
-
-    <jar destfile="build/src/jar/SpaceImpl.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="system.SpaceImpl"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/src/jar/ComputerImpl.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="system.ComputerImpl"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/src/jar/Fib.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="applications.fibonacci.TaskFibonacci"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/src/jar/TSP.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="applications.euclideantsp.TaskEuclideanTsp"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/src/jar/Path.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="applications.longestpath.TaskLongestPath"/>
-      </manifest>
-    </jar>
-
-    <jar destfile="build/src/jar/Mandel.jar" basedir="build/src">
-      <manifest>
-        <attribute name="Main-Class" value="applications.mandelbrotset.TaskMandelbrotSet"/>
-      </manifest>
-    </jar>
-
   </target>
 
   <target name="all" depends="clean,compile,jar" description="Clean build dir, then compiles and create jars" />
 
-  <target name="runSpace">
-    <property name="server-ip" value="localhost"/>
-    <java jar="build/src/jar/SpaceImpl.jar" fork="true">
+  <target name="runSpace" description="run computer" >
+    <java classname="system.SpaceImpl" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
     </java>
   </target>
 
-  <target name="runComputer">
-    <java jar="build/src/jar/ComputerImpl.jar" fork="true">
+  <target name="runComputer" description="run computer" >
+    <java classname="system.ComputerImpl" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
     </java>
   </target>
 
-  <target name="runTSP">
-    <property name="server-ip" value="localhost"/>
-    <java jar="build/src/jar/TSP.jar" fork="true">
-      <arg value="localhost" />
+  <target name="runTSP" description="run client" >
+    <java classname="applications.euclideantsp.TaskEuclideanTsp" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <arg value="localhost"/>
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
     </java>
   </target>
 
-  <target name="runFib">
-    <java jar="build/src/jar/Fib.jar" fork="true">
-      <arg value="localhost" />
+  <target name="runFib" description="run fibonacci task" >
+    <java classname="applications.fibonacci.TaskFibonacci" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <arg value="localhost"/>
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
     </java>
   </target>
 
-  <target name="runLong">
-    <java jar="build/src/jar/Path.jar" fork="true">
-      <arg value="localhost" />
+  <target name="runLPP" description="run longest path task" >
+    <java classname="applications.longestpath.TaskLongestPath" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <arg value="localhost"/>
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+
+  <target name="runMandel" description="run client" >
+    <java classname="applications.mandelbrotset.TaskMandelbrotSet" fork="true">
+      <jvmarg value="-Djava.security.policy=policy"/>
+      <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+      <arg value="localhost"/>
+      <classpath>
+        <pathelement location="build/jar/classes.jar"/>
+      </classpath>
     </java>
   </target>
 

@@ -25,6 +25,9 @@ package applications.mandelbrotset;
 
 import api.ReturnValue;
 import api.TaskCompose;
+
+import java.io.Serializable;
+
 import static applications.mandelbrotset.TaskMandelbrotSet.BLOCK_SIZE;
 import static applications.mandelbrotset.TaskMandelbrotSet.N_PIXELS;
 
@@ -32,7 +35,7 @@ import static applications.mandelbrotset.TaskMandelbrotSet.N_PIXELS;
  *
  * @author Peter Cappello
  */
-public class AddBlocks extends TaskCompose<IterationCounts>
+public class AddBlocks extends TaskCompose<IterationCounts> implements Serializable
 {    
     @Override
     public ReturnValue call() 

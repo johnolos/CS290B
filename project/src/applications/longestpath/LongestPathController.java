@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LongestPathController extends EventController {
 
@@ -25,10 +27,14 @@ public class LongestPathController extends EventController {
     public void handle(Event event){
         switch (event.getEventType()) {
             case SHARED_UPDATED:
+                Logger.getLogger(this.getClass().getCanonicalName())
+                        .log(Level.INFO, "Event.Type.SHARED_UPDATED received.");
                 fireViewUpdate(sharedUpdatedEvent());
                 updateNumber++;
                 break;
             case TEST:
+                Logger.getLogger(this.getClass().getCanonicalName())
+                        .log(Level.INFO, "Event.Type.TEST received.");
                 fireViewUpdate(testEvent());
                 updateNumber++;
                 break;
