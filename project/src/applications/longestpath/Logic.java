@@ -18,8 +18,7 @@ public class Logic {
 	}
 	
 	public static void getNodes() {
-		File file = new File("res/exampleGraph3.txt");
-		//File file = new File("res/exampleGraph2.txt");
+		File file = new File("res/exampleGraph10Nodes.txt");
 		try {
 			nodes = graph.graphForNodes(file);
 		} catch (IOException e) {
@@ -61,8 +60,6 @@ public class Logic {
 		}
 		return longestSolution; 
 	}
-	
-	
 	
 	
 	public static void main(String[] args){
