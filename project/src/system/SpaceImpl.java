@@ -239,8 +239,8 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         assert waitingTaskMap.get( task.composeId() ) != null || task.composeId() == rootTaskReturnValue : task.composeId();
         readyTaskQ.add( task ); 
     }
-    
-    public void putReadyTasks( final List<Task> tasks ) {
+
+    public void putReadyTasks( final List<? extends Task> tasks ) {
         eventQ.add(new Event(Event.Type.TEST, t1));
         readyTaskQ.addAll( tasks );
     }
@@ -248,6 +248,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     public void removeWaitingTask( final UUID composeId ) { waitingTaskMap.remove( composeId ); }
     
     public void putResult( final ReturnValue result ) { resultQ.add( result ); }
+
     
     public void tInf( final long tInf ) { this.tInf = tInf; }
     

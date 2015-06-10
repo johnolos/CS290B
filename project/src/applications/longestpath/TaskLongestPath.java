@@ -18,7 +18,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     // Configure job
     final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
     final static private String     FRAME_TITLE = "Longest Path Problem";
-    final static private Task       TASK = new TaskLongestPath(null, 10, null, null);
+          static private Task       TASK;
 
     final static private int        PORT = 8202;
     final static public  String     SERVICE = "LongestPath";
@@ -33,9 +33,9 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
 
+        TASK = new TaskLongestPath();
         GRAPH = Graph.graphForNodes(GRAPH_FILE);
         GREEDY_PATH = Graph.greedyPath(GRAPH);
-
         SHARED = new SharedPath(GREEDY_PATH);
 
         LongestPathController controller = new LongestPathController(DOMAIN, PORT);
@@ -97,7 +97,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
             }
             return new ReturnDecomposition(new LongestPath(), children);
         } else {
-
             for(int i = 0; i < graph[node].length; i+=2) {
                 if(!visitedNodes[graph[node][i]]) {
                     TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);

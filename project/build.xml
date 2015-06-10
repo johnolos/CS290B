@@ -8,7 +8,7 @@
 
   <target name="compile" depends="clean" description="Compiles to build directory">
     <mkdir dir="build"/>
-    <javac srcdir="src" destdir="build"/>
+    <javac target="1.8" srcdir="src" destdir="build"/>
   </target>
 
   <target name="jar" depends="compile" description="Jars to build directory">
@@ -29,13 +29,25 @@
 
     <jar destfile="build/jar/Fib.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="clients.ClientFibonacci"/>
+        <attribute name="Main-Class" value="applications.fibonacci.TaskFibonacci"/>
       </manifest>
     </jar>
 
     <jar destfile="build/jar/TSP.jar" basedir="build">
       <manifest>
-        <attribute name="Main-Class" value="clients.ClientEuclideanTSP"/>
+        <attribute name="Main-Class" value="applications.euclideantsp.TaskEuclideanTsp"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="build/jar/Path.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="applications.longestpath.TaskLongestPath"/>
+      </manifest>
+    </jar>
+
+    <jar destfile="build/jar/Mandel.jar" basedir="build">
+      <manifest>
+        <attribute name="Main-Class" value="applications.mandelbrotset.TaskMandelbrotSet"/>
       </manifest>
     </jar>
 
@@ -43,14 +55,16 @@
 
   <target name="all" depends="clean,compile,jar" description="Clean build dir, then compiles and create jars" />
 
-  <target name="runComputer">
+  <target name="runSpace">
     <property name="server-ip" value="localhost"/>
-    <property name="multicore" value="true"/>
-    <property name="amelioriteLatency" value="true" />
+    <java jar="build/jar/SpaceImpl.jar" fork="true">
+      <jvmarg value="-Djava.security.policy=policy"/>
+      <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
+    </java>
+  </target>
+
+  <target name="runComputer">
     <java jar="build/jar/ComputerImpl.jar" fork="true">
-      <arg value="${server-ip}" />
-      <arg value="${multicore}" />
-      <arg value="${amelioriteLatency}"/>
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
@@ -59,41 +73,26 @@
   <target name="runTSP">
     <property name="server-ip" value="localhost"/>
     <java jar="build/jar/TSP.jar" fork="true">
-      <arg value="${server-ip}" />
+      <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
   </target>
 
   <target name="runFib">
-    <property name="server-ip" value="localhost"/>
-    <property name="num" value="20"/>
     <java jar="build/jar/Fib.jar" fork="true">
-      <arg value="${server-ip}" />
-      <arg value="${num}" />
+      <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
   </target>
 
-  <target name="runSpace">
-    <property name="server-ip" value="localhost"/>
-    <java jar="build/jar/SpaceImpl.jar" fork="true">
-      <arg value="${server-ip}"/>
+  <target name="runLong">
+    <java jar="build/jar/Path.jar" fork="true">
+      <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
-      <jvmarg value="-Djava.rmi.server.hostname=${server-ip}" />
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
-  </target>
-
-  <target name="runSetup" depends="all">
-    <parallel>
-      <antcall target="runSpace" />
-      <sequential>
-        <sleep milliseconds="2000"/>
-        <antcall target="runComputer" />
-      </sequential>
-    </parallel>
   </target>
 
   <target name="javadoc" description="create javadocs">

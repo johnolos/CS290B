@@ -23,11 +23,13 @@
  */
 package applications.euclideantsp;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Peter Cappello
  */
-public interface LowerBound 
+public interface LowerBound extends Serializable
 {
     double cost();
     

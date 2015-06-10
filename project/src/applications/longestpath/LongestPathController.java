@@ -21,7 +21,6 @@ public class LongestPathController extends EventController {
         super(domain, port, TaskLongestPath.SERVICE);
     }
 
-
     @Override
     public void handle(Event event){
         switch (event.getEventType()) {

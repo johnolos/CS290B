@@ -173,7 +173,7 @@ public class TaskEuclideanTsp extends TaskRecursive<Tour>
                 // update prune statistics
             }
         }
-        return new ReturnDecomposition( new MinTour(), children );
+        return new ReturnDecomposition( new MinTour(), children( ( ( SharedTour ) shared() ).cost() ) );
     }
     
     public LowerBound lowerBound() { return lowerBound; }

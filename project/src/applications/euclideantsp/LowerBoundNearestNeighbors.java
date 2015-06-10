@@ -23,6 +23,7 @@
  */
 package applications.euclideantsp;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ import static util.EuclideanGraph.tourDistance;
  *
  * @author Peter Cappello
  */
-final public class LowerBoundNearestNeighbors implements LowerBound 
+final public class LowerBoundNearestNeighbors implements LowerBound, Serializable
 {
     static final private Integer    EMPTY = -1;
     static final private double[][] CITIES = TaskEuclideanTsp.CITIES;
