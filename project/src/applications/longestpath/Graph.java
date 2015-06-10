@@ -86,7 +86,7 @@ public class Graph {
 					tempCost = graph[node][i+1];
 					if(tempCost > cost) {
 						cost = tempCost;
-						index = i;
+						index = graph[node][i];
 						altered = true;
 					}
 				}

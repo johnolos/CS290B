@@ -28,12 +28,16 @@ public class PathTest {
         assertEquals(15.0, paths.get(1).cost(), 0.0);
         assertEquals(10.0, paths.get(2).cost(), 0.0);
     }
-    
+
+    @Test
     public void testGreedyPath() throws Exception {
     	int[][] nodes = Graph.graphForNodes(new File("res/testgraph1.txt"));
     	Path res = Graph.greedyPath(nodes);
-    	
-    	assertEquals(25.0, res.cost(), 0.0);
+    	assertEquals(20.0, res.cost(), 0.0);
+
+        nodes = Graph.graphForNodes(new File("res/testgraph2.txt"));
+        res = Graph.greedyPath(nodes);
+        assertEquals(31.0, res.cost(), 0.0);
     	
     }
 }
