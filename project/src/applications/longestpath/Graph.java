@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -80,11 +82,13 @@ public class Graph {
 					cost += graph[node][i+1];
 					node = graph[node][i];
 					path.add(node);
+					i = 0;
 					continue;
 				}
 			}
 			break;
 		}
+		Collections.reverse(path);
 		return new Path(path, cost);
 	}
 
