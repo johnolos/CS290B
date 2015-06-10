@@ -73,22 +73,34 @@ public class Graph {
 		boolean[] visited = new boolean[graph.length];
 		List<Integer> path = new ArrayList<>();
 		path.add(node);
-		double cost = 0;
-		visited[node] = true;
+		double totalCost = 0;
+		double tempCost, cost;
+		int index = -1;
+		boolean altered;
 		while(true) {
+			cost = 0;
+			altered = false;
+			visited[node] = true;
 			for(int i = 0; i < graph[node].length; i+=2) {
 				if(!visited[graph[node][i]]) {
-					cost += graph[node][i+1];
-					node = graph[node][i];
-					path.add(node);
-					i = 0;
-					continue;
+					tempCost = graph[node][i+1];
+					if(tempCost > cost) {
+						cost = tempCost;
+						index = i;
+						altered = true;
+					}
 				}
+			}
+			if(altered) {
+				totalCost += cost;
+				path.add(index);
+				node = index;
+				continue;
 			}
 			break;
 		}
 		Collections.reverse(path);
-		return new Path(path, cost);
+		return new Path(path, totalCost);
 	}
 
 	public static class WrongFileFormatException extends IOException {
