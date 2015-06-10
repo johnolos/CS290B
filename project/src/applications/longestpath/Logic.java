@@ -18,7 +18,7 @@ public class Logic {
 	}
 	
 	public static void getNodes() {
-		File file = new File("res/exampleGraph10Nodes.txt");
+		File file = new File("res/exampleGraph30Nodes.txt");
 		try {
 			nodes = graph.graphForNodes(file);
 		} catch (IOException e) {
