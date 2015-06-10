@@ -1,51 +1,85 @@
 <project>
 
+  <path id="main.class.path">
+    <fileset dir="build/jar" includes="classes.jar"/>
+  </path>
+
+  <path id="junit.class.path">
+    <fileset dir="jars" includes="*.jar"/>
+    <fileset dir="build" includes="*.class" />
+    <path refid="main.class.path"/>
+  </path>
+
+  <target name="junit" depends="jar">
+    <property name="junit.path" refid="junit.class.path"/>
+    <mkdir dir="junitreport"/>
+
+    <junit printsummary="yes" haltonerror="yes" haltonfailure="yes">
+      <classpath refid="junit.class.path"/>
+
+      <formatter type="xml"/>
+      <jvmarg value="-Djava.security.policy=policy"/>
+
+      <batchtest todir="junitreport">
+        <fileset dir="tests/" includes="**/*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
   <property name="timeout" value="4000" />
+
 
   <target name="clean" description="Clean build directory">
     <delete dir="build"/>
+    <delete dir="out" />
+    <delete dir="junitreport" />
   </target>
 
   <target name="compile" depends="clean" description="Compiles to build directory">
     <mkdir dir="build"/>
-    <javac srcdir="src" destdir="build"/>
+    <mkdir dir="build/src"/>
+    <mkdir dir="build/src"/>
+    <javac srcdir="src" destdir="build/src"/>
+    <javac srcdir="tests" destdir="build/src" classpath="jars/junit-4.12.jar" />
   </target>
 
   <target name="jar" depends="compile" description="Jars to build directory">
 
-    <mkdir dir="build/jar"/>
+    <jar jarfile="build/jar/classes.jar" basedir="build/src/" includes="api/** applications/** system/** util/**"/>
 
-    <jar destfile="build/jar/SpaceImpl.jar" basedir="build">
+    <mkdir dir="build/src/jar"/>
+
+    <jar destfile="build/src/jar/SpaceImpl.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="system.SpaceImpl"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/ComputerImpl.jar" basedir="build">
+    <jar destfile="build/src/jar/ComputerImpl.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="system.ComputerImpl"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/Fib.jar" basedir="build">
+    <jar destfile="build/src/jar/Fib.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="applications.fibonacci.TaskFibonacci"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/TSP.jar" basedir="build">
+    <jar destfile="build/src/jar/TSP.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="applications.euclideantsp.TaskEuclideanTsp"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/Path.jar" basedir="build">
+    <jar destfile="build/src/jar/Path.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="applications.longestpath.TaskLongestPath"/>
       </manifest>
     </jar>
 
-    <jar destfile="build/jar/Mandel.jar" basedir="build">
+    <jar destfile="build/src/jar/Mandel.jar" basedir="build/src">
       <manifest>
         <attribute name="Main-Class" value="applications.mandelbrotset.TaskMandelbrotSet"/>
       </manifest>
@@ -57,14 +91,14 @@
 
   <target name="runSpace">
     <property name="server-ip" value="localhost"/>
-    <java jar="build/jar/SpaceImpl.jar" fork="true">
+    <java jar="build/src/jar/SpaceImpl.jar" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
   </target>
 
   <target name="runComputer">
-    <java jar="build/jar/ComputerImpl.jar" fork="true">
+    <java jar="build/src/jar/ComputerImpl.jar" fork="true">
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
     </java>
@@ -72,7 +106,7 @@
 
   <target name="runTSP">
     <property name="server-ip" value="localhost"/>
-    <java jar="build/jar/TSP.jar" fork="true">
+    <java jar="build/src/jar/TSP.jar" fork="true">
       <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
@@ -80,7 +114,7 @@
   </target>
 
   <target name="runFib">
-    <java jar="build/jar/Fib.jar" fork="true">
+    <java jar="build/src/jar/Fib.jar" fork="true">
       <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
@@ -88,7 +122,7 @@
   </target>
 
   <target name="runLong">
-    <java jar="build/jar/Path.jar" fork="true">
+    <java jar="build/src/jar/Path.jar" fork="true">
       <arg value="localhost" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
