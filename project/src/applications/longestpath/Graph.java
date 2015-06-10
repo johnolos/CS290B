@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -71,20 +73,34 @@ public class Graph {
 		boolean[] visited = new boolean[graph.length];
 		List<Integer> path = new ArrayList<>();
 		path.add(node);
-		double cost = 0;
-		visited[node] = true;
+		double totalCost = 0;
+		double tempCost, cost;
+		int index = -1;
+		boolean altered;
 		while(true) {
+			cost = 0;
+			altered = false;
+			visited[node] = true;
 			for(int i = 0; i < graph[node].length; i+=2) {
 				if(!visited[graph[node][i]]) {
-					cost += graph[node][i+1];
-					node = graph[node][i];
-					path.add(node);
-					continue;
+					tempCost = graph[node][i+1];
+					if(tempCost > cost) {
+						cost = tempCost;
+						index = graph[node][i];
+						altered = true;
+					}
 				}
+			}
+			if(altered) {
+				totalCost += cost;
+				path.add(index);
+				node = index;
+				continue;
 			}
 			break;
 		}
-		return new Path(path, cost);
+		Collections.reverse(path);
+		return new Path(path, totalCost);
 	}
 
 	public static class WrongFileFormatException extends IOException {
