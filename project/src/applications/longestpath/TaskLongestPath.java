@@ -13,30 +13,35 @@ import java.rmi.registry.LocateRegistry;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
-    final static private File   GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
-    final static private String FRAME_TITLE = "Longest Path Problem";
-    final static private Task   TASK = new TaskLongestPath(null, 10, null, null);
+    final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
+    final static private String     FRAME_TITLE = "Longest Path Problem";
+    final static private Task       TASK = new TaskLongestPath(null, 10, null, null);
 
-    final static private int    PORT = 8202;
-    final static public  String SERVICE = "LongestPath";
-          static private String DOMAIN;
+    final static private int        PORT = 8202;
+    final static public  String     SERVICE = "LongestPath";
+          static private String     DOMAIN;
+          static private int[][]    GRAPH;
+          static private Path       GREEDY_PATH;
+          static private SharedPath SHARED;
 
-    static final private Path GREEDY_PATH = Graph.greedyPath();
     //static private final double UPPER_BOUND = tourDistance( CITIES, GREEDY_TOUR );
     //static private final Shared SHARED = new SharedTour( GREEDY_TOUR, UPPER_BOUND );
 
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
 
+        GRAPH = Graph.graphForNodes(GRAPH_FILE);
+        GREEDY_PATH = Graph.greedyPath(GRAPH);
+
+        SHARED = new SharedPath(GREEDY_PATH);
+
         LongestPathController controller = new LongestPathController(DOMAIN, PORT);
         LocateRegistry.createRegistry(PORT).rebind(SERVICE, controller);
 
-        // Obviously not null on SHARED.
-        new JobRunner(FRAME_TITLE, args, controller).run(TASK, null, null);
+        new JobRunner(FRAME_TITLE, args, controller).run(TASK, SHARED, controller.getUrl());
     }
 
     private int[][] graph;

@@ -12,7 +12,6 @@ import java.util.Scanner;
 public class Graph {
 	
 	public static int[][] graphForNodes(File file) throws IOException {
-
 		int numberOfNodes;
 		
 		int nodes[][];
