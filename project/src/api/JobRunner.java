@@ -141,8 +141,6 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
     public void run( final Task task, Shared shared, EventControllerUrl url) throws RemoteException
     {
         view( space.compute( task, shared, url).view() );
-        Logger.getLogger(this.getClass().getCanonicalName())
-                .log(Level.INFO, "Result found");
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
     }

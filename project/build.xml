@@ -29,7 +29,8 @@
 
   -->
 
-  <property name="timeout" value="4000" />
+  <property name="timeout" value="60
+  000" />
 
 
   <target name="clean" description="Clean build directory">

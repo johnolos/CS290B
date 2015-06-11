@@ -40,4 +40,18 @@ public class PathTest {
         assertEquals(31.0, res.cost(), 0.0);
     	
     }
+
+    @Test
+    public void testGraphForNodes() throws Exception {
+        int[][] nodes = Graph.graphForNodes(new File("res/exampleGraph5Nodes.txt"));
+        System.out.println("Size: " + nodes.length);
+        for(int i = 0; i < nodes.length; i++) {
+            System.out.println(i);
+            for(int j = 0; j < nodes[i].length; j++) {
+                System.out.print(nodes[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
 }

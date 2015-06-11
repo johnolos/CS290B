@@ -23,10 +23,7 @@
  */
 package system;
 
-import api.ReturnValue;
-import api.Shared;
-import api.Space;
-import api.TaskCompose;
+import api.*;
 import api.events.Event;
 import api.events.EventControllerUrl;
 import api.events.EventListener;
@@ -67,7 +64,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private ComputerImpl computerInternal;
     final private Boolean sharedLock = true;
           private UUID rootTaskReturnValue;
-          private Shared shared;
+          private Shared shared = new NullShared();
           private EventListenerMap listenerMap;
           private long t1   = 0;
           private long tInf = 0;
@@ -217,12 +214,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     {
         synchronized ( sharedLock )
         {
-            if(this.shared.isOlderThan(that)) {
-                //eventQ.add(new Event(Event.Type.SHARED_UPDATED, that));
-                return that;
-            } else {
-                return this.shared;
-            }
+            return this.shared.isOlderThan( that ) ? that : this.shared;
         }
     }
     
@@ -285,7 +277,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
                 Event event = null;
                 try {
                     Logger.getLogger(getClass().getName()).log(Level.INFO,
-                            String.format("There are %d events in eventQ.%n",eventQ.size()));
+                            String.format("There are %d events in eventQ.%n", eventQ.size()));
                     event = eventQ.take();
                     notifyAll(event);
                 }

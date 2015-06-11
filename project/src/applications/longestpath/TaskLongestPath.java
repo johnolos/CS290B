@@ -10,15 +10,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.rmi.registry.LocateRegistry;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
-    final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph1.txt").toFile();
+    final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph20Nodes.txt").toFile();
     final static private String     FRAME_TITLE = "Longest Path Problem";
           static private Task       TASK;
+
 
     final static private int        PORT = 8202;
     final static public  String     SERVICE = "LongestPath";
@@ -27,8 +29,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
           static private Path       GREEDY_PATH;
           static private SharedPath SHARED;
 
-    //static private final double UPPER_BOUND = tourDistance( CITIES, GREEDY_TOUR );
-    //static private final Shared SHARED = new SharedTour( GREEDY_TOUR, UPPER_BOUND );
 
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
@@ -55,6 +55,9 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         node = -1;
         graph = Graph.graphForNodes(GRAPH_FILE);
         visitedNodes = new boolean[graph.length];
+        for(int i = 0; i < graph.length; i++) {
+            visitedNodes[i] = false;
+        }
     }
 
     TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph, boolean[] visitedNodes) {
@@ -62,7 +65,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         this.graph = graph;
         this.parentTask = parentTask;
         this.visitedNodes = visitedNodes;
-        visitedNodes[node] = true;
     }
 
     @Override
@@ -75,6 +77,12 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                 return false;
             }
         }
+        System.out.println("Node: " + node + " is atomic");
+        String p = "";
+        for(int i = 0; i < graph[node].length; i+=2) {
+            p += String.format("i: %d d: %d v: %b. %n", graph[node][i], graph[node][i+1], visitedNodes[graph[node][i]]);
+        }
+        System.out.print(p);
         return true;
     }
 
@@ -91,18 +99,30 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         // Checked.
         List<Task> children = new LinkedList<>();
         if(parentTask == null) {
+            System.out.println("Root:");
+            System.out.printf("FromNode: %d.%n", node);
             for(int i = 0; i < graph.length; i++) {
-                TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);
+                boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
+                copyVisited[i] = true;
+                System.out.printf("%-20s ToNode: %d.%n", node, i);
+                TaskLongestPath child = new TaskLongestPath(this, i, graph, copyVisited);
                 children.add(child);
             }
+            System.out.println("-");
             return new ReturnDecomposition(new LongestPath(graph, node), children);
         } else {
+            System.out.println("Inner leaf:");
+            System.out.printf("FromNode: %d.%n", node);
             for(int i = 0; i < graph[node].length; i+=2) {
                 if(!visitedNodes[graph[node][i]]) {
-                    TaskLongestPath child = new TaskLongestPath(this, i, graph, visitedNodes);
+                    boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
+                    copyVisited[graph[node][i]] = true;
+                    System.out.printf("%-20s ToNode: %d.%n", node, graph[node][i]);
+                    TaskLongestPath child = new TaskLongestPath(this, graph[node][i], graph, copyVisited);
                     children.add(child);
                 }
             }
+            System.out.println("-");
             return new ReturnDecomposition(new LongestPath(graph, node), children);
         }
     }

@@ -21,7 +21,7 @@ public class Graph {
 		try(Scanner in = new Scanner(new FileReader(file))) {
 			
 			numberOfNodes = in.hasNextInt() ? in.nextInt() : -1;
-			
+
 			if(numberOfNodes > 0) {
 				nodes = new int[numberOfNodes][];
 
@@ -45,21 +45,15 @@ public class Graph {
 					else
 						throw new WrongFileFormatException("Didn't find a weight integer value");
 
-					int arrayLength = nodes[fromNode].length;
-					int[] replacement = Arrays.copyOf(nodes[fromNode], arrayLength + 2);
-					replacement[arrayLength] = toNode;
-					replacement[arrayLength + 1] = value;
-					nodes[fromNode] = replacement;
+					int copyLength = nodes[fromNode].length;
+
+					int[] arrayCopy = Arrays.copyOf(nodes[fromNode], copyLength + 2);
+
+					arrayCopy[copyLength] = toNode;
+					arrayCopy[copyLength + 1] = value;
+					nodes[fromNode] = arrayCopy;
 				}
 				in.close();
-
-				// Reduce possible fragmentation.
-
-				int[][] newNodes = new int[numberOfNodes][];
-				for (int i = 0; i < numberOfNodes; i++) {
-					newNodes[i] = Arrays.copyOf(nodes[i], nodes[i].length);
-				}
-				
 				return nodes;
 			}
 
@@ -101,6 +95,16 @@ public class Graph {
 		}
 		Collections.reverse(path);
 		return new Path(path, totalCost);
+	}
+
+
+	public static int getCost(int[][] graph, int from, int to) {
+		for(int i = 0; i < graph[from].length; i+=2) {
+			if(graph[from][i] == to) {
+				return graph[from][i+1];
+			}
+		}
+		return -1;
 	}
 
 	public static class WrongFileFormatException extends IOException {
