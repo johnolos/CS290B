@@ -6,7 +6,6 @@ public class Event implements Serializable {
 
     public static enum Type {
         SHARED_UPDATED,
-
         TEST
     }
 
