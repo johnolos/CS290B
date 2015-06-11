@@ -3,9 +3,7 @@
 package applications.longestpath;
 
 import api.*;
-import api.events.EventListener;
 import system.Task;
-import util.EuclideanGraph;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
@@ -37,7 +34,8 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
         TASK = new TaskLongestPath();
         GRAPH = Graph.graphForNodes(GRAPH_FILE);
-        GREEDY_PATH = Graph.greedyPath(GRAPH);
+        COORDINATES = Graph.coordinatesOfNodes(GRAPH_FILE);
+        GREEDY_PATH = Graph.greedyPath(GRAPH, COORDINATES);
         SHARED = new SharedPath(GREEDY_PATH);
 
         LongestPathController controller = new LongestPathController(DOMAIN, PORT);
@@ -47,6 +45,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     }
 
     private int[][] graph;
+    private int[][] coordinates;
     private int node;
 	private TaskLongestPath parentTask;
 
@@ -56,17 +55,19 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         parentTask = null;
         node = -1;
         graph = Graph.graphForNodes(GRAPH_FILE);
+        coordinates = Graph.coordinatesOfNodes(GRAPH_FILE);
         visitedNodes = new boolean[graph.length];
         for(int i = 0; i < graph.length; i++) {
             visitedNodes[i] = false;
         }
     }
 
-    TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph, boolean[] visitedNodes) {
+    TaskLongestPath(TaskLongestPath parentTask, int node, int[][] graph, boolean[] visitedNodes, int[][] coordinates) {
         this.node = node;
         this.graph = graph;
         this.parentTask = parentTask;
         this.visitedNodes = visitedNodes;
+        this.coordinates = coordinates;
     }
 
     @Override
@@ -91,7 +92,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     @Override
     public ReturnValue<Path> solve() {
         //TODO: Unfinished
-        Path base = new Path();
+        Path base = new Path(graph, coordinates);
         base.addNewNode(node, 0);
         return new ReturnValuePath(this, base);
     }
@@ -107,7 +108,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                 boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
                 copyVisited[i] = true;
                 System.out.printf("%-20s ToNode: %d.%n", node, i);
-                TaskLongestPath child = new TaskLongestPath(this, i, graph, copyVisited);
+                TaskLongestPath child = new TaskLongestPath(this, i, graph, copyVisited, coordinates);
                 children.add(child);
             }
             System.out.println("-");
@@ -120,7 +121,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                     boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
                     copyVisited[graph[node][i]] = true;
                     System.out.printf("%-20s ToNode: %d.%n", node, graph[node][i]);
-                    TaskLongestPath child = new TaskLongestPath(this, graph[node][i], graph, copyVisited);
+                    TaskLongestPath child = new TaskLongestPath(this, graph[node][i], graph, copyVisited, coordinates);
                     children.add(child);
                 }
             }
@@ -129,16 +130,16 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         }
     }
 
-    private boolean isComplete() {
+/*    private boolean isComplete() {
         for(int i = 0; i < graph.length; i++) {
             if(!visitedNodes[i]) {
                 return false;
             }
         }
         return true;
-    }
+    }*/
 
-    private static Path findLongestPath(int srcNode, int[] neighbors, boolean[] visitedNodes, int[][] nodes) {
+/*    private static Path findLongestPath(int srcNode, int[] neighbors, boolean[] visitedNodes, int[][] nodes) {
         Path currentPath = new Path();
         double max = 0.0;
         visitedNodes[srcNode] = true;
@@ -156,6 +157,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         }
         visitedNodes[srcNode] = false;
         return currentPath;
-    }
+    }*/
 
 }

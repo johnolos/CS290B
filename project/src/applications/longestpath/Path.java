@@ -18,25 +18,36 @@ public class Path implements Comparable<Path>, Serializable {
 
     private List<Integer> path;
     private double cost;
+    private int[][] graph;
+    private int[][] coordinates;
 
-    public Path(List<Integer> path, double cost) {
+    public Path(List<Integer> path, double cost, int[][] graph, int[][] coordinates) {
         this.path = new ArrayList<Integer>(path); 
         this.cost = cost;
+        this.graph = graph;
+        this.coordinates = coordinates;
     }
 
-    public Path() {
+    public Path(int[][] graph, int[][] coordinates) {
         path = new ArrayList<>();
         cost = 0;
+        this.graph = graph;
+        this.coordinates = coordinates;
     }
 
     public Path(Path path) {
         this.path = new ArrayList<>(path.path);
         this.cost = path.cost;
+        this.graph = path.getGraph();
+        this.coordinates = path.getCoordinates();
     }
 
     public List<Integer> getPath() {
 		return path;
 	}
+
+    public int[][] getGraph() { return graph; }
+    public int[][] getCoordinates() { return coordinates; }
 
 	public void setPath(List<Integer> path) {
 		this.path = path;
@@ -76,6 +87,10 @@ public class Path implements Comparable<Path>, Serializable {
 
     @Override
     public String toString() { return path.toString() + "\n\tCost: " + cost; }
+
+    public JLabel createGraphicImage() {
+        return Path.createGraphicImage(graph, coordinates, this);
+    }
 
     public static JLabel createGraphicImage(final int[][] graph, final int[][] nodes, Path path) {
         final Image image = new BufferedImage(NUM_PIXELS, NUM_PIXELS, BufferedImage.TYPE_INT_ARGB);

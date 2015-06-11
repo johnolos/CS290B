@@ -65,7 +65,7 @@ public class Graph {
 		throw new FileNotFoundException("Couldn't find file.");
 	}
 
-	public static Path greedyPath(int[][] graph) {
+	public static Path greedyPath(int[][] graph, int[][] coordinates) {
 		int node = 0;
 		boolean[] visited = new boolean[graph.length];
 		List<Integer> path = new ArrayList<>();
@@ -97,7 +97,7 @@ public class Graph {
 			break;
 		}
 		Collections.reverse(path);
-		return new Path(path, totalCost);
+		return new Path(path, totalCost, graph, coordinates);
 	}
 
 

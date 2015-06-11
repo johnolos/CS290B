@@ -143,13 +143,6 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         view( space.compute( task, shared, url).view() );
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
-        try {
-            Thread.sleep(1000);
-        } catch(InterruptedException e) {
-
-        }
-        view(testView("Aftermath"));
-
     }
 
     @Override
@@ -169,15 +162,5 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         } catch(ClassCastException e) {
         }
     }
-
-    private JLabel testView(String text) {
-        final Image image = new BufferedImage( 600, 600, BufferedImage.TYPE_INT_ARGB );
-        final Graphics graphics = image.getGraphics();
-        graphics.setColor(Color.BLACK);
-        graphics.drawString(text, 600 / 2, 600 / 2);
-        final ImageIcon imageIcon = new ImageIcon( image );
-        return new JLabel( imageIcon );
-    }
-
-
+    
 }

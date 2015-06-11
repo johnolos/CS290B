@@ -19,9 +19,9 @@ public class GraphAndPathTest {
     public void testCompareTo() throws Exception {
         List<Path> paths = new ArrayList<>();
 
-        paths.add(new Path(new ArrayList<>(), 10.0));
-        paths.add(new Path(new ArrayList<>(), 15.0));
-        paths.add(new Path(new ArrayList<>(), 20.0));
+        paths.add(new Path(new ArrayList<>(), 10.0, null, null));
+        paths.add(new Path(new ArrayList<>(), 15.0, null, null));
+        paths.add(new Path(new ArrayList<>(), 20.0, null, null));
 
         assertEquals(10.0, paths.get(0).cost(), 0.0);
         assertEquals(15.0, paths.get(1).cost(), 0.0);
@@ -37,11 +37,11 @@ public class GraphAndPathTest {
     @Test
     public void testGreedyPath() throws Exception {
     	int[][] nodes = Graph.graphForNodes(new File("res/testgraph1.txt"));
-    	Path res = Graph.greedyPath(nodes);
+    	Path res = Graph.greedyPath(nodes, null);
     	assertEquals(20.0, res.cost(), 0.0);
 
         nodes = Graph.graphForNodes(new File("res/testgraph2.txt"));
-        res = Graph.greedyPath(nodes);
+        res = Graph.greedyPath(nodes, null);
         assertEquals(31.0, res.cost(), 0.0);
     	
     }
@@ -89,13 +89,13 @@ public class GraphAndPathTest {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         int[][] graph = Graph.graphForNodes(new File("res/testgraph1.txt"));
-        int[][] nodes = Graph.coordinatesOfNodes(new File("res/testgraph1.txt"));
+        int[][] coordinates = Graph.coordinatesOfNodes(new File("res/testgraph1.txt"));
 
         List<Integer> intList = Arrays.asList(0, 1, 3, 4);
         int cost = 25;
-        Path path = new Path(intList, cost);
+        Path path = new Path(intList, cost, graph, coordinates);
 
-        JLabel jLabel = Path.createGraphicImage(graph, nodes, path);
+        JLabel jLabel = Path.createGraphicImage(graph, coordinates, path);
 
         Container container = frame.getContentPane();
         container.setLayout( new BorderLayout() );

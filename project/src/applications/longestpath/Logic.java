@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 
 public class Logic {
+
+	/*
 	
 	static Graph graph = new Graph(); 
 	static int nodes[][]; 
@@ -75,7 +77,6 @@ public class Logic {
 		}
 		
 	}
-	
-	
+	*/
 
 }

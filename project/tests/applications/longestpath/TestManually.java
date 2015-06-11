@@ -19,13 +19,13 @@ public class TestManually {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         int[][] graph = Graph.graphForNodes(new File("res/testgraph1.txt"));
-        int[][] nodes = Graph.coordinatesOfNodes(new File("res/testgraph1.txt"));
+        int[][] coordinates = Graph.coordinatesOfNodes(new File("res/testgraph1.txt"));
 
         List<Integer> intList = Arrays.asList(0, 1, 3, 4);
         int cost = 25;
-        Path path = new Path(intList, cost);
+        Path path = new Path(intList, cost, graph, coordinates);
 
-        JLabel jLabel = Path.createGraphicImage(graph, nodes, path);
+        JLabel jLabel = Path.createGraphicImage(graph, coordinates, path);
 
         Container container = frame.getContentPane();
         container.setLayout( new BorderLayout() );
