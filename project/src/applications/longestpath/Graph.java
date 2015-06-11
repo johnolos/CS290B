@@ -34,8 +34,12 @@ public class Graph {
 
 					if(in.hasNextInt())
 						fromNode = in.nextInt();
-					else
+					else {
+						if(in.next().equals("*")) {
+							break;
+						}
 						throw new WrongFileFormatException("Didn't find a fromNode integer value");
+					}
 					if(in.hasNextInt())
 						toNode = in.nextInt();
 					else
@@ -58,7 +62,6 @@ public class Graph {
 			}
 
 		}
-
 		throw new FileNotFoundException("Couldn't find file.");
 	}
 
@@ -98,13 +101,50 @@ public class Graph {
 	}
 
 
-	public static int getCost(int[][] graph, int from, int to) {
-		for(int i = 0; i < graph[from].length; i+=2) {
-			if(graph[from][i] == to) {
-				return graph[from][i+1];
+	public static int[][] coordinatesOfNodes(File file) throws IOException {
+		int numberOfNodes;
+
+		int coordinates[][];
+
+		try(Scanner in = new Scanner(new FileReader(file))) {
+
+			numberOfNodes = in.hasNextInt() ? in.nextInt() : -1;
+
+			if(numberOfNodes > 0) {
+				coordinates = new int[numberOfNodes][];
+
+				for (int i = 0; i < numberOfNodes; i++) {
+					coordinates[i] = new int[2];
+				}
+				while(in.hasNextLine()) {
+					if(in.next().equals("*")) {
+						break;
+					}
+				}
+
+				while (in.hasNextLine()) {
+					int node, x, y;
+
+					if(in.hasNextInt())
+						node = in.nextInt();
+					else
+						throw new WrongFileFormatException("Didn't find a fromNode integer value");
+					if(in.hasNextInt())
+						x = in.nextInt();
+					else
+						throw new WrongFileFormatException("Didn't find a toNode integer value");
+					if(in.hasNextInt())
+						y = in.nextInt();
+					else
+						throw new WrongFileFormatException("Didn't find a weight integer value");
+					coordinates[node][0] = x;
+					coordinates[node][1] = y;
+				}
+				in.close();
+				return coordinates;
 			}
 		}
-		return -1;
+		throw new FileNotFoundException("Couldn't find file.");
 	}
 
 	public static class WrongFileFormatException extends IOException {

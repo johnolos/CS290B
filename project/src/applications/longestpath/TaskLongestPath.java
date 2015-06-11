@@ -1,4 +1,5 @@
 
+
 package applications.longestpath;
 
 import api.*;
@@ -26,6 +27,7 @@ public class TaskLongestPath extends TaskRecursive<Path> {
     final static public  String     SERVICE = "LongestPath";
           static private String     DOMAIN;
           static private int[][]    GRAPH;
+          static private int[][]    COORDINATES;
           static private Path       GREEDY_PATH;
           static private SharedPath SHARED;
 

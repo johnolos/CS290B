@@ -28,17 +28,17 @@ import api.events.EventControllerUrl;
 import api.events.EventListener;
 import api.events.EventView;
 import system.Task;
-import java.awt.BorderLayout;
-import java.awt.Container;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
+
 import system.ComputerImpl;
 import system.Configuration;
 import system.SpaceImpl;
@@ -143,6 +143,13 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         view( space.compute( task, shared, url).view() );
         Logger.getLogger( this.getClass().getCanonicalName() )
                 .log( Level.INFO, "Job run time: {0} ms.", ( System.nanoTime() - startTime ) / 1000000 );
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException e) {
+
+        }
+        view(testView("Aftermath"));
+
     }
 
     @Override
@@ -161,6 +168,15 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
             view((JLabel)data);
         } catch(ClassCastException e) {
         }
+    }
+
+    private JLabel testView(String text) {
+        final Image image = new BufferedImage( 600, 600, BufferedImage.TYPE_INT_ARGB );
+        final Graphics graphics = image.getGraphics();
+        graphics.setColor(Color.BLACK);
+        graphics.drawString(text, 600 / 2, 600 / 2);
+        final ImageIcon imageIcon = new ImageIcon( image );
+        return new JLabel( imageIcon );
     }
 
 
