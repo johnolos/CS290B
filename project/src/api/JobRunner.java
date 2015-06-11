@@ -162,5 +162,5 @@ public class JobRunner<T> extends JFrame implements EventView<JLabel>
         } catch(ClassCastException e) {
         }
     }
-    
+
 }

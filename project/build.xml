@@ -29,9 +29,7 @@
 
   -->
 
-  <property name="timeout" value="60
-  000" />
-
+  <property name="timeout" value="40000" />
 
   <target name="clean" description="Clean build directory">
     <delete dir="build"/>
@@ -64,7 +62,9 @@
   </target>
 
   <target name="runComputer" description="run computer" >
+    <property name="server-ip" value="localhost"/>
     <java classname="system.ComputerImpl" fork="true">
+      <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
       <classpath>
@@ -74,10 +74,11 @@
   </target>
 
   <target name="runTSP" description="run client" >
+    <property name="server-ip" value="localhost"/>
     <java classname="applications.euclideantsp.TaskEuclideanTsp" fork="true">
+      <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
-      <arg value="localhost"/>
       <classpath>
         <pathelement location="build/jar/classes.jar"/>
       </classpath>
@@ -85,10 +86,11 @@
   </target>
 
   <target name="runFib" description="run fibonacci task" >
+    <property name="server-ip" value="localhost"/>
     <java classname="applications.fibonacci.TaskFibonacci" fork="true">
+      <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
-      <arg value="localhost"/>
       <classpath>
         <pathelement location="build/jar/classes.jar"/>
       </classpath>
@@ -96,10 +98,11 @@
   </target>
 
   <target name="runLPP" description="run longest path task" >
+    <property name="server-ip" value="localhost"/>
     <java classname="applications.longestpath.TaskLongestPath" fork="true">
+      <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
-      <arg value="localhost"/>
       <classpath>
         <pathelement location="build/jar/classes.jar"/>
       </classpath>
@@ -108,10 +111,11 @@
 
 
   <target name="runMandel" description="run client" >
+    <property name="server-ip" value="localhost"/>
     <java classname="applications.mandelbrotset.TaskMandelbrotSet" fork="true">
+      <arg value="${server-ip}" />
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
-      <arg value="localhost"/>
       <classpath>
         <pathelement location="build/jar/classes.jar"/>
       </classpath>
