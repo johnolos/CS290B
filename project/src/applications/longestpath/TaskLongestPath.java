@@ -15,7 +15,7 @@ import java.util.List;
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
-    final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph30Nodes.txt").toFile();
+          static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph30Nodes.txt").toFile();
     final static private String     FRAME_TITLE = "Longest Path Problem";
           static private Task       TASK;
 
@@ -31,6 +31,9 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
+        if(args.length == 2) {
+            GRAPH_FILE = Paths.get(".", "res", args[1]).toFile();
+        }
 
         TASK = new TaskLongestPath();
         GRAPH = Graph.graphForNodes(GRAPH_FILE);
