@@ -2,6 +2,7 @@ package applications.longestpath;
 
 import api.ReturnValue;
 import api.TaskCompose;
+import api.events.Event;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class LongestPath extends TaskCompose<Path> {
         }
         // Sorting results on largest path costs.
         paths.sort((path1, path2) -> path1.compareTo(path2));
-        return new ReturnValuePath(this, paths.get(0));
+        return new ReturnValuePath(this, paths.get(0), new Event(Event.Type.TEMPORARY_SOLUTION, paths.get(0)));
     }
 
     public static int getCost(int[][] graph, int from, int to) {

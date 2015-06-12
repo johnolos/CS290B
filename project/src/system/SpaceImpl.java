@@ -61,6 +61,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     final private Map<Computer, ComputerProxy> computerProxies = Collections.synchronizedMap( new HashMap<>() );
     final private Map<UUID, TaskCompose>        waitingTaskMap = Collections.synchronizedMap( new HashMap<>() );
     final private AtomicInteger numTasks = new AtomicInteger();
+    final private AtomicInteger numEvents = new AtomicInteger();
     final private ComputerImpl computerInternal;
     final private Boolean sharedLock = true;
           private UUID rootTaskReturnValue;
@@ -148,7 +149,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         rootTaskReturnValue = UUID.randomUUID();
         rootTask.composeId( rootTaskReturnValue );
         readyTaskQ.add( rootTask );
-        eventQ.add(new Event(Event.Type.TEST, "Task started"));
+        addEvent(new Event(Event.Type.STATUS, "Task started"));
     }
     
     @Override
@@ -241,7 +242,12 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     
     public void removeWaitingTask( final UUID composeId ) { waitingTaskMap.remove( composeId ); }
     
-    public void putResult( final ReturnValue result ) { resultQ.add( result ); }
+    public void putResult( final ReturnValue result ) {
+        resultQ.add( result );
+        if(result.event() != null)
+            addEvent(result.event());
+
+    }
 
     
     public void tInf( final long tInf ) { this.tInf = tInf; }
@@ -251,6 +257,7 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
         numTasks.getAndSet( 0 );
         t1 = 0;
         tInf = 0;
+        numEvents.getAndSet( 0 );
     }
     
     public UUID rootTaskReturnValue() { return rootTaskReturnValue; }
@@ -259,8 +266,13 @@ public final class SpaceImpl extends UnicastRemoteObject implements Space
     {
         Logger.getLogger( getClass().getCanonicalName() )
               .log( Level.INFO, 
-                    "\n\tTotal tasks: {0} \n\tT_1: {1}ms.\n\tT_inf: {2}ms.\n\tT_1 / T_inf: {3}", 
-                    new Object[]{ numTasks, result.t1() / 1000000, result.tInf() / 1000000, result.t1() / result.tInf() } );
+                    "\n\tTotal tasks: {0} \n\tT_1: {1}ms.\n\tT_inf: {2}ms.\n\tT_1 / T_inf: {3}\n\tTotal events: {4}",
+                    new Object[]{ numTasks, result.t1() / 1000000, result.tInf() / 1000000, result.t1() / result.tInf(), numEvents } );
+    }
+
+    private void addEvent(Event event) {
+        this.eventQ.add(event);
+        numEvents.getAndIncrement();
     }
 
 

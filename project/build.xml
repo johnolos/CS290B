@@ -99,8 +99,10 @@
 
   <target name="runLPP" description="run longest path task" >
     <property name="server-ip" value="localhost"/>
+    <property name="file" value="exampleGraph30Nodes.txt"/>
     <java classname="applications.longestpath.TaskLongestPath" fork="true">
       <arg value="${server-ip}" />
+      <arg value="${file}"/>
       <jvmarg value="-Djava.security.policy=policy"/>
       <jvmarg value="-Dsun.rmi.transport.tcp.responseTimeout=${timeout}" />
       <classpath>

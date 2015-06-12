@@ -40,6 +40,7 @@ abstract public class Return implements Serializable
     private long t1;            // work
     private long tInf;          // critical path length
     private Shared shared;
+    private Event event;
     
     public Shared shared() { return shared; }
     public Return shared( final Shared shared )
@@ -54,6 +55,7 @@ abstract public class Return implements Serializable
         this.taskRunTime = taskRunTime; 
         return this; 
     }
+
     
     public long t1() { return t1; }
     public void t1( final long t1 ) { this.t1 = t1; }

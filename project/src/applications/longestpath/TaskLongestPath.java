@@ -15,7 +15,7 @@ import java.util.List;
 public class TaskLongestPath extends TaskRecursive<Path> {
 
     // Configure job
-    final static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph20Nodes.txt").toFile();
+          static private File       GRAPH_FILE = Paths.get(".", "res", "exampleGraph30Nodes.txt").toFile();
     final static private String     FRAME_TITLE = "Longest Path Problem";
           static private Task       TASK;
 
@@ -31,6 +31,9 @@ public class TaskLongestPath extends TaskRecursive<Path> {
 
     public static void main(String args[]) throws Exception {
         DOMAIN = args.length == 0 ? "localhost" : args[ 0 ];
+        if(args.length == 2) {
+            GRAPH_FILE = Paths.get(".", "res", args[1]).toFile();
+        }
 
         TASK = new TaskLongestPath();
         GRAPH = Graph.graphForNodes(GRAPH_FILE);
@@ -80,12 +83,6 @@ public class TaskLongestPath extends TaskRecursive<Path> {
                 return false;
             }
         }
-        System.out.println("Node: " + node + " is atomic");
-        String p = "";
-        for(int i = 0; i < graph[node].length; i+=2) {
-            p += String.format("i: %d d: %d v: %b. %n", graph[node][i], graph[node][i+1], visitedNodes[graph[node][i]]);
-        }
-        System.out.print(p);
         return true;
     }
 
@@ -102,30 +99,22 @@ public class TaskLongestPath extends TaskRecursive<Path> {
         // Checked.
         List<Task> children = new LinkedList<>();
         if(parentTask == null) {
-            System.out.println("Root:");
-            System.out.printf("FromNode: %d.%n", node);
             for(int i = 0; i < graph.length; i++) {
                 boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
                 copyVisited[i] = true;
-                System.out.printf("%-20s ToNode: %d.%n", node, i);
                 TaskLongestPath child = new TaskLongestPath(this, i, graph, copyVisited, coordinates);
                 children.add(child);
             }
-            System.out.println("-");
             return new ReturnDecomposition(new LongestPath(graph, node), children);
         } else {
-            System.out.println("Inner leaf:");
-            System.out.printf("FromNode: %d.%n", node);
             for(int i = 0; i < graph[node].length; i+=2) {
                 if(!visitedNodes[graph[node][i]]) {
                     boolean[] copyVisited = Arrays.copyOf(visitedNodes, visitedNodes.length);
                     copyVisited[graph[node][i]] = true;
-                    System.out.printf("%-20s ToNode: %d.%n", node, graph[node][i]);
                     TaskLongestPath child = new TaskLongestPath(this, graph[node][i], graph, copyVisited, coordinates);
                     children.add(child);
                 }
             }
-            System.out.println("-");
             return new ReturnDecomposition(new LongestPath(graph, node), children);
         }
     }

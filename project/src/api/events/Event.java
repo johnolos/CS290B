@@ -6,8 +6,8 @@ public class Event implements Serializable {
 
     public static enum Type {
         SHARED_UPDATED,
-
-        TEST
+        TEMPORARY_SOLUTION,
+        STATUS
     }
 
     private final Event.Type event;
