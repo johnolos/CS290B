@@ -67,7 +67,7 @@ public class EventAPITest {
 
         @Override
         public void handle(Event event) {
-            if(event.getEventType() == Event.Type.TEST) {
+            if(event.getEventType() == Event.Type.STATUS) {
                 for(EventView eventView : eventViews) {
                     eventView.viewIfCapable(event.getObject());
                 }
@@ -88,10 +88,10 @@ public class EventAPITest {
     @Test
     public void testEventAPI() throws Exception {
         controller.register(doubleView);
-        rmiListener.notify(new Event(Event.Type.TEST, TEST_NUMBER));
+        rmiListener.notify(new Event(Event.Type.STATUS, TEST_NUMBER));
         controller.unregister(doubleView);
         controller.register(objectView);
-        rmiListener.notify(new Event(Event.Type.TEST, TEXT_STRING));
+        rmiListener.notify(new Event(Event.Type.STATUS, TEXT_STRING));
         controller.unregister(objectView);
     }
 

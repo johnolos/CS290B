@@ -25,6 +25,8 @@ package api;
 
 import java.util.UUID;
 import javax.swing.JLabel;
+
+import api.events.Event;
 import system.Task;
 import system.Return;
 import system.SpaceImpl;
@@ -39,16 +41,29 @@ abstract public class ReturnValue<T> extends Return
     final private UUID composeId;
     final private int composeArgNum;
     final private T value;
+    final private Event event;
     
     public ReturnValue( final Task task, final T value ) 
     { 
         assert task != null;
         composeId = task.composeId();
         composeArgNum = task.composeArgNum();
-        this.value = value; 
+        this.value = value;
+        this.event = null;
+    }
+
+    public ReturnValue(final Task task, final T value , final Event event)
+    {
+        assert task != null;
+        composeId = task.composeId();
+        composeArgNum = task.composeArgNum();
+        this.value = value;
+        this.event = event;
     }
     
     public T value() { return value; }
+
+    public Event event() { return event; }
     
     /**
      * Update the taskCompose task that is waiting for this input.
