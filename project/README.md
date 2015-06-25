@@ -6,7 +6,8 @@ The project was about implementing the longest path problem to work with the exi
 A future plan would be make this implementation a tad more intelligent by pruning away branches that doesn't look interesting or discard them completely if possible.
 
 ## Clean, Compile, Jar
-+ `ant all`
++ `ant all`  
+
     This command will clean, compile and jar the project files.
 
 ## How to run
